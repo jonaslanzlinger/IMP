@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.io.wavfile as wav
 import warnings
+import matplotlib.pyplot as plt
 
 # in meters
 mic_positions = np.array(
@@ -91,3 +92,18 @@ print(f"Source position: x={x}, y={y}, z={z}")
 
 # x, y, z = compute_distance_by_tdoa([0, 0, 0, 0, 0, 0], mic_positions)
 # print(f"Source position: x={x}, y={y}, z={z}")
+
+
+mic_x = [mic["x"] for mic in mic_positions]
+mic_y = [mic["y"] for mic in mic_positions]
+
+fig, ax = plt.subplots()
+
+ax.scatter(mic_x, mic_y, color="blue", label="Microphones")
+ax.scatter(x, y, color="red", label="Sound Source")
+ax.set_xlabel("X (meters)")
+ax.set_ylabel("Y (meters)")
+ax.set_title("Microphone Positions and Estimated Sound Source (2D)")
+ax.legend()
+
+plt.show()
