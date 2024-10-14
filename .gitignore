@@ -1,3 +1,5 @@
 __pycache__
 myenv/
 .DS_Store
+.python-version
+.idea
