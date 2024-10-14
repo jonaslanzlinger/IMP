@@ -1,11 +1,12 @@
+import glob
+from itertools import combinations
 import numpy as np
 from scipy.io import wavfile
+
+import doa
 from gcc_phat import gcc_phat
 import multilateration
-import doa
-import glob
 import plot
-from itertools import combinations
 
 # Parameters for GCC-PHAT and sound properties
 SOUND_SPEED = 343.2  # Speed of sound in m/s
