@@ -1,8 +1,3 @@
-# TODO
-# 1. read 4 audio files
-# 2. find time delay between microphones
-# 3. calculate TDOA using output of gcc_phat
-
 import numpy as np
 from scipy.io import wavfile
 from gcc_phat import gcc_phat
@@ -53,6 +48,13 @@ def load_wav_files():
     return sample_rate, audio_signals, wav_filenames
 
 def main():
+    """
+    1. Load audio files from specified directory (one audio file per microphone)
+    2. Calculate TDoA per microphone pair using GCC-PHAT algorithm
+    3. Calculate DoA per microphone pair (not necessary for multilateration)
+    4. Compute multilateration to approximate sound source position
+    5. Visualize result
+    """
     # Load all wav files
     sample_rate, audio_signals, filenames = load_wav_files()
 
@@ -74,8 +76,6 @@ def main():
     mic_pairs = list(combinations(range(n_mics), 2))  # All unique mic pairs
     tdoas = {}  # Store TDoA results
 
-
-    # For each microphone pair, use GCC-PHAT to compute the TDoA
     for pair in mic_pairs:
         mic_a, mic_b = pair
 
@@ -86,20 +86,16 @@ def main():
         tdoas[pair] = tdoa
         print(f"TDoA between mic{mic_a + 1} and mic{mic_b + 1}: {tdoa:.6f} seconds")
 
-    # Example: calculate angles from the TDoA for each pair
-    # TODO: maybe refactor to put more into the doa.py file?
-    for pair, tdoa in tdoas.items():
-        mic_a, mic_b = pair
-        theta = doa.compute_doa(tdoa, MAX_TAU)
-        print(f"Estimated DoA (theta) between mic{mic_a + 1} and mic{mic_b + 1}: {theta:.2f} degrees")
+    # Compute the direction of arrival for each microphone pair (not necessary for multilateration)
+    doa.compute_all_doa(tdoas, MAX_TAU)
 
-    tdoas_simple = []
-    for par, tdoa in tdoas.items():
-        tdoas_simple.append(tdoa)
+    # TODO: Currently parsing the dict values of "tdoas" into a simple array to use Jonas' prior coded multilateration
+    #  algorithm, but we should make this more efficient at some point
+    tdoas_values = np.array(list(tdoas.values()))
 
     # Perform multilateration to approximate the sound source using the returned time delays of GCC-PHAT
-    x, y, z = multilateration.approximate_sound_source(tdoas_simple, MIC_POSITIONS)
-    print(f"Source position: x={x}, y={y}, z={z}")
+    x, y, z = multilateration.approximate_sound_source(tdoas_values, MIC_POSITIONS)
+    print(f"Approximated source position: x={x}, y={y}")
 
     # Visualize the result of the multilateration
     plot.plot_2d_multilateration_result(x, y, MIC_POSITIONS)
