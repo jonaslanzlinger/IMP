@@ -7,43 +7,74 @@ import numpy as np
 import math
 from scipy.io import wavfile
 import gcc_phat
+import glob
+from itertools import combinations
 
-def load_wav_file(filename):
+
+def load_wav_files():
     """
-    Load a wav file and return the sample rate and audio data.
+    Dynamically load all wav files from the current directory
+    or any specified folder.
     """
-    sample_rate, data = wavfile.read(filename)
-    return sample_rate, data
+    wav_filenames = glob.glob("../audio_files/*.wav")  # Load all .wav files in the directory
+    audio_signals = []
+    sample_rate = None
+
+    for filename in wav_filenames:
+        sr, data = wavfile.read(filename)
+        if sample_rate is None:
+            sample_rate = sr
+        elif sample_rate != sr:
+            raise ValueError(f"Sample rate mismatch in file {filename}")
+
+        audio_signals.append(data)
+
+    return sample_rate, audio_signals, wav_filenames
 
 def main():
-    # Load the two wav files
-    sample_rate1, sig1 = load_wav_file('../audio_files/pi1_audio.wav')
-    sample_rate2, sig2 = load_wav_file('../audio_files/pi2_audio.wav')
+    # Load all wav files
+    sample_rate, audio_signals, filenames = load_wav_files()
 
-    # Ensure both signals are sampled at the same rate
-    if sample_rate1 != sample_rate2:
-        raise ValueError("Sample rates for the two files do not match.")
+    # Check if enough microphones were loaded
+    n_mics = len(audio_signals)
+    if n_mics < 2:
+        raise ValueError("At least two microphones are required for DoA estimation.")
 
-    # Shorten the longer signal to match the shorter one if necessary
-    min_length = min(len(sig1), len(sig2))
-    sig1 = sig1[:min_length]
-    sig2 = sig2[:min_length]
+    print(f"Loaded {n_mics} microphone signals from files: {filenames}")
+
+    # Ensure all signals are the same length
+    min_length = min(map(len, audio_signals))
+    audio_signals = [sig[:min_length] for sig in audio_signals]
 
     # Window function (optional)
     window = np.hanning(min_length)
 
     # Parameters for GCC-PHAT and sound properties
     sound_speed = 343.2  # Speed of sound in m/s
-    distance = 0.14  # Distance between microphones in meters
-    max_tau = distance / sound_speed  # Maximum possible time delay between microphones
+    mic_distance = 0.14  # Assumed distance between microphones (can vary)
+    max_tau = mic_distance / sound_speed  # Maximum possible time delay
 
-    # Apply GCC-PHAT to compute the time delay (tau)
-    tau, _ = gcc_phat.gcc_phat(sig1 * window, sig2 * window, fs=sample_rate1, max_tau=max_tau)
+    # Compute TDoA for all pairs of microphones
+    mic_pairs = list(combinations(range(n_mics), 2))  # All unique mic pairs
+    tdoas = {}  # Store TDoA results
 
-    # Compute the angle of arrival (theta)
-    theta = math.asin(tau / max_tau) * 180 / math.pi
+    def compute_tdoa(sig_a, sig_b):
+        return gcc_phat.gcc_phat(sig_a * window, sig_b * window, fs=sample_rate, max_tau=max_tau)
 
-    print(f'Estimated direction of arrival (theta): {theta:.2f} degrees')
+    for pair in mic_pairs:
+        mic_a, mic_b = pair
+        tdoa, _ = compute_tdoa(audio_signals[mic_a], audio_signals[mic_b])
+        tdoas[pair] = tdoa
+        print(f"TDoA between mic{mic_a + 1} and mic{mic_b + 1}: {tdoa:.6f} seconds")
+
+    # Example: calculate angles from the TDoA for each pair
+    for pair, tdoa in tdoas.items():
+        mic_a, mic_b = pair
+        theta = math.asin(tdoa / max_tau) * 180 / math.pi
+        print(f"Estimated DoA (theta) between mic{mic_a + 1} and mic{mic_b + 1}: {theta:.2f} degrees")
+
+    # Further processing can involve combining the results from all pairs to get a refined estimate
+
 
 if __name__ == "__main__":
     main()
