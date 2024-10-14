@@ -13,6 +13,7 @@ import gcc_phat
 import multilateration
 import glob
 from itertools import combinations
+import matplotlib.pyplot as plt
 
 # in meters
 mic_positions = np.array(
@@ -95,7 +96,21 @@ def main():
     # Further processing can involve combining the results from all pairs to get a refined estimate
     xs, ys, zs = multilateration.multilateration(tdoas_simple, mic_positions)
 
-    print(f"Sound Localized at: ({xs},{ys},{zs})")
+    print(f"Source position: x={xs}, y={ys}, z={zs}")
+
+    mic_x = [mic["x"] for mic in mic_positions]
+    mic_y = [mic["y"] for mic in mic_positions]
+
+    fig, ax = plt.subplots()
+
+    ax.scatter(mic_x, mic_y, color="blue", label="Microphones")
+    ax.scatter(xs, ys, color="red", label="Sound Source")
+    ax.set_xlabel("X (meters)")
+    ax.set_ylabel("Y (meters)")
+    ax.set_title("Microphone Positions and Estimated Sound Source (2D)")
+    ax.legend()
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
