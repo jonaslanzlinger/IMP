@@ -3,13 +3,26 @@
 # 2. find time delay between microphones
 # 3. calculate TDOA using output of gcc_phat
 
+# Issues
+# 1. what is max_tau and why necessary? why big change in DOAs when changed from 2 to 2.5meters?
+
 import numpy as np
 import math
 from scipy.io import wavfile
 import gcc_phat
+import multilateration
 import glob
 from itertools import combinations
 
+# in meters
+mic_positions = np.array(
+    [
+        {"x": -10, "y": -10, "z": 0},
+        {"x": -10, "y": 10, "z": 0},
+        {"x": 10, "y": 10, "z": 0},
+        {"x": 10, "y": -10, "z": 0},
+    ]
+)
 
 def load_wav_files():
     """
@@ -51,7 +64,7 @@ def main():
 
     # Parameters for GCC-PHAT and sound properties
     sound_speed = 343.2  # Speed of sound in m/s
-    mic_distance = 0.14  # Assumed distance between microphones (can vary)
+    mic_distance = 2  # Assumed distance between microphones (can vary)
     max_tau = mic_distance / sound_speed  # Maximum possible time delay
 
     # Compute TDoA for all pairs of microphones
@@ -73,8 +86,16 @@ def main():
         theta = math.asin(tdoa / max_tau) * 180 / math.pi
         print(f"Estimated DoA (theta) between mic{mic_a + 1} and mic{mic_b + 1}: {theta:.2f} degrees")
 
-    # Further processing can involve combining the results from all pairs to get a refined estimate
+    tdoas_simple = []
+    for par, tdoa in tdoas.items():
+        tdoas_simple.append(tdoa)
 
+    print(tdoas_simple)
+
+    # Further processing can involve combining the results from all pairs to get a refined estimate
+    xs, ys, zs = multilateration.multilateration(tdoas_simple, mic_positions)
+
+    print(f"Sound Localized at: ({xs},{ys},{zs})")
 
 if __name__ == "__main__":
     main()
