@@ -17,13 +17,14 @@
 
 import numpy as np
 
-
 def gcc_phat(sig, refsig, fs=1, max_tau=None, interp=16):
-    '''
+    """
     This function computes the offset between the signal sig and the reference signal refsig
-    using the Generalized Cross Correlation - Phase Transform (GCC-PHAT)method.
-    '''
-    
+    using the Generalized Cross Correlation - Phase Transform (GCC-PHAT) method.
+
+    Returns the time delay estimation (tau) between the two signals and the cross-correlation result (cc).
+    """
+
     # make sure the length for the FFT is larger or equal than len(sig) + len(refsig)
     n = sig.shape[0] + refsig.shape[0]
 
@@ -51,8 +52,12 @@ def gcc_phat(sig, refsig, fs=1, max_tau=None, interp=16):
     return tau, cc
 
 
+
 def main():
-    
+    """
+    Simple demonstration of estimating the time offset (or delay) between two signals using the
+    Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm
+    """
     refsig = np.linspace(1, 10, 10)
 
     for i in range(0, 10):
@@ -63,7 +68,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-

@@ -1,8 +1,8 @@
 import numpy as np
 
-speed_of_sound = 343  # m/s
+SPEED_OF_SOUND = 343  # m/s
 
-def multilateration(tdoas, mic_positions):
+def approximate_sound_source(tdoas, mic_positions):
     num_mics = len(mic_positions)
 
     Amat = np.zeros((num_mics - 1, 3))
@@ -16,7 +16,7 @@ def multilateration(tdoas, mic_positions):
         Amat[i - 1, 1] = 2 * (y0 - yi)
         Amat[i - 1, 2] = 2 * (z0 - zi)
 
-        Dmat[i - 1] = speed_of_sound * tdoas[i - 1] + (
+        Dmat[i - 1] = SPEED_OF_SOUND * tdoas[i - 1] + (
                 (x0 ** 2 + y0 ** 2 + z0 ** 2) - (xi ** 2 + yi ** 2 + zi ** 2)
         )
 
