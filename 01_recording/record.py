@@ -3,40 +3,32 @@ from scipy.io.wavfile import write
 from datetime import datetime
 
 # Parameters
-sample_rate = 44100  # Sample rate in Hz (CD quality)
-duration = 10  # Duration of the recording in seconds
+SAMPLE_RATE = 44100  # Sample rate in Hz
 
 def list_microphones():
-    """List all available microphones and their corresponding device IDs."""
     print("Available audio devices:")
     print(sd.query_devices())
 
 
-def record_audio(device_id=None):
+def record_audio(device_id=None, duration=10):
     timestamp = datetime.now()
+    print(f"Recording started at: {timestamp}")
 
-    # Print timestamp of recording
-    print("Recording...")
-    print(timestamp)
-
-    # Record audio
-    recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, device=device_id)
-    sd.wait()  # Wait until the recording is finished
+    recording = sd.rec(int(duration * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, device=device_id)
+    sd.wait()
     print("Recording complete. Saving file...")
 
-    # Save as WAV file
-    filename = f"output_{timestamp.strftime("%Y-%m-%d_%H:%M:%S.%f")}.wav"  # Filename with timestamp
+    filename = f"output_{timestamp.strftime("%Y-%m-%d_%H:%M:%S.%f")}.wav"
 
-    write(filename, sample_rate, recording)
+    write(filename, SAMPLE_RATE, recording)
     print(f"File saved as {filename}")
 
 
-# Run the function to start recording
 if __name__ == "__main__":
-    list_microphones()  # List all devices first
+    list_microphones()
 
-    # Example: Manually set the device ID (replace with the desired device ID from the list)
-    # You can look at the output of list_microphones() to pick the correct device
+    # Manually define device for recording and duration
     device_id = int(input("Enter the device ID to use for recording: "))
+    duration = int(input("Enter for how long you want to record: "))
 
-    record_audio(device_id=device_id)
+    record_audio(device_id=device_id, duration=duration)
