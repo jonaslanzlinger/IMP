@@ -106,3 +106,45 @@ ax.set_title("Microphone Positions and Estimated Sound Source (2D)")
 ax.legend()
 
 plt.show()
+
+
+## upcoming todos
+## 1. investigate whether we can use GCC (generalized cross correlation) to match the transients
+## 2. try to perform a simple sourier transformation to remove some frequencies as a pre processing technique
+
+# Initialize subplots
+fig, axs = plt.subplots(3, 1, figsize=(12, 16))
+
+# Plot 1: Microphone positions and sound source
+ax1 = axs[0]
+ax1.scatter(mic_x, mic_y, color="blue", label="Microphones")
+ax1.scatter(x, y, color="red", label="Sound Source")
+ax1.set_xlabel("X (meters)")
+ax1.set_ylabel("Y (meters)")
+ax1.set_title("Microphone Positions and Estimated Sound Source (2D)")
+ax1.legend()
+
+# Load audio data for waveform and spectrogram
+audio_data = [load_audio_data(file) for file in audio_files]
+min_samples = min(len(samples) for frame_rate, samples in audio_data)
+buffer = min_samples
+
+# Plot 2: Audio waveforms
+ax2 = axs[1]
+for i, (sr, samples) in enumerate(audio_data):
+    ax2.plot(samples[:buffer], label=f"Microphone {i + 1}")
+ax2.set_title("Audio Waveforms")
+ax2.set_xlabel("Samples")
+ax2.set_ylabel("Amplitude")
+ax2.legend()
+
+# Plot 3: Spectrogram for each audio signal
+ax3 = axs[2]
+for i, (sr, samples) in enumerate(audio_data):
+    ax3.specgram(samples[:buffer], Fs=sr, label=f"Microphone {i + 1}")
+ax3.set_title("Spectrogram of Audio Signals")
+ax3.set_xlabel("Time (s)")
+ax3.set_ylabel("Frequency (Hz)")
+
+plt.tight_layout()
+plt.show()
