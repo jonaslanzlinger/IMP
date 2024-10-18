@@ -1,0 +1,1 @@
+# Example to localize a sound source using 4 microphones and GCC-PHAT
