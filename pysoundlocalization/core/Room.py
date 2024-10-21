@@ -15,6 +15,7 @@ class Room:
             mic = Microphone(x, y)
             self.mics.append(mic)
             print(f"Microphone added at position ({x}, {y})")
+            return mic
         else:
             print(f"Microphone at ({x}, {y}) is outside the room bounds!")
 
