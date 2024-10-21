@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+from pysoundlocalization.algorithms.gcc_phat import gcc_phat
 from pysoundlocalization.core.Microphone import Microphone
 
 
@@ -24,6 +25,11 @@ class Room:
     # TODO: Add actual check to verify that mic position is within room
     def is_within_room(self, x, y):
         return True
+
+    # TODO: should computation methods be in room class? argument for, because you do computations on a per room basis
+    # TODO: allow selection of algorithm
+    def compute_tdoa(self, mic1, mic2, sample_rate, max_tau):
+        return gcc_phat(mic1, mic2, fs=sample_rate, max_tau=max_tau)
 
     # TODO: possibly move visualizations out of class
     def visualize(self):

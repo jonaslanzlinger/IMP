@@ -82,7 +82,7 @@ def main():
 
         sig_a = audio_signals[mic_a]
         sig_b = audio_signals[mic_b]
-        tdoa, _ = gcc_phat(sig_a * window, sig_b * window, fs=sample_rate, max_tau=MAX_TAU)
+        tdoa, cc = gcc_phat(sig_a * window, sig_b * window, fs=sample_rate, max_tau=MAX_TAU)
 
         tdoas[pair] = tdoa
         print(f"TDoA between mic{mic_a + 1} and mic{mic_b + 1}: {tdoa:.6f} seconds")
