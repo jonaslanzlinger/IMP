@@ -8,14 +8,14 @@ import numpy as np
 
 
 class Audio:
-    def __init__(self, filepath=None):
+    def __init__(self, filepath=None, sample_rate=None, audio_signal=None):
         """
         Initialize the Audio class with a specific audio file path.
         This class supports audio formats supported by soundfile, like WAV, FLAC, AIFF, OGG, etc.
         """
         self.filepath = filepath
-        self.sample_rate = None
-        self.audio_signal = None
+        self.sample_rate = sample_rate
+        self.audio_signal = audio_signal
 
     def load_audio_file(self):
         """
@@ -40,6 +40,10 @@ class Audio:
         if self.audio_signal is None:
             raise ValueError("No audio file has been loaded yet.")
         return self.audio_signal
+
+    def set_audio_signal(self, audio_signal):
+        """Set the audio signal data of the audio file."""
+        self.audio_signal = audio_signal
 
     def get_sample_rate(self):
         """Return the sample rate of the audio file."""
