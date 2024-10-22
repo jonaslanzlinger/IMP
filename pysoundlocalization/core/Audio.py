@@ -41,13 +41,13 @@ class Audio:
             raise ValueError("No audio file has been loaded yet.")
         return self.audio_signal
 
-    '''
-        def get_sample_rate(self):
+    def get_sample_rate(self):
         """Return the sample rate of the audio file."""
         if self.sample_rate is None:
             raise ValueError("No audio file has been loaded yet.")
         return self.sample_rate
 
+    '''
     def get_duration(self):
         """Return the duration of the audio file in seconds."""
         if self.audio_signal is None:
