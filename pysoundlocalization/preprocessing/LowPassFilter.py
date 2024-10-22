@@ -17,7 +17,7 @@ class LowPassFilter(IFrequencyFilter):
 
     def apply(self, audio: Audio) -> Audio:
         print(
-            f"Applying Low Pass Filter with cutoff frequency {self.cutoff_frequency} Hz and order {self.order}"
+            f"Applying LowPassFilter with cutoff frequency {self.cutoff_frequency} Hz and order {self.order}"
         )
 
         """
