@@ -7,7 +7,7 @@ from visualization.spectrogram_plot import spectrogram_plot
 
 warnings.filterwarnings("ignore")
 
-audio = Audio(filepath="preprocessing/pi1_audio.wav")
+audio = Audio(filepath="examples/example_audio/pi1_audio.wav")
 audio.load_audio_file()
 
 
@@ -15,7 +15,6 @@ audio.load_audio_file()
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
-frequency_filter_chain.plot(44100)
 # frequency_filter_chain.apply(audio)
 
 # audio.play()

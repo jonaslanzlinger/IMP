@@ -97,7 +97,7 @@ class Gui:
         if self.canvas:
             self.canvas.destroy()
 
-        canvas_size = 800
+        canvas_size = 500
         padding = 50
 
         self.canvas = tk.Canvas(
@@ -249,7 +249,7 @@ class Gui:
 
     def plot_spectrogram(self):
         """Plot the spectrogram inside the Tkinter GUI."""
-        audio = Audio(filepath="preprocessing/pi1_audio.wav")
+        audio = Audio(filepath="examples/example_audio/pi1_audio.wav")
         audio.load_audio_file()
 
         audio_signal = audio.get_audio_signal()

@@ -14,7 +14,7 @@ from preprocessing.LowPassFilter import LowPassFilter
 
 warnings.filterwarnings("ignore")
 
-speech_audio = Audio(filepath="preprocessing/speech_example.wav")
+speech_audio = Audio(filepath="examples/example_audio/speech_example.wav")
 speech_audio.load_audio_file()
 speech_signal = speech_audio.get_audio_signal()
 speech_sample_rate = speech_audio.get_sample_rate()
