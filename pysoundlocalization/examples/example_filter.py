@@ -15,8 +15,8 @@ audio.load_audio_file()
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
-# frequency_filter_chain.apply(audio)
+frequency_filter_chain.apply(audio)
 
 # audio.play()
 
-# spectrogram_plot(audio)
+spectrogram_plot(audio)
