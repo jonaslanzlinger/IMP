@@ -1,6 +1,9 @@
 from preprocessing.IFrequencyFilter import IFrequencyFilter
 from core.Audio import Audio
 from scipy.signal import butter, lfilter
+import matplotlib.pyplot as plt
+from scipy import signal
+import numpy as np
 
 
 class LowPassFilter(IFrequencyFilter):

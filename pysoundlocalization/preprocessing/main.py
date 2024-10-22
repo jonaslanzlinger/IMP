@@ -3,14 +3,21 @@ import warnings
 from core.Audio import Audio
 from preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from preprocessing.LowPassFilter import LowPassFilter
+from visualization.spectrogram_plot import spectrogram_plot
 
 warnings.filterwarnings("ignore")
 
 audio = Audio(filepath="preprocessing/pi1_audio.wav")
 audio.load_audio_file()
 
+
+# spectrogram_plot(audio)
+
 frequency_filter_chain = FrequencyFilterChain()
+frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
+frequency_filter_chain.plot(44100)
+# frequency_filter_chain.apply(audio)
 
-frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=200, order=4))
+# audio.play()
 
-frequency_filter_chain.apply(audio)
+# spectrogram_plot(audio)
