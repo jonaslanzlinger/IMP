@@ -1,3 +1,6 @@
+from core.Audio import Audio
+
+
 class Microphone:
 
     def __init__(self, x, y):
@@ -5,10 +8,17 @@ class Microphone:
         self.y = y
 
         # TODO: move towards generic SoundInput and not "recorded audio"
+        self.audio = None
         self.recorded_audio = None
 
     def get_position(self):
         return self.x, self.y
+
+    def add_audio(self, audio: Audio):
+        self.audio = audio
+
+    def get_audio(self):
+        return self.audio
 
     def add_recorded_audio(self, audio_signal):
         """

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-from pysoundlocalization.algorithms.gcc_phat import gcc_phat
-from pysoundlocalization.core.Microphone import Microphone
+from algorithms.gcc_phat import gcc_phat
+from core.Microphone import Microphone
 
 
 class Room:
@@ -20,6 +20,14 @@ class Room:
         else:
             print(f"Microphone at ({x}, {y}) is outside the room bounds!")
 
+    def add_microphone(self, mic):
+        if self.is_within_room(mic.get_position()):
+            self.mics.append(mic)
+            print(f"Microphone added at position {mic.get_position()}")
+            return mic
+        else:
+            print(f"Microphone at {mic.get_position()} is outside the room bounds!")
+
     # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
 
     # TODO: Add actual check to verify that mic position is within room
@@ -36,21 +44,27 @@ class Room:
         fig, ax = plt.subplots()
 
         # Create a polygon representing the room shape
-        polygon = patches.Polygon(self.vertices, closed=True, edgecolor='black', facecolor='none', linewidth=2)
+        polygon = patches.Polygon(
+            self.vertices, closed=True, edgecolor="black", facecolor="none", linewidth=2
+        )
         ax.add_patch(polygon)
 
         # Set limits based on the room's shape
-        ax.set_xlim(min(x for x, y in self.vertices) - 1, max(x for x, y in self.vertices) + 1)
-        ax.set_ylim(min(y for x, y in self.vertices) - 1, max(y for x, y in self.vertices) + 1)
+        ax.set_xlim(
+            min(x for x, y in self.vertices) - 1, max(x for x, y in self.vertices) + 1
+        )
+        ax.set_ylim(
+            min(y for x, y in self.vertices) - 1, max(y for x, y in self.vertices) + 1
+        )
 
         # Plot microphones
         if self.mics:
             mic_x, mic_y = zip(*[mic.get_position() for mic in self.mics])
-            ax.scatter(mic_x, mic_y, color='red', label='Microphones')
+            ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
-        ax.set_xlabel('X coordinate')
-        ax.set_ylabel('Y coordinate')
-        ax.set_title(f'Room: {self.name} with Microphones')
+        ax.set_xlabel("X coordinate")
+        ax.set_ylabel("Y coordinate")
+        ax.set_title(f"Room: {self.name} with Microphones")
         plt.legend()
         plt.grid(True)
         plt.show()

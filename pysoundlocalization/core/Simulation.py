@@ -1,8 +1,8 @@
-from pysoundlocalization.core.Room import Room
+from core.Room import Room
 
 
 class Simulation:
-    sound_speed = 343.2 # Default speed of sound in m/s
+    sound_speed = 343.2  # Default speed of sound in m/s
 
     def __init__(self, sound_speed):
         self.sound_speed = sound_speed
@@ -17,6 +17,9 @@ class Simulation:
         self.rooms.append(room)
         print(f"Room '{name}' added with vertices {vertices}")
         return room
+
+    def get_rooms(self):
+        return self.rooms
 
     def list_rooms(self):
         if not self.rooms:
