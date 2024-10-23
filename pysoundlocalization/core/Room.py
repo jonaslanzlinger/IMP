@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 from algorithms.gcc_phat import gcc_phat
-from core.Microphone import Microphone
+from .Microphone import Microphone
 
 
 class Room:
@@ -19,14 +19,6 @@ class Room:
             return mic
         else:
             print(f"Microphone at ({x}, {y}) is outside the room bounds!")
-
-    def add_microphone(self, mic):
-        if self.is_within_room(mic.get_position()):
-            self.mics.append(mic)
-            print(f"Microphone added at position {mic.get_position()}")
-            return mic
-        else:
-            print(f"Microphone at {mic.get_position()} is outside the room bounds!")
 
     # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
 

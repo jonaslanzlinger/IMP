@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.fft import fft, ifft
 from scipy.signal import butter, filtfilt
 import librosa
 import librosa.display
@@ -11,10 +10,13 @@ from visualization.spectrogram_plot import spectrogram_plot
 from visualization.wave_plot import wave_plot
 from preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from preprocessing.LowPassFilter import LowPassFilter
+import os
 
 warnings.filterwarnings("ignore")
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-speech_audio = Audio(filepath="examples/example_audio/speech_example.wav")
+speech_filepath = os.path.join(root, "examples", "example_audio", "speech_example.wav")
+speech_audio = Audio(filepath=speech_filepath)
 speech_audio.load_audio_file()
 speech_signal = speech_audio.get_audio_signal()
 speech_sample_rate = speech_audio.get_sample_rate()

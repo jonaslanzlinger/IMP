@@ -1,4 +1,4 @@
-from core.Room import Room
+from .Room import Room
 
 
 class Simulation:

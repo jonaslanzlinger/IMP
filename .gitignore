@@ -3,3 +3,4 @@ myenv/
 .DS_Store
 .python-version
 .idea
+pysoundlocalization.egg-info/

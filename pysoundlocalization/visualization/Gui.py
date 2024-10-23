@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from core.Audio import Audio
 from tkinter import filedialog
 from core.Microphone import Microphone
+import os
+
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 class Gui:
@@ -75,7 +78,9 @@ class Gui:
             ):
                 raise ValueError("Invalid format")
 
-            self.simulation.add_room(f"{len(vertices)}-shaped Room", vertices)
+            self.room = self.simulation.add_room(
+                f"{len(vertices)}-shaped Room", vertices
+            )
 
             self.draw_room(vertices)
 
@@ -158,7 +163,7 @@ class Gui:
             microphone = self.create_microphone()
             self.microphones.append(microphone)
 
-            microphone["microphone"] = Microphone(x, y)
+            microphone["microphone"] = self.room.add_microphone(x, y)
 
             x_scaled = x * self.scale + self.offset_x
             y_scaled = y * self.scale + self.offset_y

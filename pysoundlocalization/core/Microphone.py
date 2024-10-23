@@ -1,4 +1,4 @@
-from core.Audio import Audio
+from .Audio import Audio
 
 
 class Microphone:
