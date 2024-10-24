@@ -3,8 +3,7 @@ from core.Audio import Audio
 from core.Simulation import Simulation
 import os
 
-root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
+# Create a new simulation
 simulation = Simulation.create()
 
 # Define an L-shaped room using vertices
@@ -20,6 +19,7 @@ mic4 = room1.add_microphone(2.5, 3)  # Inside the L-shaped room
 room1.visualize()
 
 # Add and pre-process audio
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 audio1_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav")
 audio1 = Audio(filepath=audio1_filepath)
 sample_rate1, audio_signal1 = audio1.load_audio_file()
@@ -42,10 +42,9 @@ mic3.add_recorded_audio(Audio(filepath=audio3_filepath).get_audio_signal())
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
 mic4.add_recorded_audio(Audio(filepath=audio4_filepath).get_audio_signal())
 
-# TODO: add MAX_TAU via variables instead of 2/343.2 -> max_tau = MIC_DISTANCE / sound_speed  # Maximum possible time delay
-mic_distance = 2
-speed_sound = 343.3
-max_tau = mic_distance / speed_sound
+# Define the maximum possible time delay (TDoA) to improve algorithm speeds
+mic_distance = 2 # in meters, may be approximated
+max_tau = mic_distance / simulation.get_sound_speed()
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = room1.compute_tdoa(
@@ -67,9 +66,9 @@ print(f"TDoA for all mic pairs: {tdoa_pairs}")
 doa_pairs = room1.compute_all_doa(tdoa_pairs, max_tau=max_tau, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
+# Approximate and visualize the sound source position
 x,y = room1.approximate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
-# TODO: add another class to visualize the sound source in the room? or just separate variable in Room object.
 room1.add_sound_source_position(x, y)
 room1.visualize()

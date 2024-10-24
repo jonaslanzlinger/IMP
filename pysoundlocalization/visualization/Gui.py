@@ -5,7 +5,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from core.Audio import Audio
 from tkinter import filedialog
-from core.Microphone import Microphone
 import os
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

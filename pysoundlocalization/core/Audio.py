@@ -72,7 +72,3 @@ class Audio:
 
         play_obj = sa.play_buffer(audio_signal, num_channels, bytes_per_sample, self.sample_rate)
         play_obj.wait_done()
-
-
-# TODO: def add(path, mic1): -> add a audio file by path and associate with mic1 (prior created)
-# TODO: def pre_process() -> for each Audio object, we can preprocess the audio

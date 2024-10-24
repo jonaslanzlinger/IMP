@@ -1,15 +1,14 @@
 import numpy as np
 
-# TODO: move somewhere else
-SPEED_OF_SOUND = 343  # meters per second (constant for air at room temperature)
+SPEED_OF_SOUND = 343.2  # in meters per second #TODO: define somewhere once? because also defined in simulation
 
-
-def approximate_sound_source(tdoa_pairs):
+def approximate_sound_source(tdoa_pairs, speed_of_sound=SPEED_OF_SOUND):
     """
     Approximates the sound source given all microphone pairs and their computed TDoA values.
 
     :param tdoa_pairs: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
                          and the values are the computed TDoA values (in seconds).
+    :param speed_of_sound: The speed of sound (in meters per second) may be changed. By default set to 343.2 m/s.
     :return: The estimated (x, y) coordinates of the sound source.
     """
     if len(tdoa_pairs) < 2:
@@ -33,7 +32,7 @@ def approximate_sound_source(tdoa_pairs):
         Amat[row, 1] = 2 * (y0 - y1)
         #Amat[row, 2] = 2 * (z0 - z1)
 
-        Dmat[row] = SPEED_OF_SOUND * tdoa + (
+        Dmat[row] = speed_of_sound * tdoa + (
                 #(x0 ** 2 + y0 ** 2 + z0 ** 2) - (x1 ** 2 + y1 ** 2 + z1 ** 2)
                 (x0 ** 2 + y0 ** 2) - (x1 ** 2 + y1 ** 2)
         )
