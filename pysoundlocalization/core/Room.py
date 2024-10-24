@@ -4,6 +4,7 @@ from itertools import combinations
 
 from algorithms.gcc_phat import gcc_phat
 from algorithms.doa import compute_doa
+from algorithms.multilateration import approximate_sound_source
 from core.Microphone import Microphone
 
 
@@ -115,6 +116,17 @@ class Room:
                 print(f"DoA for microphone pair {mic_pair}: {doa:.2f} degrees")
 
         return doa_results
+
+    def approximate_sound_source(self, tdoa_pairs):
+        """
+        Approximates the sound source given all microphone pairs and their computed TDoA values.
+
+        :param tdoa_pairs: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
+                         and the values are the computed TDoA values (in seconds).
+        :return: The estimated (x, y) coordinates of the sound source.
+        """
+        return approximate_sound_source(tdoa_pairs)
+
 
     # TODO: possibly move visualizations out of class
     def visualize(self):
