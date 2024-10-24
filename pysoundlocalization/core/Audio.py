@@ -19,7 +19,7 @@ class Audio:
 
     def load_audio_file(self):
         """
-        Load a single audio file.
+        Manually load the audio file from the filepath. May be used to re-load the file from the filepath.
         """
         if not self.filepath or not os.path.exists(self.filepath):
             raise FileNotFoundError(
@@ -36,9 +36,12 @@ class Audio:
         self.filepath = filepath
 
     def get_audio_signal(self):
-        """Return the audio signal data of the audio file."""
+        """
+        Return the audio signal data of the audio file.
+        The audio is automatically loaded from the filepath if not done beforehand.
+        """
         if self.audio_signal is None:
-            raise ValueError("No audio file has been loaded yet.")
+            self.load_audio_file()
         return self.audio_signal
 
     def set_audio_signal(self, audio_signal):
@@ -59,7 +62,7 @@ class Audio:
         return len(self.audio_signal) / self.sample_rate
     '''
 
-    def play(self):
+    def play(self, num_channels=1, bytes_per_sample=2):
         """Play the audio file."""
         if self.audio_signal is None:
             raise ValueError("No audio file has been loaded yet.")
@@ -67,7 +70,7 @@ class Audio:
         # Convert the audio signal to the correct format for simpleaudio
         audio_signal = np.int16(self.audio_signal * 32767)
 
-        play_obj = sa.play_buffer(audio_signal, 1, 2, self.sample_rate)
+        play_obj = sa.play_buffer(audio_signal, num_channels, bytes_per_sample, self.sample_rate)
         play_obj.wait_done()
 
 

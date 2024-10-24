@@ -1,6 +1,3 @@
-from .Audio import Audio
-
-
 class Microphone:
 
     def __init__(self, x, y):
@@ -8,30 +5,24 @@ class Microphone:
         self.y = y
 
         # TODO: move towards generic SoundInput and not "recorded audio"
-        self.audio = None
-        self.recorded_audio = None
+        # TODO: do we want to add an Audio reference instead of just a recorded_audio_signal??
+        self.recorded_audio_signal = None
 
     def get_position(self):
         return self.x, self.y
-
-    def add_audio(self, audio: Audio):
-        self.audio = audio
-
-    def get_audio(self):
-        return self.audio
 
     def add_recorded_audio(self, audio_signal):
         """
         Store the recorded audio signal in the microphone.
         :param audio_signal: The audio signal from the Audio class.
         """
-        self.recorded_audio = audio_signal
+        self.recorded_audio_signal = audio_signal
 
     def get_recorded_audio(self):
         """
         Return the stored audio signal.
         Raises an error if no recorded audio has been added yet.
         """
-        if self.recorded_audio is None:
+        if self.recorded_audio_signal is None:
             raise ValueError("No recorded audio has been added for this microphone.")
-        return self.recorded_audio
+        return self.recorded_audio_signal
