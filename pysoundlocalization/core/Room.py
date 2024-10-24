@@ -174,6 +174,8 @@ class Room:
             min(y for x, y in self.vertices) - 1, max(y for x, y in self.vertices) + 1
         )
 
+        ax.set_aspect('equal')
+
         # Plot microphones
         if self.mics:
             mic_x, mic_y = zip(*[mic.get_position() for mic in self.mics])

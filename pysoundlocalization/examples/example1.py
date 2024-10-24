@@ -12,10 +12,10 @@ l_shape_vertices = [(0, 0), (4.7, 0), (4.7, 2), (3, 2), (3, 4.5), (0, 4.5)]
 room1 = simulation.add_room("L-Shaped Room", l_shape_vertices)
 
 # Create and add microphones with decimal coordinates
-mic1 = room1.add_microphone(0.9, 3)  # Inside the L-shaped room
-mic2 = room1.add_microphone(2.4, 3.284849)  # Inside the L-shaped room
-mic3 = room1.add_microphone(1, 1)  # Inside the L-shaped room
-mic4 = room1.add_microphone(2.5, 1.5)  # Inside the L-shaped room
+mic1 = room1.add_microphone(0.5, 1)  # Inside the L-shaped room
+mic2 = room1.add_microphone(2.5, 1)  # Inside the L-shaped room
+mic3 = room1.add_microphone(0.5, 3)  # Inside the L-shaped room
+mic4 = room1.add_microphone(2.5, 3)  # Inside the L-shaped room
 
 room1.visualize()
 
@@ -43,9 +43,9 @@ audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav
 mic4.add_recorded_audio(Audio(filepath=audio4_filepath).get_audio_signal())
 
 # TODO: add MAX_TAU via variables instead of 2/343.2 -> max_tau = MIC_DISTANCE / sound_speed  # Maximum possible time delay
-max_distance = 2
+mic_distance = 2
 speed_sound = 343.3
-max_tau = max_distance / speed_sound
+max_tau = mic_distance / speed_sound
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = room1.compute_tdoa(
