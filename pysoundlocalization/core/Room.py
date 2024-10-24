@@ -3,6 +3,7 @@ import matplotlib.patches as patches
 from itertools import combinations
 
 from algorithms.gcc_phat import gcc_phat
+from algorithms.doa import compute_doa
 from core.Microphone import Microphone
 
 
@@ -63,6 +64,12 @@ class Room:
                 print(f"Missing audio signals for mics at {mic1.get_position()} and {mic2.get_position()}")
 
         return tdoa_results
+
+    def compute_doa(self, tdoa, max_tau):
+        """
+        Computes the direction of arrival (DoA) of a sound based on the time difference of arrival (TDoA) of two signals.
+        """
+        return compute_doa(tdoa, max_tau=max_tau)
 
     # TODO: possibly move visualizations out of class
     def visualize(self):

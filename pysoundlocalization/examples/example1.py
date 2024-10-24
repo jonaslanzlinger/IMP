@@ -47,6 +47,7 @@ max_distance = 2
 speed_sound = 343.3
 max_tau = max_distance / speed_sound
 
+# Compute TDoA from Room
 tdoa12, cc = room1.compute_tdoa(
     audio1=mic1.get_recorded_audio(),
     audio2=mic2.get_recorded_audio(),
@@ -55,10 +56,11 @@ tdoa12, cc = room1.compute_tdoa(
 )
 print(f"TDoA between mic1 and mic2: {tdoa12:.6f} seconds")
 
-tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate1, max_tau=max_tau)
-print(f"TDoA for all mic pairs: {tdoa_pairs}")
+#tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate1, max_tau=max_tau)
+#print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-# Compute DOA from Room
-# room1.getDOA(...)
+# Compute direction of arrival (DoA) of a microphone pair given their TDoA
+doa = room1.compute_doa(tdoa12, max_tau=max_tau)
+print(f"Direction of arrival (DoA) of sound (mics 1 and 2): {doa:.6f} degrees")
 
 # print(mic1.get_position())
