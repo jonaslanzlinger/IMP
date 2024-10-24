@@ -21,8 +21,5 @@ class Microphone:
     def get_recorded_audio(self):
         """
         Return the stored audio signal.
-        Raises an error if no recorded audio has been added yet.
         """
-        if self.recorded_audio_signal is None:
-            raise ValueError("No recorded audio has been added for this microphone.")
         return self.recorded_audio_signal

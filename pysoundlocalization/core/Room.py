@@ -15,8 +15,7 @@ class Room:
         self.mics = []
 
     def add_microphone(self, x, y):
-        # Check if a microphone with the same x,y coordinates already exists
-        # TODO: is it worth using a dict to simplify duplicate checks? I think likely not unless we have 50+ mics at once..
+        # Ensure that no mic already exists at given coordinates
         for mic in self.mics:
             if mic.x == x and mic.y == y:
                 print(f"A microphone already exists at position ({x}, {y})")
@@ -32,9 +31,33 @@ class Room:
 
     # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
 
-    # TODO: Add actual check to verify that mic position is within room
     def is_within_room(self, x, y):
-        return True
+        """
+        Check if a point (x, y) is inside the room's polygon defined by its vertices.
+
+        Implementation of the ray-casting algorithm to solve the point-in-polygon problem.
+
+        Args:
+            x (float): X-coordinate of the point to check.
+            y (float): Y-coordinate of the point to check.
+
+        Returns:
+            bool: True if the point is inside the polygon, False otherwise.
+        """
+        num_vertices = len(self.vertices)
+        inside = False
+
+        # Iterate over each edge of the polygon
+        for i in range(num_vertices):
+            # Get current vertex and the next vertex (wrapping around at the end)
+            x1, y1 = self.vertices[i]
+            x2, y2 = self.vertices[(i + 1) % num_vertices]
+
+            # Check if the ray crosses the edge
+            if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
+                inside = not inside
+
+        return inside
 
     # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
@@ -51,6 +74,7 @@ class Room:
         :param sample_rate: The sample rate of the recorded audio signals (in Hz).
         :param max_tau: The maximum allowable time difference (in seconds) between the two signals,
                     typically determined by the distance between the microphones and the speed of sound.
+        :param print_intermediate_results: Set to true if intermediate results of computation should be printed to console. Default is false.
 
         :return: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
              and the values are the computed TDoA values (in seconds). If less than two microphones are present,
@@ -81,7 +105,7 @@ class Room:
                 if print_intermediate_results:
                     print(f"TDoA between mics {mic_pair}: {tdoa:.6f} seconds")
             else:
-                print(f"Missing audio signals for mics at {mic1.get_position()} and {mic2.get_position()}")
+                print(f"Missing audio signal(s) for mics at {mic1.get_position()} and {mic2.get_position()}")
 
         return tdoa_results
 
@@ -99,6 +123,7 @@ class Room:
                              and the values are the computed TDoA values (in seconds).
         :param max_tau: The maximum allowable time difference (in seconds) between the two signals,
                         typically determined by the distance between the microphones and the speed of sound.
+        :param print_intermediate_results: Set to true if intermediate results of computation should be printed to console. Default is false.
 
         :return: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
                  and the values are the computed DoA values (in degrees).
