@@ -13,6 +13,7 @@ class Room:
         self.name = name
         self.vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics = []
+        self.sound_source_position = None #TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
 
     def add_microphone(self, x, y):
         # Ensure that no mic already exists at given coordinates
@@ -30,6 +31,8 @@ class Room:
             print(f"Microphone at ({x}, {y}) is outside the room bounds!")
 
     # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
+    def add_sound_source_position(self, x, y):
+        self.sound_source_position = (x, y)
 
     def is_within_room(self, x, y):
         """
@@ -175,6 +178,9 @@ class Room:
         if self.mics:
             mic_x, mic_y = zip(*[mic.get_position() for mic in self.mics])
             ax.scatter(mic_x, mic_y, color="red", label="Microphones")
+
+        if self.sound_source_position and isinstance(self.sound_source_position, tuple):
+            ax.scatter(self.sound_source_position[0], self.sound_source_position[1], color="blue", label="Approximated Sound Source")
 
         ax.set_xlabel("X coordinate")
         ax.set_ylabel("Y coordinate")

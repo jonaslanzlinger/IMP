@@ -71,3 +71,5 @@ x,y = room1.approximate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
 # TODO: add another class to visualize the sound source in the room? or just separate variable in Room object.
+room1.add_sound_source_position(x, y)
+room1.visualize()
