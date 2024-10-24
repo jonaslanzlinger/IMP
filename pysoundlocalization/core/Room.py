@@ -14,6 +14,13 @@ class Room:
         self.mics = []
 
     def add_microphone(self, x, y):
+        # Check if a microphone with the same x,y coordinates already exists
+        # TODO: is it worth using a dict to simplify duplicate checks? I think likely not unless we have 50+ mics at once..
+        for mic in self.mics:
+            if mic.x == x and mic.y == y:
+                print(f"A microphone already exists at position ({x}, {y})")
+                return None
+
         if self.is_within_room(x, y):
             mic = Microphone(x, y)
             self.mics.append(mic)
@@ -28,7 +35,7 @@ class Room:
     def is_within_room(self, x, y):
         return True
 
-    # TODO: should computation methods be in room class? argument for, because you do computations on a per room basis
+    # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
     def compute_tdoa(self, audio1, audio2, sample_rate, max_tau):
         """
@@ -36,8 +43,18 @@ class Room:
         """
         return gcc_phat(audio1, audio2, fs=sample_rate, max_tau=max_tau)
 
-    def compute_all_tdoa(self, sample_rate, max_tau):
-        """Computes the time difference of arrival (TDoA) for all microphone pairs in the room"""
+    def compute_all_tdoa(self, sample_rate, max_tau, print_intermediate_results=False):
+        """
+        Computes the time difference of arrival (TDoA) for all microphone pairs in the room.
+
+        :param sample_rate: The sample rate of the recorded audio signals (in Hz).
+        :param max_tau: The maximum allowable time difference (in seconds) between the two signals,
+                    typically determined by the distance between the microphones and the speed of sound.
+
+        :return: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
+             and the values are the computed TDoA values (in seconds). If less than two microphones are present,
+             the function returns None.
+        """
         if len(self.mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
             return None
@@ -59,7 +76,9 @@ class Room:
 
                 # Store the result in a dictionary with the mic pair as the key
                 tdoa_results[mic_pair] = tdoa
-                #print(f"TDoA between mics {mic_pair}: {tdoa:.6f} seconds")
+
+                if print_intermediate_results:
+                    print(f"TDoA between mics {mic_pair}: {tdoa:.6f} seconds")
             else:
                 print(f"Missing audio signals for mics at {mic1.get_position()} and {mic2.get_position()}")
 
@@ -70,6 +89,32 @@ class Room:
         Computes the direction of arrival (DoA) of a sound based on the time difference of arrival (TDoA) of two signals.
         """
         return compute_doa(tdoa, max_tau=max_tau)
+
+    def compute_all_doa(self, tdoa_pairs, max_tau, print_intermediate_results=False):
+        """
+        Computes the direction of arrival (DoA) for all microphone pairs based on their TDoA values.
+
+        :param tdoa_pairs: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
+                             and the values are the computed TDoA values (in seconds).
+        :param max_tau: The maximum allowable time difference (in seconds) between the two signals,
+                        typically determined by the distance between the microphones and the speed of sound.
+
+        :return: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
+                 and the values are the computed DoA values (in degrees).
+        """
+        doa_results = {}
+
+        for mic_pair, tdoa in tdoa_pairs.items():
+            doa = self.compute_doa(tdoa, max_tau)
+
+            # Store the computed DoA in a dictionary with the mic pair as the key
+            doa_results[mic_pair] = doa
+
+            # TODO: use parameter to define whether intermediate results should be printed or not?
+            if print_intermediate_results:
+                print(f"DoA for microphone pair {mic_pair}: {doa:.2f} degrees")
+
+        return doa_results
 
     # TODO: possibly move visualizations out of class
     def visualize(self):
