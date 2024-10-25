@@ -91,7 +91,8 @@ class Room:
 
         return inside
 
-    def get_max_tau(self, mic_distance: float, sound_speed: float = config.DEFAULT_SOUND_SPEED) -> float:
+    # TODO: automatically compute the mic_distance based on mics in room. don't allow user to set max_tau
+    def get_max_tau(self) -> float:
         """
         Calculate the maximum time delay (tau) based on the distance between microphones and the sound speed.
 
@@ -102,7 +103,9 @@ class Room:
         Returns:
             float: Maximum time delay (tau) in seconds.
         """
-        return mic_distance / sound_speed
+        mic_distance = 2 # TODO: Find largest mic_distance from all mic pairs in room
+
+        return mic_distance / self.sound_speed
 
     # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
@@ -211,7 +214,7 @@ class Room:
 
         return doa_results
 
-    def approximate_sound_source(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float]) -> tuple[float, float]:
+    def multilaterate_sound_source(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float]) -> tuple[float, float]:
         """
         Approximates the sound source given all microphone pairs and their computed TDoA values.
 

@@ -26,7 +26,7 @@ class Microphone:
         """
         return self.x, self.y
 
-    def add_audio(self, audio):
+    def add_audio(self, audio: Audio):
         """
         Store the audio in the microphone.
 

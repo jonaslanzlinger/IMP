@@ -43,7 +43,7 @@ audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav
 mic4.add_audio(Audio(filepath=audio4_filepath))
 
 # Define the maximum possible time delay (TDoA) of any microphone pair in the room to improve algorithm speeds
-max_tau = room1.get_max_tau(mic_distance=2)
+max_tau = room1.get_max_tau()
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = room1.compute_tdoa(
@@ -66,7 +66,7 @@ doa_pairs = room1.compute_all_doa(tdoa_pairs, max_tau=max_tau, print_intermediat
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position
-x,y = room1.approximate_sound_source(tdoa_pairs)
+x,y = room1.multilaterate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
 room1.add_sound_source_position(x, y)
