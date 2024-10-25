@@ -5,17 +5,24 @@ from scipy.signal import butter, lfilter
 
 class LowPassFilter(IFrequencyFilter):
     """
-    A class used to represent a Low Pass Filter.
+    A Low Pass Filter class for processing audio signals by attenuating frequencies above a specified cutoff.
 
-    :param cutoff_frequency: The cutoff frequency for the low-pass filter.
-    :param order: The order of the cutoff frequency (default is 5).
+    Args:
+        cutoff_frequency (float): The cutoff frequency for the low-pass filter in Hz.
+        order (int): The order of the cutoff frequency (default is 5).
     """
 
-    def __init__(self, cutoff_frequency, order=5):
+    def __init__(self, cutoff_frequency: float, order: int = 5):
         self.cutoff_frequency = cutoff_frequency
         self.order = order
 
-    def apply(self, audio: Audio) -> Audio:
+    def apply(self, audio: Audio):
+        """
+        Apply the low-pass filter to the given audio signal.
+
+        Args:
+            audio (Audio): The audio object to apply the filter to. The filter modifies the audio in-place.
+        """
         print(
             f"Applying LowPassFilter with cutoff frequency {self.cutoff_frequency} Hz and order {self.order}"
         )

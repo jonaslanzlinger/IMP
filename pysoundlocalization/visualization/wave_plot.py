@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def wave_plot(audio: Audio):
+def wave_plot(audio: Audio) -> None:
     """
     Plot the waveform of an audio signal.
 
-    :param audio: Audio object containing the audio signal to plot.
+    Args:
+        audio (Audio): Audio object containing the audio signal to plot.
     """
     plt.figure(figsize=(10, 6))
 
