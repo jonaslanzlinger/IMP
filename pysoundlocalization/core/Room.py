@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from itertools import combinations
 
+import config
 from algorithms.gcc_phat import gcc_phat
 from algorithms.doa import compute_doa
 from algorithms.multilateration import approximate_sound_source
@@ -9,7 +10,8 @@ from core.Microphone import Microphone
 
 
 class Room:
-    def __init__(self, name, vertices):
+    def __init__(self, name, vertices, sound_speed = config.DEFAULT_SOUND_SPEED):
+        self.sound_speed = sound_speed # Default speed of sound in m/s
         self.name = name
         self.vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics = []
@@ -139,11 +141,26 @@ class Room:
             # Store the computed DoA in a dictionary with the mic pair as the key
             doa_results[mic_pair] = doa
 
-            # TODO: use parameter to define whether intermediate results should be printed or not?
             if print_intermediate_results:
                 print(f"DoA for microphone pair {mic_pair}: {doa:.2f} degrees")
 
         return doa_results
+
+    def get_max_tau(self, mic_distance, sound_speed=config.DEFAULT_SOUND_SPEED):
+        """
+        Computes the maximum time delay (tau) based on the distance between microphones
+        and the speed of sound.
+
+        Args:
+            mic_distance (float):   The distance between two microphones in meters.
+            sound_speed (float, optional):  The speed of sound in meters per second.
+                                            Defaults to the value set in config.DEFAULT_SOUND_SPEED.
+
+        Returns:
+            float:  The maximum time delay (tau) in seconds that sound takes to travel the given
+                    microphone distance at the specified sound speed.
+        """
+        return mic_distance / sound_speed
 
     def approximate_sound_source(self, tdoa_pairs):
         """

@@ -42,9 +42,8 @@ mic3.add_recorded_audio(Audio(filepath=audio3_filepath).get_audio_signal())
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
 mic4.add_recorded_audio(Audio(filepath=audio4_filepath).get_audio_signal())
 
-# Define the maximum possible time delay (TDoA) to improve algorithm speeds
-mic_distance = 2 # in meters, may be approximated
-max_tau = mic_distance / simulation.get_sound_speed()
+# Define the maximum possible time delay (TDoA) of any microphone pair in the room to improve algorithm speeds
+max_tau = room1.compute_max_tau(mic_distance=2)
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = room1.compute_tdoa(

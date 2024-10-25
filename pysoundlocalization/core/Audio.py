@@ -54,13 +54,11 @@ class Audio:
             raise ValueError("No audio file has been loaded yet.")
         return self.sample_rate
 
-    '''
     def get_duration(self):
         """Return the duration of the audio file in seconds."""
         if self.audio_signal is None:
             raise ValueError("No audio file has been loaded yet.")
         return len(self.audio_signal) / self.sample_rate
-    '''
 
     def play(self, num_channels=1, bytes_per_sample=2):
         """Play the audio file."""

@@ -1,19 +1,17 @@
+import config
 from .Room import Room
 
 
 class Simulation:
-    sound_speed = 343.2  # Default speed of sound in m/s
-
-    def __init__(self, sound_speed):
-        self.sound_speed = sound_speed
+    def __init__(self):
         self.rooms = []
 
     @classmethod
-    def create(cls, sound_speed=343.2):
-        return cls(sound_speed)
+    def create(cls):
+        return cls()
 
-    def add_room(self, name, vertices):
-        room = Room(name, vertices)
+    def add_room(self, name, vertices, sound_speed=config.DEFAULT_SOUND_SPEED):
+        room = Room(name, vertices, sound_speed)
         self.rooms.append(room)
         print(f"Room '{name}' added with vertices {vertices}")
         return room
@@ -28,9 +26,3 @@ class Simulation:
             print(f"List of Rooms ({len(self.rooms)}):")
             for room in self.rooms:
                 print(f"Room: {room.name}, Vertices: {room.vertices}")
-
-    def get_sound_speed(self):
-        return self.sound_speed
-
-    def set_sound_speed(self, speed):
-        self.sound_speed = speed
