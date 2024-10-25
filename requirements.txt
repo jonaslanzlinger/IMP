@@ -1,4 +1,4 @@
-numpy~=2.1.2
+numpy~=2.0.0
 scipy~=1.14.1
 matplotlib~=3.9.2
 sounddevice~=0.5.1
@@ -6,3 +6,6 @@ simpleaudio~=1.0.4
 pydub~=0.25.1
 soundfile~=0.12.1
 setuptools~=75.2.0
+preprocessing~=0.1.13
+scikit-learn~=1.5.2
+librosa~=0.10.2.post1

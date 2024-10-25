@@ -1,9 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, filtfilt
 import librosa
 import librosa.display
-import sounddevice as sd
 from core.Audio import Audio
 import warnings
 from visualization.spectrogram_plot import spectrogram_plot

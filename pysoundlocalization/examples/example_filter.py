@@ -1,4 +1,3 @@
-import scipy.io.wavfile as wav
 import warnings
 from core.Audio import Audio
 from preprocessing.FrequencyFilterChain import FrequencyFilterChain
