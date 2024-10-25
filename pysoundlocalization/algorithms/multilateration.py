@@ -2,8 +2,8 @@ import numpy as np
 import config
 
 
-def approximate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
-                             speed_of_sound: float = config.DEFAULT_SOUND_SPEED) -> tuple[float, float]:
+def multilaterate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
+                               speed_of_sound: float = config.DEFAULT_SOUND_SPEED) -> tuple[float, float]:
     """
     Approximates the sound source position given all microphone pairs and their computed TDoA values.
 

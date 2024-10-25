@@ -7,7 +7,7 @@ import numpy as np
 import config
 from algorithms.gcc_phat import gcc_phat
 from algorithms.doa import compute_doa
-from algorithms.multilateration import approximate_sound_source
+from algorithms.multilateration import multilaterate_sound_source
 from core.Microphone import Microphone
 
 
@@ -224,7 +224,7 @@ class Room:
         Returns:
             tuple[float, float]: The estimated (x, y) coordinates of the sound source.
         """
-        return approximate_sound_source(tdoa_pairs)
+        return multilaterate_sound_source(tdoa_pairs)
 
     # TODO: possibly move visualizations out of class
     def visualize(self) -> None:
