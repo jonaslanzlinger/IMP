@@ -1,15 +1,25 @@
 import numpy as np
+import config
 
-SPEED_OF_SOUND = 343.2  # in meters per second #TODO: define somewhere once? because also defined in simulation
 
-def approximate_sound_source(tdoa_pairs, speed_of_sound=SPEED_OF_SOUND):
+def approximate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
+                             speed_of_sound: float = config.DEFAULT_SOUND_SPEED) -> tuple[float, float]:
     """
-    Approximates the sound source given all microphone pairs and their computed TDoA values.
+    Approximates the sound source position given all microphone pairs and their computed TDoA values.
 
-    :param tdoa_pairs: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
-                         and the values are the computed TDoA values (in seconds).
-    :param speed_of_sound: The speed of sound (in meters per second) may be changed. By default set to 343.2 m/s.
-    :return: The estimated (x, y) coordinates of the sound source.
+    Args:
+        tdoa_pairs (dict): A dictionary where keys are tuples representing microphone pairs and values are the TDoA values (float) in seconds. The key consists of a tuple of two microphones that are identified by their coordinates.
+        Example of dictionary tdoa_pairs: {((0.5, 1), (2.5, 1)): -58.63464131262136, ((0.5, 1), (0.5, 3)): 72.89460160061566}.
+        The format of each key-value entry is: ((mic1_x, mic1_y), (mic2_x, mic2_y)): tdoa_float_value, where the key
+        is ((mic1_x, mic1_y), (mic2_x, mic2_y)) and the value is the computed tdoa_float_value.
+
+        speed_of_sound (float): Optional speed of sound in meters per second. Defaults to the value set in config.DEFAULT_SOUND_SPEED.
+
+    Returns:
+        tuple[float, float]: The estimated (x, y) coordinates of the sound source.
+
+    Raises:
+        ValueError: If fewer than two microphone pairs are provided.
     """
     if len(tdoa_pairs) < 2:
         raise ValueError("At least two microphone pairs are required to approximate the sound source.")

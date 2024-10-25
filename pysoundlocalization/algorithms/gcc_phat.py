@@ -14,17 +14,27 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 """
+# TODO: how to reference the creator of the code?
 
 import numpy as np
 
-def gcc_phat(sig, refsig, fs=1, max_tau=None, interp=16):
+def gcc_phat(sig: np.ndarray, refsig: np.ndarray, fs: int = 1, max_tau: float | None = None, interp: int = 16) -> tuple[float, np.ndarray]:
     """
-    This function computes the offset between the signal sig and the reference signal refsig
+    Computes the time delay estimation (tau) between a signal `sig` and a reference signal `refsig`
     using the Generalized Cross Correlation - Phase Transform (GCC-PHAT) method.
 
-    Returns the time delay estimation (tau) between the two signals and the cross-correlation result (cc).
-    """
+    Args:
+        sig (np.ndarray): The input signal.
+        refsig (np.ndarray): The reference signal to compare against.
+        fs (int): The sampling rate of the signals in Hz. Defaults to 1.
+        max_tau (float | None): Maximum allowable time delay in seconds. Limits the search window. Defaults to None.
+        interp (int): Interpolation factor to improve precision. Defaults to 16.
 
+    Returns:
+        tuple[float, np.ndarray]: A tuple containing:
+            - tau (float): The estimated time delay between the signals in seconds.
+            - cc (np.ndarray): The cross-correlation result array.
+    """
     # make sure the length for the FFT is larger or equal than len(sig) + len(refsig)
     n = sig.shape[0] + refsig.shape[0]
 

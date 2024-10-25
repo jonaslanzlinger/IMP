@@ -9,6 +9,17 @@ def compute_doa(tdoa, max_tau):
     :param tdoa: Time difference of arrival between the two microphones (in seconds).
     :param max_tau: The maximum possible TDoA between the microphones.
     :return: The DoA in degrees.
+
+    Args:
+        tdoa (float): Time difference of arrival between the two microphones (in seconds).
+        max_tau (float): The maximum possible TDoA between the microphones, usually determined by: (mic_distance / speed_of_sound).
+        For example, if distance between microphones is 2 meters and speed of sound is 343.2 m/s, then max_tau = 2 / 343.2.
+
+    Returns:
+        float: The computed DoA in degrees.
+
+    Raises:
+        ValueError: If the absolute value of TDoA exceeds the maximum allowable TDoA (max_tau).
     """
     if abs(tdoa) > max_tau:
         raise ValueError("TDoA value is out of valid range based on the maximum possible tau.")
