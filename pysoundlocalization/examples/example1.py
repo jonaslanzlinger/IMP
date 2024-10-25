@@ -29,26 +29,26 @@ sample_rate1, audio_signal1 = audio1.load_audio_file()
 # print(f"Audio Signal: {audio_signal1[:10]}")  # Print first 10 samples of the audio
 
 # Associate audio with mic
-mic1.add_recorded_audio(audio_signal1)
-# print(mic2.get_recorded_audio())
+mic1.add_audio(audio1)
+# print(mic1.get_audio())
 
 # Add more audio files to mics
 audio2_filepath = os.path.join(root, "examples", "example_audio", "pi2_audio.wav")
-mic2.add_recorded_audio(Audio(filepath=audio2_filepath).get_audio_signal())
+mic2.add_audio(Audio(filepath=audio2_filepath))
 
 audio3_filepath = os.path.join(root, "examples", "example_audio", "pi3_audio.wav")
-mic3.add_recorded_audio(Audio(filepath=audio3_filepath).get_audio_signal())
+mic3.add_audio(Audio(filepath=audio3_filepath))
 
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
-mic4.add_recorded_audio(Audio(filepath=audio4_filepath).get_audio_signal())
+mic4.add_audio(Audio(filepath=audio4_filepath))
 
 # Define the maximum possible time delay (TDoA) of any microphone pair in the room to improve algorithm speeds
-max_tau = room1.compute_max_tau(mic_distance=2)
+max_tau = room1.get_max_tau(mic_distance=2)
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = room1.compute_tdoa(
-    audio1=mic1.get_recorded_audio(),
-    audio2=mic2.get_recorded_audio(),
+    audio1=mic1.get_audio().get_audio_signal(),
+    audio2=mic2.get_audio().get_audio_signal(),
     sample_rate=sample_rate1,
     max_tau=max_tau
 )

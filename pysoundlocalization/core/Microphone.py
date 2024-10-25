@@ -5,21 +5,31 @@ class Microphone:
         self.y = y
 
         # TODO: move towards generic SoundInput and not "recorded audio"
-        # TODO: do we want to add an Audio reference instead of just a recorded_audio_signal??
-        self.recorded_audio_signal = None
+        self.audio = None
 
     def get_position(self):
         return self.x, self.y
 
-    def add_recorded_audio(self, audio_signal):
+    def add_audio(self, audio):
         """
-        Store the recorded audio signal in the microphone.
-        :param audio_signal: The audio signal from the Audio class.
-        """
-        self.recorded_audio_signal = audio_signal
+        Store the audio in the microphone.
 
-    def get_recorded_audio(self):
+        :param audio: The reference to the audio object
         """
-        Return the stored audio signal.
+        self.audio = audio
+
+    def get_audio(self):
         """
-        return self.recorded_audio_signal
+        Returns the audio associated with this microphone.
+
+        Returns:
+            Audio:  The Audio object currently referenced by this microphone,
+                    containing the audio signal data and any relevant processing
+                    applied to the signal.
+
+        Note:
+            The returned object is a reference to the original Audio instance.
+            Any modifications made to this Audio object will affect the data
+            stored in all other references to the same audio.
+        """
+        return self.audio
