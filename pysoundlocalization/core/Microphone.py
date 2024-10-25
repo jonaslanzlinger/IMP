@@ -1,11 +1,16 @@
+from typing import Optional
+
+from core.Audio import Audio
+
+
 class Microphone:
 
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
-        # TODO: move towards generic SoundInput and not "recorded audio"
-        self.audio = None
+        # TODO: move towards generic SoundInput?
+        self.audio: Optional[Audio] = None
 
     def get_position(self):
         return self.x, self.y
@@ -18,7 +23,7 @@ class Microphone:
         """
         self.audio = audio
 
-    def get_audio(self):
+    def get_audio(self) -> Optional[Audio]:
         """
         Returns the audio associated with this microphone.
 
