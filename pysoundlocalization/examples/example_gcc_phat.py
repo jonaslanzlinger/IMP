@@ -50,19 +50,19 @@ tdoa12, cc = room1.compute_tdoa(
     audio1=mic1.get_audio().get_audio_signal(),
     audio2=mic2.get_audio().get_audio_signal(),
     sample_rate=sample_rate1,
-    max_tau=max_tau
+    max_tau=max_tau, #Optional argument, may be left out to have max_tau computed automatically
 )
 print(f"TDoA between mic1 and mic2: {tdoa12:.6f} seconds")
 
 # Compute direction of arrival (DoA) of a microphone pair given their TDoA
-doa = room1.compute_doa(tdoa12, max_tau=max_tau)
+doa = room1.compute_doa(tdoa12)
 print(f"Direction of arrival (DoA) of sound (mics 1 and 2): {doa:.6f} degrees")
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate1, max_tau=max_tau, print_intermediate_results=True)
+tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate1, print_intermediate_results=True)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-doa_pairs = room1.compute_all_doa(tdoa_pairs, max_tau=max_tau, print_intermediate_results=True)
+doa_pairs = room1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position

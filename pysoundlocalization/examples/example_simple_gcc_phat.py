@@ -42,14 +42,13 @@ mic3.add_audio(Audio(filepath=audio3_filepath))
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
 mic4.add_audio(Audio(filepath=audio4_filepath))
 
-max_tau = room1.get_max_tau()
 sample_rate = audio.get_sample_rate() #TODO: room1.get_sample_rate()
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate, max_tau=max_tau, print_intermediate_results=True)
+tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate, print_intermediate_results=True)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-doa_pairs = room1.compute_all_doa(tdoa_pairs, max_tau=max_tau, print_intermediate_results=True)
+doa_pairs = room1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position

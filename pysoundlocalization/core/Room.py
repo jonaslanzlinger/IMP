@@ -91,25 +91,27 @@ class Room:
 
         return inside
 
-    # TODO: automatically compute the mic_distance based on mics in room. don't allow user to set max_tau
     def get_max_tau(self) -> float:
         """
         Calculate the maximum time delay (tau) based on the distance between microphones and the sound speed.
 
-        Args:
-            mic_distance (float): Distance between two microphones in meters.
-            sound_speed (float): Speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
-
         Returns:
             float: Maximum time delay (tau) in seconds.
         """
-        mic_distance = 2 # TODO: Find largest mic_distance from all mic pairs in room
+        if len(self.mics) < 2:
+            raise ValueError("At least two microphones are required to calculate max_tau.")
 
-        return mic_distance / self.sound_speed
+        # Find the max distance between any two microphones
+        max_mic_distance = max(
+            np.linalg.norm(np.array(mic1.get_position()) - np.array(mic2.get_position()))
+            for mic1, mic2 in combinations(self.mics, 2)
+        )
+
+        return max_mic_distance / self.sound_speed
 
     # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
-    def compute_tdoa(self, audio1: np.ndarray, audio2: np.ndarray, sample_rate: int, max_tau: float) -> tuple[float, np.ndarray]:
+    def compute_tdoa(self, audio1: np.ndarray, audio2: np.ndarray, sample_rate: int, max_tau: float = None) -> tuple[float, np.ndarray]:
         """
         Computes the time difference of arrival (TDoA) of two audio signals.
 
@@ -122,9 +124,13 @@ class Room:
         Returns:
             tuple[float, np.ndarray]: The estimated time delay and cross-correlation result.
         """
+        # If max_tau is not provided via parameter, automatically compute via class method
+        if max_tau is None:
+            max_tau = self.get_max_tau()
+
         return gcc_phat(audio1, audio2, fs=sample_rate, max_tau=max_tau)
 
-    def compute_all_tdoa(self, sample_rate: int, max_tau: float, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float] | None:
+    def compute_all_tdoa(self, sample_rate: int, max_tau: float = None, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float] | None:
         """
         Compute TDoA for all microphone pairs in the room.
 
@@ -144,6 +150,10 @@ class Room:
         if len(self.mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
             return None
+
+        # If max_tau is not provided via parameter, automatically compute via class method
+        if max_tau is None:
+            max_tau = self.get_max_tau()
 
         tdoa_results = {}
 
@@ -170,7 +180,7 @@ class Room:
 
         return tdoa_results
 
-    def compute_doa(self, tdoa: float, max_tau: float) -> float:
+    def compute_doa(self, tdoa: float, max_tau: float = None) -> float:
         """
         Computes the direction of arrival (DoA) of a sound based on the time difference of arrival (TDoA) of two signals.
 
@@ -181,9 +191,13 @@ class Room:
         Returns:
             float: The direction of arrival in degrees.
         """
+        # If max_tau is not provided via parameter, automatically compute via class method
+        if max_tau is None:
+            max_tau = self.get_max_tau()
+
         return compute_doa(tdoa, max_tau=max_tau)
 
-    def compute_all_doa(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float], max_tau: float, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float]:
+    def compute_all_doa(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float], max_tau: float = None, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float]:
         """
         Computes the direction of arrival (DoA) for all microphone pairs based on their TDoA values.
 
@@ -202,6 +216,10 @@ class Room:
                  and the values are the computed DoA values (in degrees).
         """
         doa_results = {}
+
+        # If max_tau is not provided via parameter, automatically compute via class method
+        if max_tau is None:
+            max_tau = self.get_max_tau()
 
         for mic_pair, tdoa in tdoa_pairs.items():
             doa = self.compute_doa(tdoa, max_tau)
