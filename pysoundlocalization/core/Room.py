@@ -247,7 +247,6 @@ class Room:
         """
         return multilaterate_sound_source(tdoa_pairs)
 
-    # TODO: possibly move visualizations out of class
     def visualize(self) -> None:
         """
         Visualizes the room layout, microphones, and sound source positions using Matplotlib.

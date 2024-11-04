@@ -6,7 +6,7 @@ import simpleaudio as sa
 
 
 
-# TODO: Move towards a generic SoundInput wrapper class
+# TODO: Move towards a generic SoundInput wrapper class?
 class Audio:
     def __init__(self, filepath: str | None = None, convert_to_sample_rate: int = None):
         """

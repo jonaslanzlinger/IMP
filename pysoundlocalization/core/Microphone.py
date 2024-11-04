@@ -14,7 +14,6 @@ class Microphone:
         self.x = x
         self.y = y
 
-        # TODO: move towards generic SoundInput?
         self.audio: Audio | None = None
 
     def get_position(self) -> tuple[float, float]:

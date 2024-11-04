@@ -26,7 +26,6 @@ audio1_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav
 audio1 = Audio(filepath=audio1_filepath)
 sample_rate1, audio_signal1 = audio1.load_audio_file()
 
-# TODO: support pre-processing of audio
 # print(f"Sample Rate: {sample_rate1}")
 # print(f"Audio Signal: {audio_signal1[:10]}")  # Print first 10 samples of the audio
 

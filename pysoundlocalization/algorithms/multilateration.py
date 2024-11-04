@@ -2,6 +2,7 @@ import numpy as np
 import config
 
 
+# TODO: think of adding z-coordinate to multilateration algorithm
 def multilaterate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
                                speed_of_sound: float = config.DEFAULT_SOUND_SPEED) -> tuple[float, float]:
     """
@@ -25,7 +26,7 @@ def multilaterate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple
         raise ValueError("At least two microphone pairs are required to approximate the sound source.")
 
     Amat = np.zeros((len(tdoa_pairs), 2))
-    #Amat = np.zeros((len(tdoa_pairs), 3)) #TODO: only if z is included
+    #Amat = np.zeros((len(tdoa_pairs), 3))
     Dmat = np.zeros((len(tdoa_pairs), 1))
 
     for row, ((mic1_pos, mic2_pos), tdoa) in enumerate(tdoa_pairs.items()):
@@ -33,7 +34,6 @@ def multilaterate_sound_source(tdoa_pairs: dict[tuple[tuple[float, float], tuple
         x0, y0 = mic1_pos
         x1, y1 = mic2_pos
 
-        # TODO: add z as well?
         #x0, y0, z0 = mic1_pos
         #x1, y1, z1 = mic2_pos
 
