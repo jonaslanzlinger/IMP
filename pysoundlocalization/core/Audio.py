@@ -1,21 +1,25 @@
+import librosa
+import numpy as np
 import os
 import soundfile as sf
 import simpleaudio as sa
-import numpy as np
+
 
 
 # TODO: Move towards a generic SoundInput wrapper class
 class Audio:
-    def __init__(self, filepath: str | None = None, sample_rate: int | None = None, audio_signal: np.ndarray | None = None):
+    def __init__(self, filepath: str | None = None, convert_to_sample_rate: int = None):
         """
         Initialize the Audio class with a specific audio file path.
         This class supports audio formats supported by soundfile, like WAV, FLAC, AIFF, OGG, etc.
 
         Args:
             filepath (str | None): Path to the audio file.
-            sample_rate (int | None): Sampling rate of the audio signal in Hz. May also be set by loading the audio from the filepath.
-            audio_signal (np.ndarray | None): Pre-loaded audio signal data as a numpy array. May also be set by loading the audio from the filepath.
+            convert_to_sample_rate (int | None): Desired sampling rate of the audio signal in Hz to which the audio will be converted.
         """
+        self.audio_signal = None
+        self.sample_rate = None
+        self.convert_to_sample_rate = convert_to_sample_rate
         self.load_audio_file(filepath)
         self.filepath = filepath
 
@@ -40,6 +44,43 @@ class Audio:
         # Load the audio file using soundfile
         self.audio_signal, self.sample_rate = sf.read(filepath)
 
+        # If desired sample rate is provided, convert audio to new sample rate
+        if self.convert_to_sample_rate is not None and self.sample_rate != self.convert_to_sample_rate:
+            self.audio_signal = self.resample_audio(self.audio_signal, self.sample_rate, self.convert_to_sample_rate)
+            self.sample_rate = self.convert_to_sample_rate
+
+        return self.sample_rate, self.audio_signal
+
+    def resample_audio(self, audio_signal: np.ndarray, original_rate: int, target_rate: int) -> np.ndarray:
+        """
+        Resamples the audio signal to the desired sampling rate.
+
+        Args:
+            audio_signal (np.ndarray): The audio signal to be resampled.
+            original_rate (int): The original sample rate of the audio signal.
+            target_rate (int): The desired sample rate of the audio signal.
+
+        Returns:
+            np.ndarray: The resampled audio signal.
+        """
+        if original_rate == target_rate:
+            return audio_signal
+        return librosa.resample(audio_signal, orig_sr=original_rate, target_sr=target_rate)
+
+
+    def convert_to_desired_sample_rate(self, desired_sample_rate: int) -> tuple[int, np.ndarray]:
+        """
+        Converts the audio to the desired sample rate.
+
+        Args:
+            desired_sample_rate (int): The desired sample rate of the converted audio signal.
+
+        Returns:
+            tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
+        """
+        if self.sample_rate != desired_sample_rate:
+            self.audio_signal = self.resample_audio(self.audio_signal, self.sample_rate, desired_sample_rate)
+            self.sample_rate = desired_sample_rate
         return self.sample_rate, self.audio_signal
 
     def get_audio_signal(self) -> np.ndarray:
@@ -56,15 +97,6 @@ class Audio:
         if self.audio_signal is None:
             self.load_audio_file()
         return self.audio_signal
-
-    def set_audio_signal(self, audio_signal: np.ndarray) -> None:
-        """
-        Set the audio signal data of the audio file.
-
-        Args:
-            audio_signal (np.ndarray): The audio signal data as a numpy array.
-        """
-        self.audio_signal = audio_signal
 
     def get_sample_rate(self) -> int:
         """

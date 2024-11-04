@@ -3,6 +3,8 @@ from core.Audio import Audio
 from core.Simulation import Simulation
 import os
 
+from preprocessing.SampleRateConverter import SampleRateConverter
+
 # Create a new simulation
 simulation = Simulation.create()
 
@@ -41,6 +43,9 @@ mic3.add_audio(Audio(filepath=audio3_filepath))
 
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
 mic4.add_audio(Audio(filepath=audio4_filepath))
+
+# Ensure that all audio of the room's microphones have the same sample rate
+SampleRateConverter.convert_all_to_lowest_sample_rate(room1)
 
 # Define the maximum possible time delay (TDoA) of any microphone pair in the room to improve algorithm speeds
 max_tau = room1.get_max_tau()

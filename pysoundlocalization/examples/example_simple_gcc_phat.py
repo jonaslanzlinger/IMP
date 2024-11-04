@@ -1,9 +1,9 @@
 import os
-
 from core.Audio import Audio
 from core.Simulation import Simulation
 from preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from preprocessing.LowPassFilter import LowPassFilter
+from preprocessing.SampleRateConverter import SampleRateConverter
 from visualization.spectrogram_plot import spectrogram_plot
 
 # Create simulation and add a room with 4 microphones
@@ -31,7 +31,7 @@ spectrogram_plot(audio)
 
 # Add more audio files to mics
 audio1_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav")
-mic1.add_audio(Audio(filepath=audio1_filepath))
+mic1.add_audio(Audio(filepath=audio1_filepath, convert_to_sample_rate=44100))
 
 audio2_filepath = os.path.join(root, "examples", "example_audio", "pi2_audio.wav")
 mic2.add_audio(Audio(filepath=audio2_filepath))
@@ -42,7 +42,15 @@ mic3.add_audio(Audio(filepath=audio3_filepath))
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
 mic4.add_audio(Audio(filepath=audio4_filepath))
 
-sample_rate = audio.get_sample_rate() #TODO: room1.get_sample_rate()
+# Manually convert audio to different sample rate if needed
+sample_rate = mic1.get_audio().get_sample_rate()
+mic4.get_audio().convert_to_desired_sample_rate(sample_rate)
+
+# Use the SampleRateConverter if necessary to change sample rates on the room-level
+print(f"Lowest sample rate in Room: {SampleRateConverter.get_lowest_sample_rate(room1)}")
+SampleRateConverter.convert_all_to_lowest_sample_rate(room1)
+SampleRateConverter.convert_all_to_defined_sample_rate(room1, 44100)
+SampleRateConverter.convert_all_to_sample_rate_of_audio_file(room1, audio)
 
 # Compute all TDoA and DoA for all mic pairs
 tdoa_pairs = room1.compute_all_tdoa(sample_rate=sample_rate, print_intermediate_results=True)
