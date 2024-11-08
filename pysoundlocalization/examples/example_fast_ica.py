@@ -21,11 +21,17 @@ noise_time_array = np.linspace(
     0, len(speech_signal) / speech_sample_rate, len(speech_signal), endpoint=False
 )
 noise_signal = noise_amplitude * np.sin(2 * np.pi * noise_frequency * noise_time_array)
-noise_audio = Audio(audio_signal=noise_signal, sample_rate=noise_sample_rate)
+noise_audio = Audio.create_from_signal(
+    audio_signal=noise_signal, sample_rate=noise_sample_rate
+)
 
 combined_signal = speech_signal + noise_signal
 
-combined_audio = Audio(audio_signal=combined_signal, sample_rate=speech_sample_rate)
+combined_audio = Audio.create_from_signal(
+    audio_signal=combined_signal, sample_rate=speech_sample_rate
+)
+
+# combined_audio.play()
 
 # print(speech_audio.get_audio_signal().shape)
 # print(noise_audio.get_audio_signal().shape)
@@ -66,14 +72,18 @@ plt.show()
 speech_source = sources[:, 0]
 noise_source = sources[:, 1]
 
-speech_audio = Audio(audio_signal=speech_source, sample_rate=speech_sample_rate)
-noise_audio = Audio(audio_signal=noise_source, sample_rate=speech_sample_rate)
+speech_audio = Audio.create_from_signal(
+    audio_signal=speech_source, sample_rate=speech_sample_rate
+)
+noise_audio = Audio.create_from_signal(
+    audio_signal=noise_source, sample_rate=speech_sample_rate
+)
 
 #############################################
 # WARNING: VERY LOUD!!!!!!!!!!!!!!!!!!!!!!!!!
 # ###########################################
 
-speech_audio.play()
+# speech_audio.play()
 # noise_audio.play()
 
 # ###########################################
