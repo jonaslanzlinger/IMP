@@ -78,6 +78,6 @@ def notch_filter(audio: Audio, freq) -> Audio:
 
 filtered_audio = notch_filter(combined_audio, noise_frequency)
 
-# filtered_audio.play()
+filtered_audio.play()
 
 wave_plot(filtered_audio)

@@ -5,6 +5,7 @@ from datetime import datetime
 # Parameters
 SAMPLE_RATE = 44100  # Sample rate in Hz
 
+
 def list_microphones():
     print("Available audio devices:")
     print(sd.query_devices())
@@ -14,11 +15,16 @@ def record_audio(device_id=None, duration=10):
     timestamp = datetime.now()
     print(f"Recording started at: {timestamp}")
 
-    recording = sd.rec(int(duration * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, device=device_id)
+    recording = sd.rec(
+        int(duration * SAMPLE_RATE),
+        samplerate=SAMPLE_RATE,
+        channels=1,
+        device=device_id,
+    )
     sd.wait()
     print("Recording complete. Saving file...")
 
-    filename = f"output_{timestamp.strftime("%Y-%m-%d_%H-%M-%S_%f")}.wav"
+    filename = f"output_{timestamp.strftime("MIC3_%Y-%m-%d_%H-%M-%S_%f")}.wav"
 
     write(filename, SAMPLE_RATE, recording)
     print(f"File saved as {filename}")
