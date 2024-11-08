@@ -1,22 +1,22 @@
 from datetime import timedelta, datetime
-
-from core.Room import Room
 from core.Audio import Audio
 
 class SampleTrimmer:
 
-    #TODO: not just seconds, but duration with H:MM:SS.sss
     @staticmethod
-    def trim_from_beginning(audio: Audio, seconds: int):
+    def trim_from_beginning(audio: Audio, time_delta: timedelta):
         """
-        Trim the specified number of seconds from the beginning of the audio signal.
+        Trim the specified timedelta (duration) from the beginning of the audio signal.
 
         Args:
             audio (Audio): The audio object to be trimmed.
-            seconds (int): The number of seconds to trim from the beginning.
+            time_delta (timedelta): The time duration to trim from the beginning. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
         """
+        # Convert the timedelta to seconds (including microseconds and milliseconds)
+        seconds_to_trim = time_delta.total_seconds()
+
         # Calculate the number of samples to trim
-        samples_to_trim = int(seconds * audio.sample_rate)
+        samples_to_trim = int(seconds_to_trim * audio.sample_rate)
 
         # Trim the audio signal
         audio.audio_signal = audio.audio_signal[samples_to_trim:]
@@ -24,16 +24,19 @@ class SampleTrimmer:
         return audio
 
     @staticmethod
-    def trim_from_end(audio: Audio, seconds: int):
+    def trim_from_end(audio: Audio, time_delta: timedelta):
         """
         Trim the specified number of seconds from the end of the audio signal.
 
         Args:
             audio (Audio): The audio object to be trimmed.
-            seconds (int): The number of seconds to trim from the end.
+            time_delta (int): The time duration to trim from the end. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
         """
+        # Convert the timedelta to seconds (including milliseconds and microseconds)
+        seconds_to_trim = time_delta.total_seconds()
+
         # Calculate the number of samples to trim
-        samples_to_trim = int(seconds * audio.sample_rate)
+        samples_to_trim = int(seconds_to_trim * audio.sample_rate)
 
         # Trim the audio signal
         audio.audio_signal = audio.audio_signal[:-samples_to_trim]
@@ -41,16 +44,19 @@ class SampleTrimmer:
         return audio
 
     @staticmethod
-    def slice_from_beginning(audio: Audio, seconds: int):
+    def slice_from_beginning(audio: Audio, time_delta: timedelta):
         """
-        Keep only the first X seconds from the beginning of the audio signal.
+        Keep only the first specified time duration from the beginning of the audio signal.
 
         Args:
-            audio (Audio): The audio object to be trimmed.
-            seconds (int): The duration in seconds to keep from the beginning.
+            audio (Audio): The audio object to be sliced.
+            time_delta (timedelta): The duration to keep from the beginning. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
         """
+        # Convert the timedelta to seconds (including milliseconds and microseconds)
+        seconds_to_keep = time_delta.total_seconds()
+
         # Calculate the number of samples to keep
-        samples_to_keep = int(seconds * audio.sample_rate)
+        samples_to_keep = int(seconds_to_keep * audio.sample_rate)
 
         # Keep the specified portion of the audio signal
         audio.audio_signal = audio.audio_signal[:samples_to_keep]
@@ -58,35 +64,42 @@ class SampleTrimmer:
         return audio
 
     @staticmethod
-    def slice_from_end(audio: Audio, seconds: int):
+    def slice_from_end(audio: Audio, time_delta: timedelta):
         """
-        Keep only the last X seconds of the end of the audio signal.
+        Keep only the specified time duration from the end of the audio signal.
 
         Args:
             audio (Audio): The audio object to be trimmed.
-            seconds (int): The number of seconds from the end of the audio to keep.
+            time_delta (timedelta): The duration to keep from the end of the audio signal. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
         """
-        # Calculate the number of samples to keep
-        samples_to_keep = int(seconds * audio.sample_rate)
+        # Convert the timedelta to seconds (including milliseconds and microseconds)
+        seconds_to_keep = time_delta.total_seconds()
 
-        # Keep only the last X seconds of the audio signal
+        # Calculate the number of samples to keep
+        samples_to_keep = int(seconds_to_keep * audio.sample_rate)
+
+        # Keep only the specified duration from the end of the audio signal
         audio.audio_signal = audio.audio_signal[-samples_to_keep:]
 
         return audio
 
     @staticmethod
-    def slice_from_to(audio: Audio, start_seconds: int, end_seconds: int):
+    def slice_from_to(audio: Audio, start_time: timedelta, end_time: timedelta):
         """
         Slice the audio signal to keep only the part between the start and end timestamps.
 
         Args:
             audio (Audio): The audio object to be sliced.
-            start_seconds (int): The start timestamp in seconds.
-            end_seconds (int): The end timestamp in seconds.
+            start_time (timedelta): The start timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
+            end_time (timedelta): The end timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
 
         Returns:
             Audio: The sliced audio object containing the portion between start and end timestamps.
         """
+        # Convert the timedeltas to seconds
+        start_seconds = start_time.total_seconds()
+        end_seconds = end_time.total_seconds()
+
         # Calculate the start and end sample indices
         start_sample = int(start_seconds * audio.sample_rate)
         end_sample = int(end_seconds * audio.sample_rate)
@@ -126,17 +139,18 @@ class SampleTrimmer:
         # Find the latest start timestamp and the earliest end timestamp
         latest_start = max(start_times)
         earliest_end = min(
-            start_time + timedelta(milliseconds=audio.get_duration() * 1000)
+            start_time + timedelta(seconds=audio.get_duration())
             for start_time, audio in zip(start_times, audio_files)
         )
 
-        # Calculate the synchronization window duration
-        sync_duration_s = int((earliest_end - latest_start).total_seconds())
+        # Calculate the synchronization duration as a timedelta
+        sync_duration = earliest_end - latest_start
 
         for audio, start_time in zip(audio_files, start_times):
-            # Calculate the offset for trimming
-            offset_s = int((latest_start - start_time).total_seconds())
+            # Calculate the offset for trimming as a timedelta
+            offset = latest_start - start_time
 
-            # Trim or pad the audio file accordingly
-            # TODO: currently bugged because .slice_from_to can only consider full seconds
-            SampleTrimmer.slice_from_to(audio, offset_s, offset_s + sync_duration_s)
+            # Trim or pad the audio file accordingly using timedelta precision
+            SampleTrimmer.slice_from_to(audio, offset, offset + sync_duration)
+
+        return audio_files
