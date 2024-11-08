@@ -2,6 +2,9 @@ import os
 from core.Audio import Audio
 from core.Simulation import Simulation
 from preprocessing.SampleRateConverter import SampleRateConverter
+from preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from preprocessing.LowCutFilter import LowCutFilter
+from visualization.spectrogram_plot import spectrogram_plot
 
 # Create simulation and add a room with 4 microphones
 simulation = Simulation.create()
@@ -13,20 +16,31 @@ mic4 = room1.add_microphone(2,2)
 
 # Add audio
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-audio1_filepath = "trimmed_output_MIC1_2024-11-07_10-30-45_977581.wav"
+audio1_filepath = "first25seconds_trimmed_output_MIC1_2024-11-07_10-30-45_977581.wav"
 mic1.add_audio(Audio(filepath=audio1_filepath))
 
-audio2_filepath = "trimmed_output_MIC2_2024-11-07_10-30-45_474498.wav"
+audio2_filepath = "first25seconds_trimmed_output_MIC2_2024-11-07_10-30-45_474498.wav"
 mic2.add_audio(Audio(filepath=audio2_filepath))
 
-audio3_filepath = "trimmed_output_MIC3_2024-11-07_10-30-46_550904.wav"
+audio3_filepath = "first25seconds_trimmed_output_MIC3_2024-11-07_10-30-46_550904.wav"
 mic3.add_audio(Audio(filepath=audio3_filepath))
 
-audio4_filepath = "trimmed_output_MIC4_2024-11-07_10-30-45_728052.wav"
+audio4_filepath = "first25seconds_trimmed_output_MIC4_2024-11-07_10-30-45_728052.wav"
 mic4.add_audio(Audio(filepath=audio4_filepath))
 
 # Ensure that all audio files are of same sample rate
 SampleRateConverter.convert_all_to_lowest_sample_rate(room1)
+
+spectrogram_plot(mic1.get_audio())
+
+frequency_filter_chain = FrequencyFilterChain()
+frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=15000, order=5))
+frequency_filter_chain.apply(mic1.get_audio())
+frequency_filter_chain.apply(mic2.get_audio())
+frequency_filter_chain.apply(mic3.get_audio())
+frequency_filter_chain.apply(mic4.get_audio())
+
+spectrogram_plot(mic1.get_audio())
 
 # Compute all TDoA and DoA for all mic pairs
 tdoa_pairs = room1.compute_all_tdoa(sample_rate=SampleRateConverter.get_lowest_sample_rate(room1), print_intermediate_results=True)
