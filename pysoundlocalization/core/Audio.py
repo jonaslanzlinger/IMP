@@ -23,6 +23,10 @@ class Audio:
         self.load_audio_file(filepath)
         self.filepath = filepath
 
+    def __str__(self):
+        shape = self.audio_signal.shape
+        return f"Audio(filepath={self.filepath}, sample_rate={self.sample_rate}, shape={shape}, channels={1 if len(shape) == 1 else shape[1]}, duration={self.get_duration()}s, audio_signal={self.audio_signal})"
+
     def load_audio_file(self, filepath: str = None) -> tuple[int, np.ndarray]:
         """
         Manually load the audio file from the filepath. May be used to re-load the file from the filepath.
