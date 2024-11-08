@@ -4,3 +4,4 @@ myenv/
 .python-version
 .idea
 pysoundlocalization.egg-info/
+audio_files/
