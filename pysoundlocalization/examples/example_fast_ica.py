@@ -73,7 +73,7 @@ noise_audio = Audio(audio_signal=noise_source, sample_rate=speech_sample_rate)
 # WARNING: VERY LOUD!!!!!!!!!!!!!!!!!!!!!!!!!
 # ###########################################
 
-# speech_audio.play()
+speech_audio.play()
 # noise_audio.play()
 
 # ###########################################
