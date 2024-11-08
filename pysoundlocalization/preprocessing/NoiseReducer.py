@@ -20,7 +20,6 @@ class NoiseReducer:
         audio_sound = audio.get_audio_signal()
         sr = audio.get_sample_rate()
 
-        noise_sample = None
         if noise_sample is None:
             noise_sample = audio_sound[0 : int(sr * 1)]
 
