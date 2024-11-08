@@ -3,12 +3,19 @@ import numpy as np
 import os
 import soundfile as sf
 import simpleaudio as sa
-
+import sounddevice as sd
+from scipy.io import wavfile
 
 
 # TODO: Move towards a generic SoundInput wrapper class?
 class Audio:
-    def __init__(self, filepath: str | None = None, convert_to_sample_rate: int = None):
+    def __init__(
+        self,
+        filepath: str | None = None,
+        convert_to_sample_rate: int = None,
+        audio_signal: np.ndarray = None,
+        sample_rate: int = None,
+    ):
         """
         Initialize the Audio class with a specific audio file path.
         This class supports audio formats supported by soundfile, like WAV, FLAC, AIFF, OGG, etc.
@@ -17,11 +24,26 @@ class Audio:
             filepath (str | None): Path to the audio file.
             convert_to_sample_rate (int | None): Desired sampling rate of the audio signal in Hz to which the audio will be converted.
         """
-        self.audio_signal = None
-        self.sample_rate = None
-        self.convert_to_sample_rate = convert_to_sample_rate
-        self.load_audio_file(filepath)
-        self.filepath = filepath
+        self.audio_signal = audio_signal
+        self.sample_rate = sample_rate
+        if audio_signal is None and sample_rate is None:
+            self.convert_to_sample_rate = convert_to_sample_rate
+            self.load_audio_file(filepath)
+            self.filepath = filepath
+
+    @classmethod
+    def create_from_signal(cls, audio_signal: np.ndarray, sample_rate: int) -> "Audio":
+        """
+        Create an Audio object from an audio signal and sample rate.
+
+        Args:
+            audio_signal (np.ndarray): The audio signal data as a numpy array.
+            sample_rate (int): The sample rate in Hz.
+
+        Returns:
+            Audio: The audio object with the provided audio signal and sample rate.
+        """
+        return cls(audio_signal=audio_signal, sample_rate=sample_rate)
 
     def __str__(self):
         shape = self.audio_signal.shape
@@ -49,13 +71,20 @@ class Audio:
         self.audio_signal, self.sample_rate = sf.read(filepath)
 
         # If desired sample rate is provided, convert audio to new sample rate
-        if self.convert_to_sample_rate is not None and self.sample_rate != self.convert_to_sample_rate:
-            self.audio_signal = self.resample_audio(self.audio_signal, self.sample_rate, self.convert_to_sample_rate)
+        if (
+            self.convert_to_sample_rate is not None
+            and self.sample_rate != self.convert_to_sample_rate
+        ):
+            self.audio_signal = self.resample_audio(
+                self.audio_signal, self.sample_rate, self.convert_to_sample_rate
+            )
             self.sample_rate = self.convert_to_sample_rate
 
         return self.sample_rate, self.audio_signal
 
-    def resample_audio(self, audio_signal: np.ndarray, original_rate: int, target_rate: int) -> np.ndarray:
+    def resample_audio(
+        self, audio_signal: np.ndarray, original_rate: int, target_rate: int
+    ) -> np.ndarray:
         """
         Resamples the audio signal to the desired sampling rate.
 
@@ -69,10 +98,13 @@ class Audio:
         """
         if original_rate == target_rate:
             return audio_signal
-        return librosa.resample(audio_signal, orig_sr=original_rate, target_sr=target_rate)
+        return librosa.resample(
+            audio_signal, orig_sr=original_rate, target_sr=target_rate
+        )
 
-
-    def convert_to_desired_sample_rate(self, desired_sample_rate: int) -> tuple[int, np.ndarray]:
+    def convert_to_desired_sample_rate(
+        self, desired_sample_rate: int
+    ) -> tuple[int, np.ndarray]:
         """
         Converts the audio to the desired sample rate.
 
@@ -83,7 +115,9 @@ class Audio:
             tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
         """
         if self.sample_rate != desired_sample_rate:
-            self.audio_signal = self.resample_audio(self.audio_signal, self.sample_rate, desired_sample_rate)
+            self.audio_signal = self.resample_audio(
+                self.audio_signal, self.sample_rate, desired_sample_rate
+            )
             self.sample_rate = desired_sample_rate
         return self.sample_rate, self.audio_signal
 
@@ -101,6 +135,15 @@ class Audio:
         if self.audio_signal is None:
             self.load_audio_file()
         return self.audio_signal
+
+    def set_audio_signal(self, audio_signal: np.ndarray) -> None:
+        """
+        Set the audio signal data of the audio file.
+
+        Args:
+            audio_signal (np.ndarray): The audio signal data as a numpy array.
+        """
+        self.audio_signal = audio_signal
 
     def get_sample_rate(self) -> int:
         """
@@ -130,13 +173,9 @@ class Audio:
             self.load_audio_file()
         return len(self.audio_signal) / self.sample_rate
 
-    def play(self, num_channels: int = 1, bytes_per_sample: int = 2) -> None:
+    def play(self) -> None:
         """
-        Play the audio file using simpleaudio.
-
-        Args:
-            num_channels (int): Number of audio channels. Default is 1 (mono).
-            bytes_per_sample (int): Number of bytes per sample. Default is 2 (16-bit audio).
+        Play the audio file using sounddevice.
 
         Raises:
             ValueError: If the audio signal has not been loaded yet.
@@ -144,8 +183,5 @@ class Audio:
         if self.audio_signal is None:
             self.load_audio_file()
 
-        # Convert the audio signal to the correct format for simpleaudio
-        audio_signal = np.int16(self.audio_signal * 32767)
-
-        play_obj = sa.play_buffer(audio_signal, num_channels, bytes_per_sample, self.sample_rate)
-        play_obj.wait_done()
+        sd.play(self.audio_signal, self.sample_rate)
+        sd.wait()
