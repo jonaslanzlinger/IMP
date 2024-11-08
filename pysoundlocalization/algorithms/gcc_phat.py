@@ -10,6 +10,7 @@ Adapted as part of a project for sound localization.
 
 import numpy as np
 
+# TODO: remove sample_rate as parameter from all methods where possible and automatically get from audio object?
 def gcc_phat(sig: np.ndarray, refsig: np.ndarray, fs: int = 1, max_tau: float | None = None, interp: int = 16) -> tuple[float, np.ndarray]:
     """
     Computes the time delay estimation (tau) between a signal `sig` and a reference signal `refsig`
