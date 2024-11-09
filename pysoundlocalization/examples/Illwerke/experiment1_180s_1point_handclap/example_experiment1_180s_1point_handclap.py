@@ -14,10 +14,10 @@ from visualization.spectrogram_plot import spectrogram_plot
 # Create simulation and add a room with 4 microphones
 simulation = Simulation.create()
 room1 = simulation.add_room("Machine Room", [(0, 0), (0, 10), (10, 10), (10, 0)])
-mic1 = room1.add_microphone(8.61, 2)
-mic2 = room1.add_microphone(8.61, 5.89)
-mic3 = room1.add_microphone(2, 5.89)
-mic4 = room1.add_microphone(2, 2)
+mic1 = room1.add_microphone(6.61, 0)
+mic2 = room1.add_microphone(6.61, 3.89)
+mic3 = room1.add_microphone(0, 3.89)
+mic4 = room1.add_microphone(0, 0)
 
 # Add audio
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -75,6 +75,7 @@ for mic in room1.mics:
     #     audio = Audio.create_from_signal(reconstructed_sounds[i], mic.get_audio().get_sample_rate())
     #     audio = NoiseReducer.reduce_noise(audio=audio)
     #     audio.play()
+    print(mic.get_audio())
 
 # Compute all TDoA and DoA for all mic pairs
 tdoa_pairs = room1.compute_all_tdoa(sample_rate=SampleRateConverter.get_lowest_sample_rate(room1), print_intermediate_results=True)
