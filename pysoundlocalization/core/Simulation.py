@@ -1,4 +1,4 @@
-import config
+import pysoundlocalization.config as config
 from pysoundlocalization.core.Room import Room
 
 

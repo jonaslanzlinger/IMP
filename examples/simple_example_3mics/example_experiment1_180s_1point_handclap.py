@@ -1,16 +1,18 @@
 import os
 from datetime import datetime, timedelta
 
-from core.Audio import Audio
-from core.Simulation import Simulation
-from preprocessing.NoiseReducer import NoiseReducer
-from preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
-from preprocessing.SampleRateConverter import SampleRateConverter
-from preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from preprocessing.LowCutFilter import LowCutFilter
-from preprocessing.SampleTrimmer import SampleTrimmer
-from visualization.spectrogram_plot import spectrogram_plot
-from visualization.wave_plot import wave_plot
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.core.Simulation import Simulation
+from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
+    NonNegativeMatrixFactorization,
+)
+from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
+from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.wave_plot import wave_plot
 
 # Create simulation and add a room with 4 microphones
 simulation = Simulation.create()
@@ -44,9 +46,13 @@ SampleRateConverter.convert_all_to_lowest_sample_rate(room1)
 # audio_references = [mic1.get_audio(), mic2.get_audio(), mic3.get_audio()]
 # SampleTrimmer.sync_audio(audio_references, audio_timestamps)
 
-#Sync the beginning manually
-SampleTrimmer.trim_from_beginning(mic1.get_audio(), timedelta(seconds=1, microseconds=18020))
-SampleTrimmer.trim_from_beginning(mic2.get_audio(), timedelta(seconds=1, microseconds=777688))
+# Sync the beginning manually
+SampleTrimmer.trim_from_beginning(
+    mic1.get_audio(), timedelta(seconds=1, microseconds=18020)
+)
+SampleTrimmer.trim_from_beginning(
+    mic2.get_audio(), timedelta(seconds=1, microseconds=777688)
+)
 SampleTrimmer.trim_from_beginning(mic3.get_audio(), timedelta(microseconds=911530))
 
 # Trim from end to make them of equal length
@@ -58,27 +64,27 @@ print(mic2.get_audio())
 print(mic3.get_audio())
 
 # for mic in room1.mics:
-    # print(mic.get_audio())
-    # wave_plot(mic.get_audio())
+# print(mic.get_audio())
+# wave_plot(mic.get_audio())
 
-    # print sample with index where amplitude threshold over 0.8
-    # threshold = 0.8
-    # for i, sample in enumerate(mic.get_audio().audio_signal):
-    #     if abs(sample) > threshold:
-    #         print(f"Sample {i} exceeds threshold with amplitude {sample}")
+# print sample with index where amplitude threshold over 0.8
+# threshold = 0.8
+# for i, sample in enumerate(mic.get_audio().audio_signal):
+#     if abs(sample) > threshold:
+#         print(f"Sample {i} exceeds threshold with amplitude {sample}")
 
-    #Total samples in 14.13seconds: 617400
+# Total samples in 14.13seconds: 617400
 
-    #MIC1: Sample 181657-182573 -> 916 samples
-    #MIC2: Sample 183999-184457 -> 458 samples
-    #MIC3: Sample 185135-186346 -> 1211 samples
+# MIC1: Sample 181657-182573 -> 916 samples
+# MIC2: Sample 183999-184457 -> 458 samples
+# MIC3: Sample 185135-186346 -> 1211 samples
 
 
 # Splice all audio in room to a smaller sample of 20 seconds (that includes a handclap)
-#SampleTrimmer.slice_all_from_to(room1, timedelta(seconds=15), timedelta(seconds=25))
+# SampleTrimmer.slice_all_from_to(room1, timedelta(seconds=15), timedelta(seconds=25))
 
 # Show claps in spectogram
-#spectrogram_plot(mic1.get_audio())
+# spectrogram_plot(mic1.get_audio())
 # mic1.get_audio().play()
 
 # Try to remove frequencies of machine sound
@@ -95,23 +101,26 @@ print(mic3.get_audio())
 #     SampleTrimmer.trim_from_beginning(mic.get_audio(), timedelta(seconds=1))
 #     SampleTrimmer.trim_from_end(mic.get_audio(), timedelta(seconds=0.5))
 
-    # reconstructed_sounds = nmf.run(mic.get_audio())
-    # for i in range(len(reconstructed_sounds)):
-    #     print(f"Playing recostructed sound {i + 1}")
-    #     audio = Audio.create_from_signal(reconstructed_sounds[i], mic.get_audio().get_sample_rate())
-    #     audio = NoiseReducer.reduce_noise(audio=audio)
-    #     audio.play()
-    # print(mic.get_audio())
+# reconstructed_sounds = nmf.run(mic.get_audio())
+# for i in range(len(reconstructed_sounds)):
+#     print(f"Playing recostructed sound {i + 1}")
+#     audio = Audio.create_from_signal(reconstructed_sounds[i], mic.get_audio().get_sample_rate())
+#     audio = NoiseReducer.reduce_noise(audio=audio)
+#     audio.play()
+# print(mic.get_audio())
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(sample_rate=SampleRateConverter.get_lowest_sample_rate(room1), print_intermediate_results=True)
+tdoa_pairs = room1.compute_all_tdoa(
+    sample_rate=SampleRateConverter.get_lowest_sample_rate(room1),
+    print_intermediate_results=True,
+)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = room1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position
-x,y = room1.multilaterate_sound_source(tdoa_pairs)
+x, y = room1.multilaterate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
 room1.add_sound_source_position(x, y)
