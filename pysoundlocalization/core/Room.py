@@ -34,13 +34,14 @@ class Room:
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
         )
 
-    def add_microphone(self, x: float, y: float) -> Microphone | None:
+    def add_microphone(self, x: float, y: float, name: str) -> Microphone | None:
         """
         Add a microphone at the specified coordinates if it is within room boundaries and not duplicated.
 
         Args:
             x (float): X-coordinate of the microphone position.
             y (float): Y-coordinate of the microphone position.
+            name (str): The name of the microphone.
 
         Returns:
             Microphone | None: The added Microphone object if successful, otherwise None.
@@ -52,7 +53,7 @@ class Room:
                 return None
 
         if self.is_within_room(x, y):
-            mic = Microphone(x, y)
+            mic = Microphone(x, y, name)
             self.mics.append(mic)
             print(f"Microphone added at position ({x}, {y})")
             return mic
@@ -195,7 +196,9 @@ class Room:
                 tdoa_results[mic_pair] = tdoa
 
                 if print_intermediate_results:
-                    print(f"TDoA between mics {mic_pair}: {tdoa:.6f} seconds")
+                    print(
+                        f"TDoA between mics ({mic1.get_name()}, {mic2.get_name()}), {mic_pair}: {tdoa:.6f} seconds"
+                    )
             else:
                 print(
                     f"Missing audio signal(s) for mics at {mic1.get_position()} and {mic2.get_position()}"

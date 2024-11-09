@@ -3,7 +3,7 @@ from pysoundlocalization.core.Audio import Audio
 
 class Microphone:
 
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float, y: float, name: str = "NoName"):
         """
         Initialize the Microphone with a specified (x, y) position.
 
@@ -11,10 +11,29 @@ class Microphone:
             x (float): X-coordinate of the microphone position.
             y (float): Y-coordinate of the microphone position.
         """
+        self.name = name
         self.x = x
         self.y = y
 
         self.audio: Audio | None = None
+
+    def get_name(self) -> str:
+        """
+        Get the name of the microphone.
+
+        Returns:
+            str: The name of the microphone.
+        """
+        return self.name
+
+    def set_name(self, name: str):
+        """
+        Set the name of the microphone.
+
+        Args:
+            name (str): The new name of the microphone.
+        """
+        self.name = name
 
     def get_position(self) -> tuple[float, float]:
         """
