@@ -1,13 +1,15 @@
-from core.Audio import Audio
-from preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from datetime import timedelta
-from preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from preprocessing.LowCutFilter import LowCutFilter
-from visualization.spectrogram_plot import spectrogram_plot
-from preprocessing.NoiseReducer import NoiseReducer
-from preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
+from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
+    NonNegativeMatrixFactorization,
+)
 
-audio_file = "Illwerke/03_experiment1_1punkt_klatschen/first25seconds_trimmed_output_MIC3_2024-11-07_10-30-46_550904.wav"
+audio_file = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC3_2024-11-07_10-30-46_550904.wav"
 audio = Audio(filepath=audio_file, convert_to_sample_rate=11025)
 print(audio.get_duration())
 
@@ -41,4 +43,4 @@ for i in range(len(reconstructed_sounds)):
     print(f"Playing reconstructed sound {i+1}")
     audio = Audio.create_from_signal(reconstructed_sounds[i], 11025)
     audio = NoiseReducer.reduce_noise(audio=audio)
-    # audio.play()
+    audio.play()

@@ -4,15 +4,20 @@ from itertools import combinations
 
 import numpy as np
 
-import config
-from algorithms.gcc_phat import gcc_phat
-from algorithms.doa import compute_doa
-from algorithms.multilateration import multilaterate_sound_source
-from core.Microphone import Microphone
+import pysoundlocalization.config as config
+from pysoundlocalization.algorithms.gcc_phat import gcc_phat
+from pysoundlocalization.algorithms.doa import compute_doa
+from pysoundlocalization.algorithms.multilateration import multilaterate_sound_source
+from pysoundlocalization.core.Microphone import Microphone
 
 
 class Room:
-    def __init__(self, name: str, vertices: list[tuple[float, float]], sound_speed: float = config.DEFAULT_SOUND_SPEED):
+    def __init__(
+        self,
+        name: str,
+        vertices: list[tuple[float, float]],
+        sound_speed: float = config.DEFAULT_SOUND_SPEED,
+    ):
         """
         Initialize a Room instance with a name, vertices defining the room shape.
 
@@ -21,11 +26,13 @@ class Room:
             vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
             sound_speed (float): The speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
         """
-        self.sound_speed = sound_speed # Default speed of sound in m/s
+        self.sound_speed = sound_speed  # Default speed of sound in m/s
         self.name = name
         self.vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics: list[Microphone] = []
-        self.sound_source_position: tuple[float, float] | None = None #TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
+        self.sound_source_position: tuple[float, float] | None = (
+            None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
+        )
 
     def add_microphone(self, x: float, y: float) -> Microphone | None:
         """
@@ -99,11 +106,15 @@ class Room:
             float: Maximum time delay (tau) in seconds.
         """
         if len(self.mics) < 2:
-            raise ValueError("At least two microphones are required to calculate max_tau.")
+            raise ValueError(
+                "At least two microphones are required to calculate max_tau."
+            )
 
         # Find the max distance between any two microphones
         max_mic_distance = max(
-            np.linalg.norm(np.array(mic1.get_position()) - np.array(mic2.get_position()))
+            np.linalg.norm(
+                np.array(mic1.get_position()) - np.array(mic2.get_position())
+            )
             for mic1, mic2 in combinations(self.mics, 2)
         )
 
@@ -111,7 +122,13 @@ class Room:
 
     # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
-    def compute_tdoa(self, audio1: np.ndarray, audio2: np.ndarray, sample_rate: int, max_tau: float = None) -> tuple[float, np.ndarray]:
+    def compute_tdoa(
+        self,
+        audio1: np.ndarray,
+        audio2: np.ndarray,
+        sample_rate: int,
+        max_tau: float = None,
+    ) -> tuple[float, np.ndarray]:
         """
         Computes the time difference of arrival (TDoA) of two audio signals.
 
@@ -130,7 +147,12 @@ class Room:
 
         return gcc_phat(audio1, audio2, fs=sample_rate, max_tau=max_tau)
 
-    def compute_all_tdoa(self, sample_rate: int, max_tau: float = None, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float] | None:
+    def compute_all_tdoa(
+        self,
+        sample_rate: int,
+        max_tau: float = None,
+        print_intermediate_results: bool = False,
+    ) -> dict[tuple[tuple[float, float], tuple[float, float]], float] | None:
         """
         Compute TDoA for all microphone pairs in the room.
 
@@ -158,7 +180,7 @@ class Room:
         tdoa_results = {}
 
         # Iterate over all possible pairs of microphones
-        for (mic1, mic2) in combinations(self.mics, 2):
+        for mic1, mic2 in combinations(self.mics, 2):
             # Retrieve the audio signals from each microphone
             audio1 = mic1.get_audio().get_audio_signal()
             audio2 = mic2.get_audio().get_audio_signal()
@@ -169,14 +191,15 @@ class Room:
                 tdoa, cc = self.compute_tdoa(audio1, audio2, sample_rate, max_tau)
                 mic_pair = (mic1.get_position(), mic2.get_position())
 
-
                 # Store the result in a dictionary with the mic pair as the key
                 tdoa_results[mic_pair] = tdoa
 
                 if print_intermediate_results:
                     print(f"TDoA between mics {mic_pair}: {tdoa:.6f} seconds")
             else:
-                print(f"Missing audio signal(s) for mics at {mic1.get_position()} and {mic2.get_position()}")
+                print(
+                    f"Missing audio signal(s) for mics at {mic1.get_position()} and {mic2.get_position()}"
+                )
 
         return tdoa_results
 
@@ -197,7 +220,12 @@ class Room:
 
         return compute_doa(tdoa, max_tau=max_tau)
 
-    def compute_all_doa(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float], max_tau: float = None, print_intermediate_results: bool = False) -> dict[tuple[tuple[float, float], tuple[float, float]], float]:
+    def compute_all_doa(
+        self,
+        tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
+        max_tau: float = None,
+        print_intermediate_results: bool = False,
+    ) -> dict[tuple[tuple[float, float], tuple[float, float]], float]:
         """
         Computes the direction of arrival (DoA) for all microphone pairs based on their TDoA values.
 
@@ -232,7 +260,9 @@ class Room:
 
         return doa_results
 
-    def multilaterate_sound_source(self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float]) -> tuple[float, float]:
+    def multilaterate_sound_source(
+        self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float]
+    ) -> tuple[float, float]:
         """
         Approximates the sound source given all microphone pairs and their computed TDoA values.
 
@@ -267,7 +297,7 @@ class Room:
             min(y for x, y in self.vertices) - 1, max(y for x, y in self.vertices) + 1
         )
 
-        ax.set_aspect('equal')
+        ax.set_aspect("equal")
 
         # Plot microphones
         if self.mics:
@@ -275,7 +305,12 @@ class Room:
             ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
         if self.sound_source_position and isinstance(self.sound_source_position, tuple):
-            ax.scatter(self.sound_source_position[0], self.sound_source_position[1], color="blue", label="Approximated Sound Source")
+            ax.scatter(
+                self.sound_source_position[0],
+                self.sound_source_position[1],
+                color="blue",
+                label="Approximated Sound Source",
+            )
 
         ax.set_xlabel("X coordinate")
         ax.set_ylabel("Y coordinate")

@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from core.Audio import Audio
+from pysoundlocalization.core.Audio import Audio
 
 
 class IFrequencyFilter(ABC):
     """
     Interface for frequency filter classes, providing a method to apply a filter to an Audio object.
     """
+
     @abstractmethod
     def apply(self, audio: Audio) -> Audio:
         """

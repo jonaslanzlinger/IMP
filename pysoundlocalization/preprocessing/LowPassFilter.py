@@ -1,5 +1,5 @@
-from preprocessing.IFrequencyFilter import IFrequencyFilter
-from core.Audio import Audio
+from pysoundlocalization.preprocessing.IFrequencyFilter import IFrequencyFilter
+from pysoundlocalization.core.Audio import Audio
 from scipy.signal import butter, lfilter
 
 

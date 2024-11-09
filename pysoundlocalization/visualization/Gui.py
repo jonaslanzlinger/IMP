@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
-from core.Simulation import Simulation
+from pysoundlocalization.core.Simulation import Simulation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-from core.Audio import Audio
+from pysoundlocalization.core.Audio import Audio
 from tkinter import filedialog
 import os
 

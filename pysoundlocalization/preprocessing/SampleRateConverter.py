@@ -1,10 +1,12 @@
-from core.Room import Room
-from core.Audio import Audio
+from pysoundlocalization.core.Room import Room
+from pysoundlocalization.core.Audio import Audio
+
 
 class SampleRateConverter:
     """
     The SampleRateConverter takes a Room instance and applies sample rate conversions to its mic audio signals.
     """
+
     @staticmethod
     def get_lowest_sample_rate(room: Room) -> int:
         """
@@ -16,7 +18,11 @@ class SampleRateConverter:
         Returns:
             int: The lowest sample rate found among the audio files in the room.
         """
-        return min(mic.get_audio().get_sample_rate() for mic in room.mics if mic.get_audio() is not None)
+        return min(
+            mic.get_audio().get_sample_rate()
+            for mic in room.mics
+            if mic.get_audio() is not None
+        )
 
     @staticmethod
     def convert_all_to_lowest_sample_rate(room: Room) -> None:

@@ -1,5 +1,5 @@
 import config
-from .Room import Room
+from pysoundlocalization.core.Room import Room
 
 
 class Simulation:
@@ -19,7 +19,12 @@ class Simulation:
         """
         return cls()
 
-    def add_room(self, name: str, vertices: list[tuple[float, float]], sound_speed: float = config.DEFAULT_SOUND_SPEED) -> Room:
+    def add_room(
+        self,
+        name: str,
+        vertices: list[tuple[float, float]],
+        sound_speed: float = config.DEFAULT_SOUND_SPEED,
+    ) -> Room:
         """
         Add a new room to the simulation.
 

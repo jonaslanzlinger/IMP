@@ -1,4 +1,4 @@
-from core.Audio import Audio
+from pysoundlocalization.core.Audio import Audio
 
 
 class Microphone:

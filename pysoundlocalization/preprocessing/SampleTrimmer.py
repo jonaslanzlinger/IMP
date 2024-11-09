@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
-from core.Audio import Audio
-from core.Room import Room
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.core.Room import Room
 
 
 class SampleTrimmer:
