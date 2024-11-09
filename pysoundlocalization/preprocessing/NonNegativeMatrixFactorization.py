@@ -10,7 +10,7 @@ class NonNegativeMatrixFactorization:
     def __init__(self):
         self.FRAME = 512
         self.HOP = 256
-        self.SR = 11025
+        self.SR = 44100
         self.EPSILON = 1e-10
         self.V = None
         self.K = None

@@ -1,5 +1,7 @@
 from datetime import timedelta, datetime
 from core.Audio import Audio
+from core.Room import Room
+
 
 class SampleTrimmer:
 
@@ -108,6 +110,23 @@ class SampleTrimmer:
         audio.audio_signal = audio.audio_signal[start_sample:end_sample]
 
         return audio
+
+    @staticmethod
+    def slice_all_from_to(room: Room, start_time: timedelta, end_time: timedelta):
+        """
+        Slice all audio signals in room (associated with a mic) to keep only the part between the start and end timestamps.
+
+        Args:
+            room (Room): The room to slice all audio signals from.
+            start_time (timedelta): The start timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
+            end_time (timedelta): The end timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
+
+        Returns:
+            Room: The room with all audio signals sliced.
+        """
+        for mic in room.mics:
+            SampleTrimmer.slice_from_to(mic.get_audio(), start_time, end_time)
+        return room
 
     @staticmethod
     def sync_audio(audio_files: list[Audio], start_times: list[datetime]):
