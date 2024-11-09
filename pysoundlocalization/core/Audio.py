@@ -2,9 +2,7 @@ import librosa
 import numpy as np
 import os
 import soundfile as sf
-import simpleaudio as sa
 import sounddevice as sd
-from scipy.io import wavfile
 
 
 # TODO: Move towards a generic SoundInput wrapper class?
