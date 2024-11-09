@@ -1,4 +1,4 @@
-from visualization.Gui import Gui
+from pysoundlocalization.visualization.Gui import Gui
 
 gui = Gui()
 gui.run()

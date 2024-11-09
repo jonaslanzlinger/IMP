@@ -1,8 +1,8 @@
 import warnings
-from core.Audio import Audio
-from preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from preprocessing.LowPassFilter import LowPassFilter
-from visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from pysoundlocalization.preprocessing.LowPassFilter import LowPassFilter
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 import os
 
 warnings.filterwarnings("ignore")

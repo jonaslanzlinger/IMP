@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from core.Audio import Audio
-from preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 
 # Various slicing and trimming methods
 audio = Audio(filepath='example_audio/pi1_audio.wav')

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
-from core.Audio import Audio
+from pysoundlocalization.core.Audio import Audio
 import warnings
 import os
 

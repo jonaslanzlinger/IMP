@@ -2,12 +2,12 @@ import numpy as np
 from scipy.signal import butter, filtfilt
 import librosa
 import librosa.display
-from core.Audio import Audio
+from pysoundlocalization.core.Audio import Audio
 import warnings
-from visualization.spectrogram_plot import spectrogram_plot
-from visualization.wave_plot import wave_plot
-from preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from preprocessing.LowPassFilter import LowPassFilter
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from pysoundlocalization.preprocessing.LowPassFilter import LowPassFilter
 import os
 
 warnings.filterwarnings("ignore")

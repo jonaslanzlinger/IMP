@@ -1,15 +1,15 @@
 import os
 from datetime import datetime, timedelta
 
-from core.Audio import Audio
-from core.Simulation import Simulation
-from preprocessing.NoiseReducer import NoiseReducer
-from preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
-from preprocessing.SampleRateConverter import SampleRateConverter
-from preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from preprocessing.LowCutFilter import LowCutFilter
-from preprocessing.SampleTrimmer import SampleTrimmer
-from visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.core.Simulation import Simulation
+from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
+from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
+from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
+from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 
 # Create simulation and add a room with 4 microphones
 simulation = Simulation.create()
