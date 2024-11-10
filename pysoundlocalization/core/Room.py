@@ -36,7 +36,9 @@ class Room:
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
         )
 
-    def add_microphone(self, x: float, y: float, name: str) -> Microphone | None:
+    def add_microphone(
+        self, x: float, y: float, name: str | None = None
+    ) -> Microphone | None:
         """
         Add a microphone at the specified coordinates if it is within room boundaries and not duplicated.
 
