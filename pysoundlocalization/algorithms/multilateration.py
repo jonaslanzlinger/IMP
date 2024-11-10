@@ -1,10 +1,11 @@
 import numpy as np
 import pysoundlocalization.config as config
+from pysoundlocalization.core.TdoaPair import TdoaPair
 
 
 # TODO: think of adding z-coordinate to multilateration algorithm
 def multilaterate_sound_source(
-    tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
+    tdoa_pairs: TdoaPair,
     speed_of_sound: float = config.DEFAULT_SOUND_SPEED,
 ) -> tuple[float, float]:
     """
@@ -33,10 +34,13 @@ def multilaterate_sound_source(
     # Amat = np.zeros((len(tdoa_pairs), 3))
     Dmat = np.zeros((len(tdoa_pairs), 1))
 
-    for row, ((mic1_pos, mic2_pos), tdoa) in enumerate(tdoa_pairs.items()):
+    # for row, ((mic1_pos, mic2_pos), tdoa) in enumerate(tdoa_pairs.items()):
+    for row, tdoa_pair in enumerate(tdoa_pairs):
         # Retrieve positions of mic1 and mic2
-        x0, y0 = mic1_pos
-        x1, y1 = mic2_pos
+        # x0, y0 = mic1_pos
+        # x1, y1 = mic2_pos
+        x0, y0 = tdoa_pair.get_mic1().get_position()
+        x1, y1 = tdoa_pair.get_mic2().get_position()
 
         # x0, y0, z0 = mic1_pos
         # x1, y1, z1 = mic2_pos
@@ -46,7 +50,7 @@ def multilaterate_sound_source(
         Amat[row, 1] = 2 * (y0 - y1)
         # Amat[row, 2] = 2 * (z0 - z1)
 
-        Dmat[row] = speed_of_sound * tdoa + (
+        Dmat[row] = speed_of_sound * tdoa_pair.get_tdoa + (
             # (x0 ** 2 + y0 ** 2 + z0 ** 2) - (x1 ** 2 + y1 ** 2 + z1 ** 2)
             (x0**2 + y0**2)
             - (x1**2 + y1**2)

@@ -9,6 +9,8 @@ from pysoundlocalization.algorithms.gcc_phat import gcc_phat
 from pysoundlocalization.algorithms.doa import compute_doa
 from pysoundlocalization.algorithms.multilateration import multilaterate_sound_source
 from pysoundlocalization.core.Microphone import Microphone
+from pysoundlocalization.core.TdoaPair import TdoaPair
+from pysoundlocalization.core.DoaPair import DoaPair
 
 
 class Room:
@@ -153,7 +155,7 @@ class Room:
         sample_rate: int,
         max_tau: float = None,
         print_intermediate_results: bool = False,
-    ) -> dict[tuple[tuple[float, float], tuple[float, float]], float] | None:
+    ) -> TdoaPair | None:
         """
         Compute TDoA for all microphone pairs in the room.
 
@@ -163,12 +165,7 @@ class Room:
             print_intermediate_results (bool): Print intermediate results if True.
 
         Returns:
-            dict[tuple[tuple[float, float], tuple[float, float]], float] | None: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
-                and the values are the computed TDoA values (in seconds). If less than two microphones are present,
-                the function returns None. The key consists of a tuple of two microphones that are identified by their coordinates.
-                Example of dictionary tdoa_pairs: {((0.5, 1), (2.5, 1)): -58.63464131262136, ((0.5, 1), (0.5, 3)): 72.89460160061566}.
-                The format of each key-value entry is: ((mic1_x, mic1_y), (mic2_x, mic2_y)): tdoa_float_value, where the key
-                is ((mic1_x, mic1_y), (mic2_x, mic2_y)) and the value is the computed tdoa_float_value.
+            list[TdoaPair] | None: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
         """
         if len(self.mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
@@ -178,7 +175,7 @@ class Room:
         if max_tau is None:
             max_tau = self.get_max_tau()
 
-        tdoa_results = {}
+        tdoa_results = []
 
         # Iterate over all possible pairs of microphones
         for mic1, mic2 in combinations(self.mics, 2):
@@ -190,15 +187,13 @@ class Room:
             if audio1 is not None and audio2 is not None:
                 # Compute TDoA using the compute_tdoa method
                 tdoa, cc = self.compute_tdoa(audio1, audio2, sample_rate, max_tau)
-                mic_pair = (mic1.get_position(), mic2.get_position())
 
-                # Store the result in a dictionary with the mic pair as the key
-                tdoa_results[mic_pair] = tdoa
+                tdoa_pair = TdoaPair(mic1, mic2, tdoa)
+                tdoa_results.append(tdoa_pair)
 
                 if print_intermediate_results:
-                    print(
-                        f"TDoA between mics ({mic1.get_name()}, {mic2.get_name()}), {mic_pair}: {tdoa:.6f} seconds"
-                    )
+                    print(str(tdoa_pair))
+
             else:
                 print(
                     f"Missing audio signal(s) for mics at {mic1.get_position()} and {mic2.get_position()}"
@@ -225,55 +220,49 @@ class Room:
 
     def compute_all_doa(
         self,
-        tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float],
+        tdoa_pairs: list[TdoaPair],
         max_tau: float = None,
         print_intermediate_results: bool = False,
-    ) -> dict[tuple[tuple[float, float], tuple[float, float]], float]:
+    ) -> list[DoaPair]:
         """
         Computes the direction of arrival (DoA) for all microphone pairs based on their TDoA values.
 
         Args:
-            tdoa_pairs (dict): A dictionary where keys are tuples representing microphone pairs and values are the TDoA values (float) in seconds. The key consists of a tuple of two microphones that are identified by their coordinates.
-                                Example of dictionary tdoa_pairs: {((0.5, 1), (2.5, 1)): -58.63464131262136, ((0.5, 1), (0.5, 3)): 72.89460160061566}.
-                                The format of each key-value entry is: ((mic1_x, mic1_y), (mic2_x, mic2_y)): tdoa_float_value, where the key
-                                is ((mic1_x, mic1_y), (mic2_x, mic2_y)) and the value is the computed tdoa_float_value.
+            tdoa_pairs (list[TdoaPair]): A list of TdoaPair objects representing the computed TDoA for each microphone pair.
             max_tau (float): The maximum allowable time difference (in seconds) between the two signals,
                         typically determined by the distance between the microphones and the speed of sound.
             print_intermediate_results (bool): Set to true if intermediate results of computation should be printed to console. Default is false.
 
 
         Returns:
-            dict[tuple[tuple[float, float], tuple[float, float]], float]: A dictionary where the keys are tuples representing microphone pairs (positions of the two mics),
-                 and the values are the computed DoA values (in degrees).
+            list[DoaPair]: A list of DoaPair objects representing the computed DoA for each microphone pair.
         """
-        doa_results = {}
+        doa_results = []
 
         # If max_tau is not provided via parameter, automatically compute via class method
         if max_tau is None:
             max_tau = self.get_max_tau()
 
-        for mic_pair, tdoa in tdoa_pairs.items():
-            doa = self.compute_doa(tdoa, max_tau)
+        # for mic_pair, tdoa in tdoa_pairs.items():
+        for tdoa_pair in tdoa_pairs:
+            doa = self.compute_doa(tdoa_pair.get_tdoa(), max_tau)
 
-            # Store the computed DoA in a dictionary with the mic pair as the key
-            doa_results[mic_pair] = doa
+            doa_pair = DoaPair(tdoa_pair.get_mic1(), tdoa_pair.get_mic2(), doa)
+            doa_results.append(doa_pair)
 
             if print_intermediate_results:
-                print(f"DoA for microphone pair {mic_pair}: {doa:.2f} degrees")
+                print(str(doa_pair))
 
         return doa_results
 
     def multilaterate_sound_source(
-        self, tdoa_pairs: dict[tuple[tuple[float, float], tuple[float, float]], float]
+        self, tdoa_pairs: list[TdoaPair]
     ) -> tuple[float, float]:
         """
         Approximates the sound source given all microphone pairs and their computed TDoA values.
 
         Args:
-            tdoa_pairs (dict):  A dictionary where keys are tuples representing microphone pairs and values are the TDoA values (float) in seconds. The key consists of a tuple of two microphones that are identified by their coordinates.
-                                Example of dictionary tdoa_pairs: {((0.5, 1), (2.5, 1)): -58.63464131262136, ((0.5, 1), (0.5, 3)): 72.89460160061566}.
-                                The format of each key-value entry is: ((mic1_x, mic1_y), (mic2_x, mic2_y)): tdoa_float_value, where the key
-                                is ((mic1_x, mic1_y), (mic2_x, mic2_y)) and the value is the computed tdoa_float_value.
+            tdoa_pairs (list[TdoaPair]): A list of TdoaPair objects representing the computed TDoA for each microphone pair
 
         Returns:
             tuple[float, float]: The estimated (x, y) coordinates of the sound source.
