@@ -129,6 +129,29 @@ class SampleTrimmer:
         return room
 
     @staticmethod
+    def sync_room(room: Room) -> Room | None:
+
+        if len(room.mics) == 0:
+            raise ValueError("Room has no microphones.")
+
+        list_audio = []
+        list_start_times = []
+
+        for mic in room.mics:
+
+            if mic.get_audio() is None:
+                raise ValueError(f"MIC {mic.get_name()} has no audio signal.")
+            if mic.get_recording_start_time() is None:
+                raise ValueError(f"MIC {mic.get_name()} has no recording start time.")
+
+            list_audio.append(mic.get_audio())
+            list_start_times.append(mic.get_recording_start_time())
+
+        SampleTrimmer.sync_audio(list_audio, list_start_times)
+
+        return room
+
+    @staticmethod
     def sync_audio(audio_files: list[Audio], start_times: list[datetime]):
         """
         Synchronize the audio files to start and end at the same timestamp. Concretely, it slices all audio to start
