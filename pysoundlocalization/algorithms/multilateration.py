@@ -1,6 +1,7 @@
 import numpy as np
 import pysoundlocalization.config as config
 from pysoundlocalization.core.TdoaPair import TdoaPair
+from scipy.optimize import least_squares
 
 
 # TODO: think of adding z-coordinate to multilateration algorithm
@@ -12,11 +13,7 @@ def multilaterate_sound_source(
     Approximates the sound source position given all microphone pairs and their computed TDoA values.
 
     Args:
-        tdoa_pairs (dict): A dictionary where keys are tuples representing microphone pairs and values are the TDoA values (float) in seconds. The key consists of a tuple of two microphones that are identified by their coordinates.
-        Example of dictionary tdoa_pairs: {((0.5, 1), (2.5, 1)): -58.63464131262136, ((0.5, 1), (0.5, 3)): 72.89460160061566}.
-        The format of each key-value entry is: ((mic1_x, mic1_y), (mic2_x, mic2_y)): tdoa_float_value, where the key
-        is ((mic1_x, mic1_y), (mic2_x, mic2_y)) and the value is the computed tdoa_float_value.
-
+        tdoa_pairs (list[TdoaPair]): A list of TdoaPair objects representing the TDoA values between microphone pairs.
         speed_of_sound (float): Optional speed of sound in meters per second. Defaults to the value set in config.DEFAULT_SOUND_SPEED.
 
     Returns:
@@ -30,37 +27,47 @@ def multilaterate_sound_source(
             "At least two microphone pairs are required to approximate the sound source."
         )
 
-    Amat = np.zeros((len(tdoa_pairs), 2))
-    # Amat = np.zeros((len(tdoa_pairs), 3))
-    Dmat = np.zeros((len(tdoa_pairs), 1))
-
-    # for row, ((mic1_pos, mic2_pos), tdoa) in enumerate(tdoa_pairs.items()):
-    for row, tdoa_pair in enumerate(tdoa_pairs):
-        # Retrieve positions of mic1 and mic2
-        # x0, y0 = mic1_pos
-        # x1, y1 = mic2_pos
-        x0, y0 = tdoa_pair.get_mic1().get_position()
-        x1, y1 = tdoa_pair.get_mic2().get_position()
-
-        # x0, y0, z0 = mic1_pos
-        # x1, y1, z1 = mic2_pos
-
-        # Formulate the linear system based on TDoA and microphone positions
-        Amat[row, 0] = 2 * (x0 - x1)
-        Amat[row, 1] = 2 * (y0 - y1)
-        # Amat[row, 2] = 2 * (z0 - z1)
-
-        Dmat[row] = speed_of_sound * tdoa_pair.get_tdoa() + (
-            # (x0 ** 2 + y0 ** 2 + z0 ** 2) - (x1 ** 2 + y1 ** 2 + z1 ** 2)
-            (x0**2 + y0**2)
-            - (x1**2 + y1**2)
+    # Convert TDOA times to distance differences in meters
+    tdoa_distances = [
+        (
+            tdoa_pair.get_mic1(),
+            tdoa_pair.get_mic2(),
+            tdoa_pair.get_tdoa() * speed_of_sound,
         )
+        for tdoa_pair in tdoa_pairs
+    ]
 
-    # Solve the least squares problem to estimate the source position
-    source_position, residuals, rank, singular_values = np.linalg.lstsq(
-        Amat, Dmat, rcond=None
-    )
+    # Define the system of equations based on the hyperbolic equations for TDOA
+    def multilateration_fn(initial_guess):
+        """Function to minimize for multilateration."""
+        px, py = initial_guess
+        equations = []
+        for mic1, mic2, d in tdoa_distances:
+            x1, y1 = mic1.get_position()
+            x2, y2 = mic2.get_position()
+            dist1 = np.sqrt((px - x1) ** 2 + (py - y1) ** 2)
+            dist2 = np.sqrt((px - x2) ** 2 + (py - y2) ** 2)
+            equations.append(dist1 - dist2 - d)
+        return equations
 
-    xs, ys = source_position.flatten()
+    # Initial guess (e.g., center of the mic positions or any reasonable point)
+    # Or any reasonable starting point in your coordinate system
+    initial_guess = [0, 0]
+    for mic1, mic2, d in tdoa_distances:
+        x1, y1 = mic1.get_position()
+        x2, y2 = mic2.get_position()
+        initial_guess[0] += (x1 + x2) / 2
+        initial_guess[1] += (y1 + y2) / 2
+    initial_guess[0] /= len(tdoa_distances)
+    initial_guess[1] /= len(tdoa_distances)
+
+    print("Initial guess:", initial_guess)
+
+    # Solve using least squares optimization
+    result = least_squares(multilateration_fn, initial_guess)
+
+    source_position = result.x
+
+    xs, ys = source_position
 
     return xs, ys
