@@ -152,6 +152,47 @@ class Room:
 
         return gcc_phat(audio1, audio2, fs=sample_rate, max_tau=max_tau)
 
+    def compute_all_tdoa_by_threshold(
+        self, debug_threshold_sample_index: bool = False
+    ) -> list[TdoaPair]:
+        """
+        Compute TDoA for all microphone pairs in the room based on a threshold.
+
+        Returns:
+            list[TdoaPair]: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
+        """
+
+        def compute_sample_index_threshold(mic: Microphone, debug: bool = False) -> int:
+            threshold = 0.3
+            for i, sample in enumerate(mic.get_audio().audio_signal):
+                if abs(sample) > threshold:
+                    if debug:
+                        print(
+                            f"Mic {mic.get_name()} sample index: {i} has exceeded threshold"
+                        )
+                    return i
+
+        tdoa_pairs = []
+
+        for i in range(len(self.mics)):
+            mic1 = self.mics[i]
+            mic1_sample_index = compute_sample_index_threshold(
+                mic1, debug=debug_threshold_sample_index
+            )
+            for j in range(i + 1, len(self.mics)):
+                mic2 = self.mics[j]
+                mic2_sample_index = compute_sample_index_threshold(mic2, debug=False)
+                tdoa_pairs.append(
+                    TdoaPair(
+                        mic1,
+                        mic2,
+                        abs(mic2_sample_index - mic1_sample_index)
+                        / mic1.get_audio().get_sample_rate(),
+                    )
+                )
+
+        return tdoa_pairs
+
     def compute_all_tdoa(
         self,
         sample_rate: int,
