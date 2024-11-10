@@ -50,7 +50,7 @@ def multilaterate_sound_source(
         Amat[row, 1] = 2 * (y0 - y1)
         # Amat[row, 2] = 2 * (z0 - z1)
 
-        Dmat[row] = speed_of_sound * tdoa_pair.get_tdoa + (
+        Dmat[row] = speed_of_sound * tdoa_pair.get_tdoa() + (
             # (x0 ** 2 + y0 ** 2 + z0 ** 2) - (x1 ** 2 + y1 ** 2 + z1 ** 2)
             (x0**2 + y0**2)
             - (x1**2 + y1**2)
