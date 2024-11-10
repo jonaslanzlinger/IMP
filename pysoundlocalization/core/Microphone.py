@@ -1,4 +1,5 @@
 from pysoundlocalization.core.Audio import Audio
+from datetime import datetime
 
 
 class Microphone:
@@ -14,6 +15,7 @@ class Microphone:
         self.name = name
         self.x = x
         self.y = y
+        self.__recording_start_time: datetime | None = None
 
         self.audio: Audio | None = None
 
@@ -68,3 +70,21 @@ class Microphone:
             stored in all other references to the same audio.
         """
         return self.audio
+
+    def get_recording_start_time(self) -> datetime | None:
+        """
+        Get the start time of the recording.
+
+        Returns:
+            datetime | None: The start time of the recording.
+        """
+        return self.__recording_start_time
+
+    def set_recording_start_time(self, start_time: datetime):
+        """
+        Set the start time of the recording.
+
+        Args:
+            start_time (datetime): The start time of the recording.
+        """
+        self.__recording_start_time = start_time
