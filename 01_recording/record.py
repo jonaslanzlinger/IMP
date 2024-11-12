@@ -2,8 +2,7 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 from datetime import datetime
 
-# Parameters
-SAMPLE_RATE = 44100  # Sample rate in Hz
+SAMPLE_RATE = 44100
 
 
 def list_microphones():
@@ -12,22 +11,24 @@ def list_microphones():
 
 
 def record_audio(mic_id=None, device_id=None, duration=10):
-    timestamp = datetime.now()
-    print(f"Recording started at: {timestamp}")
 
     recording = sd.rec(
         int(duration * SAMPLE_RATE),
         samplerate=SAMPLE_RATE,
         channels=1,
         device=device_id,
+        blocksize=8,
     )
+
+    start_timestamp = datetime.now()
     sd.wait()
-    print("Recording complete. Saving file...")
+    end_timestamp = datetime.now()
 
-    filename = f"output_{timestamp.strftime(f'{mic_id}_%Y-%m-%d_%H-%M-%S_%f')}.wav"
-
+    filename = f"output_{end_timestamp.strftime(f'{mic_id}_%Y-%m-%d_%H-%M-%S_%f')}.wav"
     write(filename, SAMPLE_RATE, recording)
     print(f"File saved as {filename}")
+
+    print(f"Time taken to record: {end_timestamp - start_timestamp}")
 
 
 if __name__ == "__main__":
