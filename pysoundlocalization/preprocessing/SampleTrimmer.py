@@ -18,10 +18,10 @@ class SampleTrimmer:
         seconds_to_trim = time_delta.total_seconds()
 
         # Calculate the number of samples to trim
-        samples_to_trim = int(seconds_to_trim * audio.sample_rate)
+        samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.audio_signal = audio.audio_signal[samples_to_trim:]
+        audio.set_audio_signal(audio.get_audio_signal()[samples_to_trim:])
 
         return audio
 
@@ -38,10 +38,10 @@ class SampleTrimmer:
         seconds_to_trim = time_delta.total_seconds()
 
         # Calculate the number of samples to trim
-        samples_to_trim = int(seconds_to_trim * audio.sample_rate)
+        samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.audio_signal = audio.audio_signal[:-samples_to_trim]
+        audio.set_audio_signal(audio.get_audio_signal()[:-samples_to_trim])
 
         return audio
 
@@ -58,10 +58,10 @@ class SampleTrimmer:
         seconds_to_keep = time_delta.total_seconds()
 
         # Calculate the number of samples to keep
-        samples_to_keep = int(seconds_to_keep * audio.sample_rate)
+        samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep the specified portion of the audio signal
-        audio.audio_signal = audio.audio_signal[:samples_to_keep]
+        audio.set_audio_signal(audio.get_audio_signal()[:samples_to_keep])
 
         return audio
 
@@ -78,10 +78,10 @@ class SampleTrimmer:
         seconds_to_keep = time_delta.total_seconds()
 
         # Calculate the number of samples to keep
-        samples_to_keep = int(seconds_to_keep * audio.sample_rate)
+        samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep only the specified duration from the end of the audio signal
-        audio.audio_signal = audio.audio_signal[-samples_to_keep:]
+        audio.set_audio_signal(audio.get_audio_signal()[-samples_to_keep:])
 
         return audio
 
@@ -103,11 +103,11 @@ class SampleTrimmer:
         end_seconds = end_time.total_seconds()
 
         # Calculate the start and end sample indices
-        start_sample = int(start_seconds * audio.sample_rate)
-        end_sample = int(end_seconds * audio.sample_rate)
+        start_sample = int(start_seconds * audio.get_sample_rate())
+        end_sample = int(end_seconds * audio.get_sample_rate())
 
         # Slice the audio signal between start and end samples
-        audio.audio_signal = audio.audio_signal[start_sample:end_sample]
+        audio.set_audio_signal(audio.get_audio_signal()[start_sample:end_sample])
 
         return audio
 

@@ -43,4 +43,4 @@ for i in range(len(reconstructed_sounds)):
     print(f"Playing reconstructed sound {i+1}")
     audio = Audio.create_from_signal(reconstructed_sounds[i], 11025)
     audio = NoiseReducer.reduce_noise(audio=audio)
-    audio.play()
+    # audio.play()

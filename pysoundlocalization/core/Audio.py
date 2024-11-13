@@ -22,12 +22,15 @@ class Audio:
             filepath (str | None): Path to the audio file.
             convert_to_sample_rate (int | None): Desired sampling rate of the audio signal in Hz to which the audio will be converted.
         """
-        self.audio_signal = audio_signal
-        self.sample_rate = sample_rate
-        if audio_signal is None and sample_rate is None:
-            self.convert_to_sample_rate = convert_to_sample_rate
+        self.__filepath = filepath
+        self.__convert_to_sample_rate = convert_to_sample_rate
+        self.__audio_signal = audio_signal
+        self.__sample_rate = sample_rate
+        if audio_signal is not None and sample_rate is not None:
+            self.__duration = len(audio_signal) / sample_rate
+        elif audio_signal is None and sample_rate is None:
+            self.__duration = None
             self.load_audio_file(filepath)
-            self.filepath = filepath
 
     @classmethod
     def create_from_signal(cls, audio_signal: np.ndarray, sample_rate: int) -> "Audio":
@@ -44,8 +47,8 @@ class Audio:
         return cls(audio_signal=audio_signal, sample_rate=sample_rate)
 
     def __str__(self):
-        shape = self.audio_signal.shape
-        return f"Audio(filepath={self.filepath}, sample_rate={self.sample_rate}, shape={shape}, channels={1 if len(shape) == 1 else shape[1]}, duration={self.get_duration()}s, audio_signal={self.audio_signal})"
+        shape = self.__audio_signal.shape
+        return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, shape={shape}, channels={1 if len(shape) == 1 else shape[1]}, duration={self.__duration}s, audio_signal={self.__audio_signal})"
 
     def load_audio_file(self, filepath: str = None) -> tuple[int, np.ndarray]:
         """
@@ -58,7 +61,7 @@ class Audio:
             FileNotFoundError: If no valid file path is provided or the file does not exist.
         """
         if filepath is None:
-            filepath = self.filepath
+            filepath = self.__filepath
 
         if not filepath or not os.path.exists(filepath):
             raise FileNotFoundError(
@@ -66,19 +69,19 @@ class Audio:
             )
 
         # Load the audio file using soundfile
-        self.audio_signal, self.sample_rate = sf.read(filepath)
+        self.__audio_signal, self.__sample_rate = sf.read(filepath)
 
         # If desired sample rate is provided, convert audio to new sample rate
         if (
-            self.convert_to_sample_rate is not None
-            and self.sample_rate != self.convert_to_sample_rate
+            self.__convert_to_sample_rate is not None
+            and self.__sample_rate != self.__convert_to_sample_rate
         ):
-            self.audio_signal = self.resample_audio(
-                self.audio_signal, self.sample_rate, self.convert_to_sample_rate
+            self.__audio_signal = self.resample_audio(
+                self.__audio_signal, self.__sample_rate, self.__convert_to_sample_rate
             )
-            self.sample_rate = self.convert_to_sample_rate
+            self.__sample_rate = self.__convert_to_sample_rate
 
-        return self.sample_rate, self.audio_signal
+        return self.__sample_rate, self.__audio_signal
 
     def resample_audio(
         self, audio_signal: np.ndarray, original_rate: int, target_rate: int
@@ -112,12 +115,12 @@ class Audio:
         Returns:
             tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
         """
-        if self.sample_rate != desired_sample_rate:
-            self.audio_signal = self.resample_audio(
-                self.audio_signal, self.sample_rate, desired_sample_rate
+        if self.__sample_rate != desired_sample_rate:
+            self.__audio_signal = self.resample_audio(
+                self.__audio_signal, self.__sample_rate, desired_sample_rate
             )
-            self.sample_rate = desired_sample_rate
-        return self.sample_rate, self.audio_signal
+            self.__sample_rate = desired_sample_rate
+        return self.__sample_rate, self.__audio_signal
 
     def get_audio_signal(self) -> np.ndarray:
         """
@@ -130,9 +133,9 @@ class Audio:
         Raises:
             FileNotFoundError: If the audio file needs to be loaded but the file path is not set.
         """
-        if self.audio_signal is None:
+        if self.__audio_signal is None:
             self.load_audio_file()
-        return self.audio_signal
+        return self.__audio_signal
 
     def set_audio_signal(self, audio_signal: np.ndarray) -> None:
         """
@@ -141,7 +144,7 @@ class Audio:
         Args:
             audio_signal (np.ndarray): The audio signal data as a numpy array.
         """
-        self.audio_signal = audio_signal
+        self.__audio_signal = audio_signal
 
     def get_sample_rate(self) -> int:
         """
@@ -153,9 +156,9 @@ class Audio:
         Raises:
             ValueError: If the sample rate has not been set or loaded.
         """
-        if self.sample_rate is None:
+        if self.__sample_rate is None:
             self.load_audio_file()
-        return self.sample_rate
+        return self.__sample_rate
 
     def get_duration(self) -> float:
         """
@@ -167,9 +170,9 @@ class Audio:
         Raises:
             ValueError: If the audio signal has not been loaded yet.
         """
-        if self.audio_signal is None:
+        if self.__audio_signal is None:
             self.load_audio_file()
-        return len(self.audio_signal) / self.sample_rate
+        return len(self.__audio_signal) / self.__sample_rate
 
     def play(self) -> None:
         """
@@ -178,8 +181,8 @@ class Audio:
         Raises:
             ValueError: If the audio signal has not been loaded yet.
         """
-        if self.audio_signal is None:
+        if self.__audio_signal is None:
             self.load_audio_file()
 
-        sd.play(self.audio_signal, self.sample_rate)
+        sd.play(self.__audio_signal, self.__sample_rate)
         sd.wait()

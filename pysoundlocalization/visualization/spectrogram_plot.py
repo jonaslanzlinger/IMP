@@ -9,7 +9,7 @@ def spectrogram_plot(audio: Audio) -> None:
     Args:
         audio (Audio): Audio object containing the audio signal to plot.
     """
-    sample_rate = audio.sample_rate
+    sample_rate = audio.get_sample_rate()
     audio_signal = audio.get_audio_signal()
 
     plt.figure(figsize=(10, 6))

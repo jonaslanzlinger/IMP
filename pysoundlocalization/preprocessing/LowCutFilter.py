@@ -31,11 +31,11 @@ class LowCutFilter(IFrequencyFilter):
         Nyquist Sampling Theorem: sample_rate >= 2 * max_frequency
         nyquist = 0.5 * sample_rate
         """
-        nyquist = 0.5 * audio.sample_rate
+        nyquist = 0.5 * audio.get_sample_rate()
         normalized_cutoff = self.cutoff_frequency / nyquist
 
         # Create the Butterworth filter
         b, a = butter(self.order, normalized_cutoff, btype="high", analog=False)
 
         # Apply the filter to the audio signal
-        audio.audio_signal = lfilter(b, a, audio.audio_signal)
+        audio.set_audio_signal(lfilter(b, a, audio.get_audio_signal()))
