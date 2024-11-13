@@ -50,7 +50,7 @@ class Simulation:
         else:
             print(f"List of Rooms ({len(self.__rooms)}):")
             for room in self.__rooms:
-                print(f"Room: {room.name}, Vertices: {room.vertices}")
+                print(f"Room: {room.get_name()}, Vertices: {room.vertices}")
 
     def get_rooms(self) -> list[Room]:
         """

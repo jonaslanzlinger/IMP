@@ -29,7 +29,7 @@ class Room:
             sound_speed (float): The speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
         """
         self.__sound_speed = sound_speed  # Default speed of sound in m/s
-        self.name = name
+        self.__name = name
         self.vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics: list[Microphone] = []
         self.sound_source_position: tuple[float, float] | None = (
@@ -349,7 +349,7 @@ class Room:
 
         ax.set_xlabel("X coordinate")
         ax.set_ylabel("Y coordinate")
-        ax.set_title(f"Room: {self.name} with Microphones")
+        ax.set_title(f"Room: {self.__name} with Microphones")
         plt.legend()
         plt.grid(True)
         plt.show()
@@ -371,3 +371,21 @@ class Room:
             speed (float): The speed of sound in m/s.
         """
         self.__sound_speed = speed
+
+    def get_name(self) -> str:
+        """
+        Get the name of the room.
+
+        Returns:
+            str: The name of the room.
+        """
+        return self.__name
+
+    def set_name(self, name: str) -> None:
+        """
+        Set the name of the room.
+
+        Args:
+            name (str): The name of the room.
+        """
+        self.__name = name
