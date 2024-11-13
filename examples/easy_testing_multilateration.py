@@ -40,19 +40,19 @@ silence = np.zeros(int(sample_rate * silence_duration))
 # Corrected concatenation for each microphone
 audio_signal = np.concatenate([silence] * 0 + [sine_wave] * 10 + [silence] * 90)
 audio = Audio.create_from_signal(audio_signal, 44100)
-mic1.add_audio(audio)
+mic1.set_audio(audio)
 
 audio_signal = np.concatenate([silence] * 29 + [sine_wave] * 10 + [silence] * 61)
 audio = Audio.create_from_signal(audio_signal, 44100)
-mic2.add_audio(audio)
+mic2.set_audio(audio)
 
 audio_signal = np.concatenate([silence] * 37 + [sine_wave] * 10 + [silence] * 53)
 audio = Audio.create_from_signal(audio_signal, 44100)
-mic3.add_audio(audio)
+mic3.set_audio(audio)
 
 audio_signal = np.concatenate([silence] * 29 + [sine_wave] * 10 + [silence] * 61)
 audio = Audio.create_from_signal(audio_signal, 44100)
-mic4.add_audio(audio)
+mic4.set_audio(audio)
 
 # # Compute all TDoA and DoA for all mic pairs
 tdoa_pairs = room1.compute_all_tdoa(

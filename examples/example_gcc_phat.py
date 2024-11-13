@@ -30,18 +30,18 @@ sample_rate1, audio_signal1 = audio1.load_audio_file()
 # print(f"Audio Signal: {audio_signal1[:10]}")  # Print first 10 samples of the audio
 
 # Associate audio with mic
-mic1.add_audio(audio1)
+mic1.set_audio(audio1)
 # print(mic1.get_audio())
 
 # Add more audio files to mics
 audio2_filepath = os.path.join(root, "examples", "example_audio", "pi2_audio.wav")
-mic2.add_audio(Audio(filepath=audio2_filepath))
+mic2.set_audio(Audio(filepath=audio2_filepath))
 
 audio3_filepath = os.path.join(root, "examples", "example_audio", "pi3_audio.wav")
-mic3.add_audio(Audio(filepath=audio3_filepath))
+mic3.set_audio(Audio(filepath=audio3_filepath))
 
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
-mic4.add_audio(Audio(filepath=audio4_filepath))
+mic4.set_audio(Audio(filepath=audio4_filepath))
 
 # Ensure that all audio of the room's microphones have the same sample rate
 SampleRateConverter.convert_all_to_lowest_sample_rate(room1)

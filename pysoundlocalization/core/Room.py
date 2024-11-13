@@ -52,7 +52,7 @@ class Room:
         """
         # Ensure that no mic already exists at given coordinates
         for mic in self.__mics:
-            if mic.x == x and mic.y == y:
+            if mic.get_x == x and mic.get_y == y:
                 print(f"A microphone already exists at position ({x}, {y})")
                 return None
 

@@ -15,15 +15,15 @@ mic3 = room1.add_microphone(0.9, 3.2, name="3-tibor")
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 audio1_filepath = "output_MIC1_2024-11-09_18-24-32_018020.wav"
-mic1.add_audio(Audio(filepath=audio1_filepath))
+mic1.set_audio(Audio(filepath=audio1_filepath))
 mic1.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 18020))
 
 audio2_filepath = "output_MIC2_2024-11-09_18-24-32_777688.wav"
-mic2.add_audio(Audio(filepath=audio2_filepath))
+mic2.set_audio(Audio(filepath=audio2_filepath))
 mic2.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 777688))
 
 audio3_filepath = "output_MIC3_2024-11-09_18-24-31_911530.wav"
-mic3.add_audio(Audio(filepath=audio3_filepath))
+mic3.set_audio(Audio(filepath=audio3_filepath))
 mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
 
 # Because of system latency, the timestamps are off by a few milliseconds.

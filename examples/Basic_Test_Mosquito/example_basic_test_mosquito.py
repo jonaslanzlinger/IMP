@@ -14,16 +14,16 @@ mic4 = room1.add_microphone(0, 2)
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 audio1_filepath = "trimmed_output_MIC1_2024-11-06_15-30-17_252158.wav"
-mic1.add_audio(Audio(filepath=audio1_filepath, convert_to_sample_rate=44100))
+mic1.set_audio(Audio(filepath=audio1_filepath, convert_to_sample_rate=44100))
 
 audio2_filepath = "trimmed_output_MIC2_2024-11-06_15-30-16_794128.wav"
-mic2.add_audio(Audio(filepath=audio2_filepath, convert_to_sample_rate=44100))
+mic2.set_audio(Audio(filepath=audio2_filepath, convert_to_sample_rate=44100))
 
 audio3_filepath = "trimmed_output_MIC3_2024-11-06_15-30-17_275815.wav"
-mic3.add_audio(Audio(filepath=audio3_filepath, convert_to_sample_rate=44100))
+mic3.set_audio(Audio(filepath=audio3_filepath, convert_to_sample_rate=44100))
 
 audio4_filepath = "trimmed_output_MIC4_2024-11-06_15-30-16_843761.wav"
-mic4.add_audio(Audio(filepath=audio4_filepath, convert_to_sample_rate=44100))
+mic4.set_audio(Audio(filepath=audio4_filepath, convert_to_sample_rate=44100))
 
 # Compute all TDoA and DoA for all mic pairs
 # TODO: Support multiple sound localizations. Currently, the mosquito sound is localized, but the handclap is ignored.

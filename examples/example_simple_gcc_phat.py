@@ -31,16 +31,16 @@ spectrogram_plot(audio)
 
 # Add more audio files to mics
 audio1_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav")
-mic1.add_audio(Audio(filepath=audio1_filepath, convert_to_sample_rate=44100))
+mic1.set_audio(Audio(filepath=audio1_filepath, convert_to_sample_rate=44100))
 
 audio2_filepath = os.path.join(root, "examples", "example_audio", "pi2_audio.wav")
-mic2.add_audio(Audio(filepath=audio2_filepath))
+mic2.set_audio(Audio(filepath=audio2_filepath))
 
 audio3_filepath = os.path.join(root, "examples", "example_audio", "pi3_audio.wav")
-mic3.add_audio(Audio(filepath=audio3_filepath))
+mic3.set_audio(Audio(filepath=audio3_filepath))
 
 audio4_filepath = os.path.join(root, "examples", "example_audio", "pi4_audio.wav")
-mic4.add_audio(Audio(filepath=audio4_filepath))
+mic4.set_audio(Audio(filepath=audio4_filepath))
 
 # Manually convert audio to different sample rate if needed
 sample_rate = mic1.get_audio().get_sample_rate()

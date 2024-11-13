@@ -24,16 +24,16 @@ mic4 = room1.add_microphone(0, 0)
 # Add audio
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 audio1_filepath = "output_MIC1_2024-11-07_10-30-45_977581.wav"
-mic1.add_audio(Audio(filepath=audio1_filepath))
+mic1.set_audio(Audio(filepath=audio1_filepath))
 
 audio2_filepath = "output_MIC2_2024-11-07_10-30-45_474498.wav"
-mic2.add_audio(Audio(filepath=audio2_filepath))
+mic2.set_audio(Audio(filepath=audio2_filepath))
 
 audio3_filepath = "output_MIC3_2024-11-07_10-30-46_550904.wav"
-mic3.add_audio(Audio(filepath=audio3_filepath))
+mic3.set_audio(Audio(filepath=audio3_filepath))
 
 audio4_filepath = "output_MIC4_2024-11-07_10-30-45_728052.wav"
-mic4.add_audio(Audio(filepath=audio4_filepath))
+mic4.set_audio(Audio(filepath=audio4_filepath))
 
 # PREPROCESSING
 # --------------
