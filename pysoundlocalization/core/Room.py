@@ -353,3 +353,21 @@ class Room:
         plt.legend()
         plt.grid(True)
         plt.show()
+
+    def get_sound_speed(self) -> float:
+        """
+        Get the speed of sound in the room.
+
+        Returns:
+            float: The speed of sound in m/s.
+        """
+        return self.__sound_speed
+
+    def set_sound_speed(self, speed: float) -> None:
+        """
+        Set the speed of sound in the room.
+
+        Args:
+            speed (float): The speed of sound in m/s.
+        """
+        self.__sound_speed = speed
