@@ -28,7 +28,7 @@ class Room:
             vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
             sound_speed (float): The speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
         """
-        self.sound_speed = sound_speed  # Default speed of sound in m/s
+        self.__sound_speed = sound_speed  # Default speed of sound in m/s
         self.name = name
         self.vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics: list[Microphone] = []
@@ -123,7 +123,7 @@ class Room:
             for mic1, mic2 in combinations(self.mics, 2)
         )
 
-        return max_mic_distance / self.sound_speed
+        return max_mic_distance / self.__sound_speed
 
     # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
     # TODO: allow selection of algorithm
