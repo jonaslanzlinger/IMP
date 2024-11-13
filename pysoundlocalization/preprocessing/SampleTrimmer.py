@@ -124,20 +124,20 @@ class SampleTrimmer:
         Returns:
             Room: The room with all audio signals sliced.
         """
-        for mic in room.mics:
+        for mic in room.get_mics():
             SampleTrimmer.slice_from_to(mic.get_audio(), start_time, end_time)
         return room
 
     @staticmethod
     def sync_room(room: Room) -> Room | None:
 
-        if len(room.mics) == 0:
+        if len(room.get_mics()) == 0:
             raise ValueError("Room has no microphones.")
 
         list_audio = []
         list_start_times = []
 
-        for mic in room.mics:
+        for mic in room.get_mics():
 
             if mic.get_audio() is None:
                 raise ValueError(f"MIC {mic.get_name()} has no audio signal.")

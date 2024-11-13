@@ -20,7 +20,7 @@ class SampleRateConverter:
         """
         return min(
             mic.get_audio().get_sample_rate()
-            for mic in room.mics
+            for mic in room.get_mics()
             if mic.get_audio() is not None
         )
 
@@ -33,7 +33,7 @@ class SampleRateConverter:
             room: An instance of the Room class.
         """
         lowest_rate = SampleRateConverter.get_lowest_sample_rate(room)
-        for mic in room.mics:
+        for mic in room.get_mics():
             mic.get_audio().convert_to_desired_sample_rate(lowest_rate)
 
     @staticmethod
@@ -45,7 +45,7 @@ class SampleRateConverter:
             room: An instance of the Room class.
             target_sample_rate (int): The sample rate to convert to.
         """
-        for mic in room.mics:
+        for mic in room.get_mics():
             mic.get_audio().convert_to_desired_sample_rate(target_sample_rate)
 
     @staticmethod

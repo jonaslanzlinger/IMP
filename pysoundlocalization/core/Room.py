@@ -31,7 +31,7 @@ class Room:
         self.__sound_speed = sound_speed  # Default speed of sound in m/s
         self.__name = name
         self.__vertices = vertices  # List of (x, y) coordinates for the room's shape
-        self.mics: list[Microphone] = []
+        self.__mics: list[Microphone] = []
         self.sound_source_position: tuple[float, float] | None = (
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
         )
@@ -51,14 +51,14 @@ class Room:
             Microphone | None: The added Microphone object if successful, otherwise None.
         """
         # Ensure that no mic already exists at given coordinates
-        for mic in self.mics:
+        for mic in self.__mics:
             if mic.x == x and mic.y == y:
                 print(f"A microphone already exists at position ({x}, {y})")
                 return None
 
         if self.is_within_room(x, y):
             mic = Microphone(x, y, name)
-            self.mics.append(mic)
+            self.__mics.append(mic)
             print(f"Microphone added at position ({x}, {y})")
             return mic
         else:
@@ -110,7 +110,7 @@ class Room:
         Returns:
             float: Maximum time delay (tau) in seconds.
         """
-        if len(self.mics) < 2:
+        if len(self.__mics) < 2:
             raise ValueError(
                 "At least two microphones are required to calculate max_tau."
             )
@@ -120,7 +120,7 @@ class Room:
             np.linalg.norm(
                 np.array(mic1.get_position()) - np.array(mic2.get_position())
             )
-            for mic1, mic2 in combinations(self.mics, 2)
+            for mic1, mic2 in combinations(self.__mics, 2)
         )
 
         return max_mic_distance / self.__sound_speed
@@ -174,13 +174,13 @@ class Room:
 
         tdoa_pairs = []
 
-        for i in range(len(self.mics)):
-            mic1 = self.mics[i]
+        for i in range(len(self.__mics)):
+            mic1 = self.__mics[i]
             mic1_sample_index = compute_sample_index_threshold(
                 mic1, debug=debug_threshold_sample_index
             )
-            for j in range(i + 1, len(self.mics)):
-                mic2 = self.mics[j]
+            for j in range(i + 1, len(self.__mics)):
+                mic2 = self.__mics[j]
                 mic2_sample_index = compute_sample_index_threshold(mic2, debug=False)
                 tdoa_pairs.append(
                     TdoaPair(
@@ -210,7 +210,7 @@ class Room:
         Returns:
             list[TdoaPair] | None: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
         """
-        if len(self.mics) < 2:
+        if len(self.__mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
             return None
 
@@ -221,7 +221,7 @@ class Room:
         tdoa_results = []
 
         # Iterate over all possible pairs of microphones
-        for mic1, mic2 in combinations(self.mics, 2):
+        for mic1, mic2 in combinations(self.__mics, 2):
             # Retrieve the audio signals from each microphone
             audio1 = mic1.get_audio().get_audio_signal()
             audio2 = mic2.get_audio().get_audio_signal()
@@ -341,8 +341,8 @@ class Room:
         ax.set_aspect("equal")
 
         # Plot microphones
-        if self.mics:
-            mic_x, mic_y = zip(*[mic.get_position() for mic in self.mics])
+        if self.__mics:
+            mic_x, mic_y = zip(*[mic.get_position() for mic in self.__mics])
             ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
         if self.sound_source_position and isinstance(self.sound_source_position, tuple):
@@ -413,3 +413,21 @@ class Room:
             vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
         """
         self.__vertices = vertices
+
+    def get_mics(self) -> list[Microphone]:
+        """
+        Get the microphones in the room.
+
+        Returns:
+            list[Microphone]: List of Microphone objects in the room.
+        """
+        return self.__mics
+
+    def set_mics(self, mics: list[Microphone]) -> None:
+        """
+        Set the microphones in the room.
+
+        Args:
+            mics (list[Microphone]): List of Microphone objects in the room.
+        """
+        self.__mics = mics

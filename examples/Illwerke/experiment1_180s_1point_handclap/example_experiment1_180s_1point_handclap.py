@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
-from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
+    NonNegativeMatrixFactorization,
+)
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
@@ -44,8 +46,18 @@ audio1_timestamp = datetime(2024, 11, 7, 10, 30, 45, 977581)
 audio2_timestamp = datetime(2024, 11, 7, 10, 30, 45, 474498)
 audio3_timestamp = datetime(2024, 11, 7, 10, 30, 46, 550904)
 audio4_timestamp = datetime(2024, 11, 7, 10, 30, 45, 728052)
-audio_timestamps = [audio1_timestamp, audio2_timestamp, audio3_timestamp, audio4_timestamp]
-audio_references = [mic1.get_audio(), mic2.get_audio(), mic3.get_audio(), mic4.get_audio()]
+audio_timestamps = [
+    audio1_timestamp,
+    audio2_timestamp,
+    audio3_timestamp,
+    audio4_timestamp,
+]
+audio_references = [
+    mic1.get_audio(),
+    mic2.get_audio(),
+    mic3.get_audio(),
+    mic4.get_audio(),
+]
 SampleTrimmer.sync_audio(audio_references, audio_timestamps)
 
 # Splice all audio in room to a smaller sample of 20 seconds (that includes a handclap)
@@ -61,7 +73,7 @@ frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 
 nmf = NonNegativeMatrixFactorization()
 
-for mic in room1.mics:
+for mic in room1.get_mics():
     frequency_filter_chain.apply(mic.get_audio())
     NoiseReducer.reduce_noise(audio=mic.get_audio())
 
@@ -78,14 +90,17 @@ for mic in room1.mics:
     print(mic.get_audio())
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(sample_rate=SampleRateConverter.get_lowest_sample_rate(room1), print_intermediate_results=True)
+tdoa_pairs = room1.compute_all_tdoa(
+    sample_rate=SampleRateConverter.get_lowest_sample_rate(room1),
+    print_intermediate_results=True,
+)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = room1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position
-x,y = room1.multilaterate_sound_source(tdoa_pairs)
+x, y = room1.multilaterate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
 room1.add_sound_source_position(x, y)
