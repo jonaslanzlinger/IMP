@@ -13,8 +13,8 @@ class LowPassFilter(IFrequencyFilter):
     """
 
     def __init__(self, cutoff_frequency: float, order: int = 5):
-        self.cutoff_frequency = cutoff_frequency
-        self.order = order
+        self.__cutoff_frequency = cutoff_frequency
+        self.__order = order
 
     def apply(self, audio: Audio):
         """
@@ -24,7 +24,7 @@ class LowPassFilter(IFrequencyFilter):
             audio (Audio): The audio object to apply the filter to. The filter modifies the audio in-place.
         """
         print(
-            f"Applying LowPassFilter with cutoff frequency {self.cutoff_frequency} Hz and order {self.order}"
+            f"Applying LowPassFilter with cutoff frequency {self.__cutoff_frequency} Hz and order {self.__order}"
         )
 
         """
@@ -32,10 +32,46 @@ class LowPassFilter(IFrequencyFilter):
         nyquist = 0.5 * sample_rate
         """
         nyquist = 0.5 * audio.get_sample_rate()
-        normalized_cutoff = self.cutoff_frequency / nyquist
+        normalized_cutoff = self.__cutoff_frequency / nyquist
 
         # Create the Butterworth filter
-        b, a = butter(self.order, normalized_cutoff, btype="low", analog=False)
+        b, a = butter(self.__order, normalized_cutoff, btype="low", analog=False)
 
         # Apply the filter to the audio signal
-        audio.audio_signal = lfilter(b, a, audio.get_audio_signal())
+        audio.set_audio_signal(lfilter(b, a, audio.get_audio_signal()))
+
+    def get_cutoff_frequency(self) -> float:
+        """
+        Get the cutoff frequency of the low-pass filter.
+
+        Returns:
+            float: The cutoff frequency of the low-pass filter in Hz.
+        """
+        return self.__cutoff_frequency
+
+    def set_cutoff_frequency(self, cutoff_frequency: float) -> None:
+        """
+        Set the cutoff frequency of the low-pass filter.
+
+        Args:
+            cutoff_frequency (float): The cutoff frequency of the low-pass filter in Hz.
+        """
+        self.__cutoff_frequency = cutoff_frequency
+
+    def get_order(self) -> int:
+        """
+        Get the order of the low-pass filter.
+
+        Returns:
+            int: The order of the low-pass filter.
+        """
+        return self.__order
+
+    def set_order(self, order: int) -> None:
+        """
+        Set the order of the low-pass filter.
+
+        Args:
+            order (int): The order of the low-pass filter.
+        """
+        self.__order = order

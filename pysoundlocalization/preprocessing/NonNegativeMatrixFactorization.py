@@ -8,34 +8,35 @@ import librosa
 
 class NonNegativeMatrixFactorization:
     def __init__(self):
-        self.FRAME = 512
-        self.HOP = 256
-        self.SR = 44100
-        self.EPSILON = 1e-10
-        self.V = None
-        self.K = None
-        self.N = None
-        self.S = 2
-        self.W = None
-        self.H = None
-        self.cost_function = None
+        self.__FRAME = 512
+        self.__HOP = 256
+        self.__SR = 44100
+        self.__EPSILON = 1e-10
+        self.__V = None
+        self.__K = None
+        self.__N = None
+        self.__S = 2
+        self.__W = None
+        self.__H = None
+        self.__D = None
+        self.__cost_function = None
 
     def run(self, audio: Audio):
 
         sound_stft = librosa.stft(
             audio.get_audio_signal(),
-            n_fft=self.FRAME,
-            hop_length=self.HOP,
+            n_fft=self.__FRAME,
+            hop_length=self.__HOP,
         )
         sound_sftf_magnitude = np.abs(sound_stft)
         sound_stft_angle = np.angle(sound_stft)
 
-        self.V = sound_sftf_magnitude + self.EPSILON
+        self.__V = sound_sftf_magnitude + self.__EPSILON
 
         beta = 2
-        self.W, self.H, self.cost_function = self.NMF(
-            self.V,
-            self.S,
+        self.__W, self.__H, self.__cost_function = self.NMF(
+            self.__V,
+            self.__S,
             beta=beta,
             threshold=0.05,
             MAXITER=5000,
@@ -44,17 +45,17 @@ class NonNegativeMatrixFactorization:
         )
 
         # After NMF, each audio source S can be expressed as a frequency mask over time
-        f, axs = plt.subplots(nrows=1, ncols=self.S, figsize=(20, 5))
+        f, axs = plt.subplots(nrows=1, ncols=self.__S, figsize=(20, 5))
         filtered_spectrograms = []
-        for i in range(self.S):
+        for i in range(self.__S):
             axs[i].set_title(f"Frequency Mask of Audio Source s = {i+1}")
             # Filter eash source components
-            WsHs = self.W[:, [i]] @ self.H[[i], :]
+            WsHs = self.__W[:, [i]] @ self.__H[[i], :]
             filtered_spectrogram = (
-                self.W[:, [i]]
-                @ self.H[[i], :]
-                / (self.W @ self.H + self.EPSILON)
-                * self.V
+                self.__W[:, [i]]
+                @ self.__H[[i], :]
+                / (self.__W @ self.__H + self.__EPSILON)
+                * self.__V
             )
             # Compute the filtered spectrogram
             D = librosa.amplitude_to_db(filtered_spectrogram, ref=np.max)
@@ -62,8 +63,8 @@ class NonNegativeMatrixFactorization:
             librosa.display.specshow(
                 D,
                 y_axis="hz",
-                sr=self.SR,
-                hop_length=self.HOP,
+                sr=self.__SR,
+                hop_length=self.__HOP,
                 x_axis="time",
                 cmap=matplotlib.cm.jet,
                 ax=axs[i],
@@ -72,20 +73,20 @@ class NonNegativeMatrixFactorization:
             filtered_spectrograms.append(filtered_spectrogram)
 
         reconstructed_sounds = []
-        for i in range(self.S):
+        for i in range(self.__S):
             reconstruct = filtered_spectrograms[i] * np.exp(1j * sound_stft_angle)
             new_sound = librosa.istft(
-                reconstruct, n_fft=self.FRAME, hop_length=self.HOP
+                reconstruct, n_fft=self.__FRAME, hop_length=self.__HOP
             )
             reconstructed_sounds.append(new_sound)
 
         # Plotting the waveform
         colors = ["r", "g", "b", "c"]
-        fig, ax = plt.subplots(nrows=self.S, ncols=1, sharex=True, figsize=(10, 8))
-        for i in range(self.S):
+        fig, ax = plt.subplots(nrows=self.__S, ncols=1, sharex=True, figsize=(10, 8))
+        for i in range(self.__S):
             librosa.display.waveshow(
                 reconstructed_sounds[i],
-                sr=self.SR,
+                sr=self.__SR,
                 color=colors[i],
                 ax=ax[i],
                 label=f"Source {i}",
@@ -104,15 +105,18 @@ class NonNegativeMatrixFactorization:
         beta = 0 : Itakura-Saito cost function
         """
         if beta == 0:
-            return np.sum(V / (self.W @ self.H) - math.log10(V / (self.W @ self.H)) - 1)
+            return np.sum(
+                V / (self.__W @ self.__H) - math.log10(V / (self.__W @ self.__H)) - 1
+            )
 
         if beta == 1:
             return np.sum(
-                self.V * math.log10(V / (self.W @ self.H)) + (self.W @ self.H - V)
+                self.__V * math.log10(V / (self.__W @ self.__H))
+                + (self.__W @ self.__H - V)
             )
 
         if beta == 2:
-            return 1 / 2 * np.linalg.norm(self.W @ self.H - V)
+            return 1 / 2 * np.linalg.norm(self.__W @ self.__H - V)
 
     def plot_NMF_iter(self, beta, iteration=None):
 
@@ -127,31 +131,31 @@ class NonNegativeMatrixFactorization:
         H_plot = plt.axes([0.35, 0.75, 1, 0.15])
         W_plot = plt.axes([0.1, 0.1, 0.2, 0.6])
 
-        self.D = librosa.amplitude_to_db(self.W @ self.H, ref=np.max)
+        self.__D = librosa.amplitude_to_db(self.__W @ self.__H, ref=np.max)
 
         librosa.display.specshow(
-            self.W,
+            self.__W,
             y_axis="hz",
-            sr=self.SR,
-            hop_length=self.HOP,
+            sr=self.__SR,
+            hop_length=self.__HOP,
             x_axis="time",
             cmap=matplotlib.cm.jet,
             ax=W_plot,
         )
         librosa.display.specshow(
-            self.H,
+            self.__H,
             y_axis="hz",
-            sr=self.SR,
-            hop_length=self.HOP,
+            sr=self.__SR,
+            hop_length=self.__HOP,
             x_axis="time",
             cmap=matplotlib.cm.jet,
             ax=H_plot,
         )
         librosa.display.specshow(
-            self.D,
+            self.__D,
             y_axis="hz",
-            sr=self.SR,
-            hop_length=self.HOP,
+            sr=self.__SR,
+            hop_length=self.__HOP,
             x_axis="time",
             cmap=matplotlib.cm.jet,
             ax=V_plot,
@@ -204,14 +208,14 @@ class NonNegativeMatrixFactorization:
 
         """
         counter = 0
-        self.cost_function = []
+        self.__cost_function = []
         beta_divergence = 1
 
-        self.K, self.N = np.shape(V)
+        self.__K, self.__N = np.shape(V)
 
         # Initialisation of W and H matrices : The initialization is generally random
-        self.W = np.abs(np.random.normal(loc=0, scale=2.5, size=(self.K, S)))
-        self.H = np.abs(np.random.normal(loc=0, scale=2.5, size=(S, self.N)))
+        self.__W = np.abs(np.random.normal(loc=0, scale=2.5, size=(self.__K, S)))
+        self.__H = np.abs(np.random.normal(loc=0, scale=2.5, size=(S, self.__N)))
 
         # Plotting the first initialization
         if display == True:
@@ -220,16 +224,16 @@ class NonNegativeMatrixFactorization:
         while beta_divergence >= threshold and counter <= MAXITER:
 
             # Update of W and H
-            self.H *= (self.W.T @ (((self.W @ self.H) ** (beta - 2)) * V)) / (
-                self.W.T @ ((self.W @ self.H) ** (beta - 1)) + 10e-10
+            self.__H *= (self.__W.T @ (((self.__W @ self.__H) ** (beta - 2)) * V)) / (
+                self.__W.T @ ((self.__W @ self.__H) ** (beta - 1)) + 10e-10
             )
-            self.W *= (((self.W @ self.H) ** (beta - 2) * V) @ self.H.T) / (
-                (self.W @ self.H) ** (beta - 1) @ self.H.T + 10e-10
+            self.__W *= (((self.__W @ self.__H) ** (beta - 2) * V) @ self.__H.T) / (
+                (self.__W @ self.__H) ** (beta - 1) @ self.__H.T + 10e-10
             )
 
             # Compute cost function
             beta_divergence = self.divergence(V, beta=2)
-            self.cost_function.append(beta_divergence)
+            self.__cost_function.append(beta_divergence)
 
             if display == True and counter % displayEveryNiter == 0:
                 self.plot_NMF_iter(beta, counter)
@@ -241,4 +245,4 @@ class NonNegativeMatrixFactorization:
         else:
             print(f"Convergeance after {counter-1} iterations.")
 
-        return self.W, self.H, self.cost_function
+        return self.__W, self.__H, self.__cost_function

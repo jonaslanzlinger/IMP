@@ -7,7 +7,7 @@ class FrequencyFilterChain(IFrequencyFilter):
         """
         Initialize an empty chain of frequency filters.
         """
-        self.filters: list[IFrequencyFilter] = []
+        self.__filters: list[IFrequencyFilter] = []
 
     def apply(self, audio: Audio) -> None:
         """
@@ -16,7 +16,7 @@ class FrequencyFilterChain(IFrequencyFilter):
         Args:
             audio (Audio): The audio object to process with each filter.
         """
-        for filter in self.filters:
+        for filter in self.__filters:
             filter.apply(audio)
 
     def add_filter(self, filter: IFrequencyFilter) -> None:
@@ -26,7 +26,7 @@ class FrequencyFilterChain(IFrequencyFilter):
         Args:
             filter (IFrequencyFilter): The filter to add to the chain.
         """
-        self.filters.append(filter)
+        self.__filters.append(filter)
 
     def remove_filter(self, filter: IFrequencyFilter) -> None:
         """
@@ -38,4 +38,13 @@ class FrequencyFilterChain(IFrequencyFilter):
         Raises:
             ValueError: If the filter is not in the chain.
         """
-        self.filters.remove(filter)
+        self.__filters.remove(filter)
+
+    def get_filters(self) -> list[IFrequencyFilter]:
+        """
+        Get all filters in the chain.
+
+        Returns:
+            list[IFrequencyFilter]: A list of all filters in the chain.
+        """
+        return self.__filters
