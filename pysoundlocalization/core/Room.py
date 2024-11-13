@@ -32,7 +32,7 @@ class Room:
         self.__name = name
         self.__vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.__mics: list[Microphone] = []
-        self.sound_source_position: tuple[float, float] | None = (
+        self.__sound_source_position: tuple[float, float] | None = (
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
         )
 
@@ -73,7 +73,7 @@ class Room:
             x (float): X-coordinate of the sound source.
             y (float): Y-coordinate of the sound source.
         """
-        self.sound_source_position = (x, y)
+        self.__sound_source_position = (x, y)
 
     def is_within_room(self, x: float, y: float) -> bool:
         """
@@ -345,10 +345,12 @@ class Room:
             mic_x, mic_y = zip(*[mic.get_position() for mic in self.__mics])
             ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
-        if self.sound_source_position and isinstance(self.sound_source_position, tuple):
+        if self.__sound_source_position and isinstance(
+            self.__sound_source_position, tuple
+        ):
             ax.scatter(
-                self.sound_source_position[0],
-                self.sound_source_position[1],
+                self.__sound_source_position[0],
+                self.__sound_source_position[1],
                 color="blue",
                 label="Approximated Sound Source",
             )
@@ -431,3 +433,23 @@ class Room:
             mics (list[Microphone]): List of Microphone objects in the room.
         """
         self.__mics = mics
+
+    def get_sound_source_position(self) -> tuple[float, float] | None:
+        """
+        Get the coordinates of the sound source.
+
+        Returns:
+            tuple[float, float] | None: The (x, y) coordinates of the sound source if available, otherwise None.
+        """
+        return self.__sound_source_position
+
+    def set_sound_source_position(
+        self, sound_source_position: tuple[float, float]
+    ) -> None:
+        """
+        Set the coordinates of the sound source.
+
+        Args:
+            sound_source_position (tuple[float, float]): The (x, y) coordinates of the sound source.
+        """
+        self.__sound_source_position = sound_source_position
