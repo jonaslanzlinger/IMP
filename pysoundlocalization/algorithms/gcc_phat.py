@@ -10,8 +10,15 @@ Adapted as part of a project for sound localization.
 
 import numpy as np
 
+
 # TODO: remove sample_rate as parameter from all methods where possible and automatically get from audio object?
-def gcc_phat(sig: np.ndarray, refsig: np.ndarray, fs: int = 1, max_tau: float | None = None, interp: int = 16) -> tuple[float, np.ndarray]:
+def gcc_phat(
+    sig: np.ndarray,
+    refsig: np.ndarray,
+    fs: int = 1,
+    max_tau: float | None = None,
+    interp: int = 16,
+) -> tuple[float, np.ndarray]:
     """
     Computes the time delay estimation (tau) between a signal `sig` and a reference signal `refsig`
     using the Generalized Cross Correlation - Phase Transform (GCC-PHAT) method.
@@ -42,7 +49,7 @@ def gcc_phat(sig: np.ndarray, refsig: np.ndarray, fs: int = 1, max_tau: float | 
     if max_tau:
         max_shift = np.minimum(int(interp * fs * max_tau), max_shift)
 
-    cc = np.concatenate((cc[-max_shift:], cc[:max_shift+1]))
+    cc = np.concatenate((cc[-max_shift:], cc[: max_shift + 1]))
 
     # find max cross correlation index
     shift = np.argmax(cc) - max_shift
@@ -51,9 +58,8 @@ def gcc_phat(sig: np.ndarray, refsig: np.ndarray, fs: int = 1, max_tau: float | 
     # shift = np.argmax(np.abs(cc)) - max_shift
 
     tau = shift / float(interp * fs)
-    
-    return tau, cc
 
+    return tau, cc
 
 
 def main():
