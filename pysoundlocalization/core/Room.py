@@ -30,7 +30,7 @@ class Room:
         """
         self.__sound_speed = sound_speed  # Default speed of sound in m/s
         self.__name = name
-        self.vertices = vertices  # List of (x, y) coordinates for the room's shape
+        self.__vertices = vertices  # List of (x, y) coordinates for the room's shape
         self.mics: list[Microphone] = []
         self.sound_source_position: tuple[float, float] | None = (
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
@@ -88,14 +88,14 @@ class Room:
         Returns:
             bool: True if the point is inside the polygon, False otherwise.
         """
-        num_vertices = len(self.vertices)
+        num_vertices = len(self.__vertices)
         inside = False
 
         # Iterate over each edge of the polygon
         for i in range(num_vertices):
             # Get current vertex and the next vertex (wrapping around at the end)
-            x1, y1 = self.vertices[i]
-            x2, y2 = self.vertices[(i + 1) % num_vertices]
+            x1, y1 = self.__vertices[i]
+            x2, y2 = self.__vertices[(i + 1) % num_vertices]
 
             # Check if the ray crosses the edge
             if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
@@ -320,16 +320,22 @@ class Room:
 
         # Create a polygon representing the room shape
         polygon = patches.Polygon(
-            self.vertices, closed=True, edgecolor="black", facecolor="none", linewidth=2
+            self.__vertices,
+            closed=True,
+            edgecolor="black",
+            facecolor="none",
+            linewidth=2,
         )
         ax.add_patch(polygon)
 
         # Set limits based on the room's shape
         ax.set_xlim(
-            min(x for x, y in self.vertices) - 1, max(x for x, y in self.vertices) + 1
+            min(x for x, y in self.__vertices) - 1,
+            max(x for x, y in self.__vertices) + 1,
         )
         ax.set_ylim(
-            min(y for x, y in self.vertices) - 1, max(y for x, y in self.vertices) + 1
+            min(y for x, y in self.__vertices) - 1,
+            max(y for x, y in self.__vertices) + 1,
         )
 
         ax.set_aspect("equal")
@@ -389,3 +395,21 @@ class Room:
             name (str): The name of the room.
         """
         self.__name = name
+
+    def get_vertices(self) -> list[tuple[float, float]]:
+        """
+        Get the vertices of the room.
+
+        Returns:
+            list[tuple[float, float]]: List of (x, y) coordinates defining the room's shape.
+        """
+        return self.__vertices
+
+    def set_vertices(self, vertices: list[tuple[float, float]]) -> None:
+        """
+        Set the vertices of the room.
+
+        Args:
+            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
+        """
+        self.__vertices = vertices
