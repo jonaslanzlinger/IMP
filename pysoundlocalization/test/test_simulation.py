@@ -8,7 +8,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulation(self):
         simulation = Simulation()
-        self.assertEqual(simulation.rooms, [])
+        self.assertEqual(simulation.get_rooms(), [])
 
 
 if __name__ == "__main__":

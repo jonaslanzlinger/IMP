@@ -7,7 +7,7 @@ class Simulation:
         """
         Initialize the Simulation with an empty list of rooms.
         """
-        self.rooms: list[Room] = []
+        self.__rooms: list[Room] = []
 
     @classmethod
     def create(cls) -> "Simulation":
@@ -37,7 +37,7 @@ class Simulation:
             Room: The newly created Room instance.
         """
         room = Room(name, vertices, sound_speed)
-        self.rooms.append(room)
+        self.__rooms.append(room)
         print(f"Room '{name}' added with vertices {vertices}")
         return room
 
@@ -45,9 +45,27 @@ class Simulation:
         """
         Print a list of all rooms in the simulation with their names and vertices.
         """
-        if not self.rooms:
+        if not self.__rooms:
             print("No rooms available in the simulation.")
         else:
-            print(f"List of Rooms ({len(self.rooms)}):")
-            for room in self.rooms:
+            print(f"List of Rooms ({len(self.__rooms)}):")
+            for room in self.__rooms:
                 print(f"Room: {room.name}, Vertices: {room.vertices}")
+
+    def get_rooms(self) -> list[Room]:
+        """
+        Get a list of all rooms in the simulation.
+
+        Returns:
+            list[Room]: List of Room instances.
+        """
+        return self.__rooms
+
+    def set_rooms(self, rooms: list[Room]) -> None:
+        """
+        Set the list of rooms in the simulation.
+
+        Args:
+            rooms (list[Room]): List of Room instances.
+        """
+        self.__rooms = rooms
