@@ -20,7 +20,9 @@ from pysoundlocalization.core.Audio import Audio
 
 # Create simulation and add an environment with 5 microphones
 simulation = Simulation.create()
-environment1 = simulation.add_environment("School Environment", [(0, 0), (0, 3000), (3000, 3000), (3000, 0)])
+environment1 = simulation.add_environment(
+    "School Environment", [(0, 0), (0, 3000), (3000, 3000), (3000, 0)]
+)
 mic1 = environment1.add_microphone(1000, 1000, name="1")
 mic2 = environment1.add_microphone(1000, 2000, name="2")
 mic3 = environment1.add_microphone(2000, 2000, name="3")

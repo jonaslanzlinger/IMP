@@ -4,7 +4,9 @@ from pysoundlocalization.core.Simulation import Simulation
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
-environment1 = simulation.add_environment("Square Environment", [(0, 0), (0, 4), (4, 4), (4, 0)])
+environment1 = simulation.add_environment(
+    "Square Environment", [(0, 0), (0, 4), (4, 4), (4, 0)]
+)
 mic1 = environment1.add_microphone(0, 0)
 mic2 = environment1.add_microphone(2, 0)
 mic3 = environment1.add_microphone(2, 2)
@@ -27,7 +29,9 @@ mic4.set_audio(Audio(filepath=audio4_filepath, convert_to_sample_rate=44100))
 
 # Compute all TDoA and DoA for all mic pairs
 # TODO: Support multiple sound localizations. Currently, the mosquito sound is localized, but the handclap is ignored.
-tdoa_pairs = environment1.compute_all_tdoa(sample_rate=44100, print_intermediate_results=True)
+tdoa_pairs = environment1.compute_all_tdoa(
+    sample_rate=44100, print_intermediate_results=True
+)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 # Approximate and visualize the sound source position

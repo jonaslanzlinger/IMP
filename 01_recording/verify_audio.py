@@ -2,10 +2,10 @@ import soundfile as sf
 
 # Array of file paths
 file_paths = [
-    '../audio_files/Sandbox Experiments/Basic_Test_Mosquito/trimmed_output_MIC1_2024-11-06_15-30-17_252158.wav',
-    '../audio_files/Sandbox Experiments/Basic_Test_Mosquito/trimmed_output_MIC2_2024-11-06_15-30-16_794128.wav',
-    '../audio_files/Sandbox Experiments/Basic_Test_Mosquito/output_MIC3_2024-11-06_15-30-17_275815.wav',
-    '../audio_files/Sandbox Experiments/Basic_Test_Mosquito/output_MIC4_2024-11-06_15-30-16_843761.wav'
+    "../audio_files/Sandbox Experiments/Basic_Test_Mosquito/trimmed_output_MIC1_2024-11-06_15-30-17_252158.wav",
+    "../audio_files/Sandbox Experiments/Basic_Test_Mosquito/trimmed_output_MIC2_2024-11-06_15-30-16_794128.wav",
+    "../audio_files/Sandbox Experiments/Basic_Test_Mosquito/output_MIC3_2024-11-06_15-30-17_275815.wav",
+    "../audio_files/Sandbox Experiments/Basic_Test_Mosquito/output_MIC4_2024-11-06_15-30-16_843761.wav",
 ]
 
 # Iterate through each file path
@@ -18,7 +18,9 @@ for file_path in file_paths:
         duration_seconds = len(data) / sample_rate
 
         # Get the shape of the data
-        shape = data.shape  # (num_samples, num_channels) if stereo, or (num_samples,) if mono
+        shape = (
+            data.shape
+        )  # (num_samples, num_channels) if stereo, or (num_samples,) if mono
 
         # Print details
         print(f"File: {file_path}")

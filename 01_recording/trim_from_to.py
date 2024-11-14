@@ -12,8 +12,12 @@ def trim_audio(input_path, output_path, start_time, end_time):
     print(f"Trimmed audio length: {end_time - start_time}")
 
     # Convert the timestamps to milliseconds
-    start_ms = (start_time.hour * 3600 + start_time.minute * 60 + start_time.second) * 1000 + start_time.microsecond // 1000
-    end_ms = (end_time.hour * 3600 + end_time.minute * 60 + end_time.second) * 1000 + end_time.microsecond // 1000
+    start_ms = (
+        start_time.hour * 3600 + start_time.minute * 60 + start_time.second
+    ) * 1000 + start_time.microsecond // 1000
+    end_ms = (
+        end_time.hour * 3600 + end_time.minute * 60 + end_time.second
+    ) * 1000 + end_time.microsecond // 1000
 
     # Trim the audio from start_ms to end_ms
     trimmed_audio = audio[start_ms:end_ms]
@@ -56,8 +60,10 @@ else:
 
     # Create the output file path with the format "fromTo_timestamp_..."
     file_name, file_extension = os.path.splitext(os.path.basename(input_path))
-    output_path = os.path.join(os.path.dirname(input_path),
-                               f"from{start_time_str.replace(':', '').replace('.', '')}_to{end_time_str.replace(':', '').replace('.', '')}_{file_name}{file_extension}")
+    output_path = os.path.join(
+        os.path.dirname(input_path),
+        f"from{start_time_str.replace(':', '').replace('.', '')}_to{end_time_str.replace(':', '').replace('.', '')}_{file_name}{file_extension}",
+    )
 
     # Call the function to trim the audio and save it
     trim_audio(input_path, output_path, start_time, end_time)

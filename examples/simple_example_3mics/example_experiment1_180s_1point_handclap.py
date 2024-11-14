@@ -8,7 +8,9 @@ from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 
 simulation = Simulation.create()
-environment1 = simulation.add_environment("School Environment", [(0, 0), (0, 10), (10, 10), (10, 0)])
+environment1 = simulation.add_environment(
+    "School Environment", [(0, 0), (0, 10), (10, 10), (10, 0)]
+)
 mic1 = environment1.add_microphone(0, 0, name="1-jonas-links")
 mic2 = environment1.add_microphone(1.8, 0, name="2-jonas-rechts")
 mic3 = environment1.add_microphone(0.9, 3.2, name="3-tibor")
@@ -46,7 +48,9 @@ if algorithm_choise == "gcc_phat":
         print_intermediate_results=False,
     )
 elif algorithm_choise == "threshold":
-    tdoa_pairs = environment1.compute_all_tdoa_by_threshold(debug_threshold_sample_index=True)
+    tdoa_pairs = environment1.compute_all_tdoa_by_threshold(
+        debug_threshold_sample_index=True
+    )
 
 print(tdoa_pairs)
 

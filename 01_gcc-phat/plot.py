@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 def plot_2d_multilateration_result(x, y, MIC_POSITIONS):
     mic_x = [mic["x"] for mic in MIC_POSITIONS]
     mic_y = [mic["y"] for mic in MIC_POSITIONS]

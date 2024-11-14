@@ -15,7 +15,7 @@ MAX_TAU = MIC_DISTANCE / SOUND_SPEED  # Maximum possible time delay
 
 # There must be a matching MIC_POSITION for every wav file found in the directory.
 # The first wav file corresponds to the first MIC_POSITION, and so on.
-AUDIO_FILES_DIR ="../audio_files/*.wav"
+AUDIO_FILES_DIR = "../audio_files/*.wav"
 
 # Mic positions defined in meters.
 # TODO: Why -10 to 10?
@@ -27,6 +27,7 @@ MIC_POSITIONS = np.array(
         {"x": 10, "y": -10, "z": 0},
     ]
 )
+
 
 def load_wav_files():
     """
@@ -47,6 +48,7 @@ def load_wav_files():
         audio_signals.append(data)
 
     return sample_rate, audio_signals, wav_filenames
+
 
 def main():
     """
@@ -82,7 +84,9 @@ def main():
 
         sig_a = audio_signals[mic_a]
         sig_b = audio_signals[mic_b]
-        tdoa, cc = gcc_phat(sig_a * window, sig_b * window, fs=sample_rate, max_tau=MAX_TAU)
+        tdoa, cc = gcc_phat(
+            sig_a * window, sig_b * window, fs=sample_rate, max_tau=MAX_TAU
+        )
 
         tdoas[pair] = tdoa
         print(f"TDoA between mic{mic_a + 1} and mic{mic_b + 1}: {tdoa:.6f} seconds")
@@ -100,6 +104,7 @@ def main():
 
     # Visualize the result of the multilateration
     plot.plot_2d_multilateration_result(x, y, MIC_POSITIONS)
+
 
 if __name__ == "__main__":
     main()

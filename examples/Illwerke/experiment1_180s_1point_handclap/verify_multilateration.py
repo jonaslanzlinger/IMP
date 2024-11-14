@@ -1,4 +1,4 @@
-#-------
+# -------
 # Used to verify whether there's a problem with the rewritten multilateration algorithm used in the library,
 # by comparing it to the initial algorithm here.
 #
@@ -23,13 +23,14 @@ speed_of_sound = 343  # m/s
 # pairs: 1,2 + 1,3 + 1,4 + 2,3 + 2,4 + 3,4
 # where pair 1,2 would be (8.61,2) and (8.61,5.89)
 tdoas = [
-    np.float64(0.0001403061224489796), #1,2
-    np.float64(0.00011621315192743764), #1,3
-    np.float64(-0.014426020408163265), #1,4
-    np.float64(-0.00020833333333333335), #2,3
-    np.float64(0.0002990362811791383), #2,4
-    np.float64(0.02145124716553288) #3,4
+    np.float64(0.0001403061224489796),  # 1,2
+    np.float64(0.00011621315192743764),  # 1,3
+    np.float64(-0.014426020408163265),  # 1,4
+    np.float64(-0.00020833333333333335),  # 2,3
+    np.float64(0.0002990362811791383),  # 2,4
+    np.float64(0.02145124716553288),  # 3,4
 ]
+
 
 def compute_distance_by_tdoa(tdoas, mic_positions):
     num_mics = len(mic_positions)
@@ -46,7 +47,7 @@ def compute_distance_by_tdoa(tdoas, mic_positions):
         Amat[i - 1, 2] = 2 * (z0 - zi)
 
         Dmat[i - 1] = speed_of_sound * tdoas[i - 1] + (
-                (x0 ** 2 + y0 ** 2 + z0 ** 2) - (xi ** 2 + yi ** 2 + zi ** 2)
+            (x0**2 + y0**2 + z0**2) - (xi**2 + yi**2 + zi**2)
         )
 
     source_position, residuals, rank, singular_values = np.linalg.lstsq(

@@ -57,6 +57,7 @@ def compute_tdoa(timestamps):
 
 tdoas = compute_tdoa(mic_sound_peak_times)
 
+
 def compute_distance_by_tdoa(tdoas, mic_positions):
 
     num_mics = len(mic_positions)

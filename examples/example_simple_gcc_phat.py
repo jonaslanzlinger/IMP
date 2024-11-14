@@ -8,7 +8,9 @@ from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
-environment1 = simulation.add_environment("Square Environment", [(0, 0), (0, 4), (4, 4), (4, 0)])
+environment1 = simulation.add_environment(
+    "Square Environment", [(0, 0), (0, 4), (4, 4), (4, 0)]
+)
 mic1 = environment1.add_microphone(1, 1)
 mic2 = environment1.add_microphone(1, 2)
 mic3 = environment1.add_microphone(2, 2)

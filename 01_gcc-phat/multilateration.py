@@ -2,6 +2,7 @@ import numpy as np
 
 SPEED_OF_SOUND = 343  # m/s
 
+
 def approximate_sound_source(tdoas, mic_positions):
     num_mics = len(mic_positions)
 
@@ -17,7 +18,7 @@ def approximate_sound_source(tdoas, mic_positions):
         Amat[i - 1, 2] = 2 * (z0 - zi)
 
         Dmat[i - 1] = SPEED_OF_SOUND * tdoas[i - 1] + (
-                (x0 ** 2 + y0 ** 2 + z0 ** 2) - (xi ** 2 + yi ** 2 + zi ** 2)
+            (x0**2 + y0**2 + z0**2) - (xi**2 + yi**2 + zi**2)
         )
 
     source_position, residuals, rank, singular_values = np.linalg.lstsq(

@@ -9,3 +9,4 @@ setuptools~=75.2.0
 preprocessing~=0.1.13
 scikit-learn~=1.5.2
 librosa~=0.10.2.post1
+black~=24.10.0

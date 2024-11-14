@@ -1,31 +1,40 @@
 """
- Estimate time delay using GCC-PHAT 
- Copyright (c) 2017 Yihui Xiong
+This script demonstrates the GCC-PHAT algorithm for estimating time delays between signals.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Original code by Yihui Xiong (2017), licensed under the Apache License, Version 2.0.
+Source: https://github.com/xiongyihui/tdoa/blob/master/gcc_phat.py
+License: https://www.apache.org/licenses/LICENSE-2.0
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+Adapted as part of a project for sound localization.
 """
 
 import numpy as np
 
 
-def gcc_phat(sig, refsig, fs=1, max_tau=None, interp=16):
+# TODO: remove sample_rate as parameter from all methods where possible and automatically get from audio object?
+def gcc_phat(
+    sig: np.ndarray,
+    refsig: np.ndarray,
+    fs: int = 1,
+    max_tau: float | None = None,
+    interp: int = 16,
+) -> tuple[float, np.ndarray]:
     """
-    This function computes the offset between the signal sig and the reference signal refsig
+    Computes the time delay estimation (tau) between a signal `sig` and a reference signal `refsig`
     using the Generalized Cross Correlation - Phase Transform (GCC-PHAT) method.
 
-    Returns the time delay estimation (tau) between the two signals and the cross-correlation result (cc).
-    """
+    Args:
+        sig (np.ndarray): The input signal.
+        refsig (np.ndarray): The reference signal to compare against.
+        fs (int): The sampling rate of the signals in Hz. Defaults to 1.
+        max_tau (float | None): Maximum allowable time delay in seconds. Limits the search window. Defaults to None.
+        interp (int): Interpolation factor to improve precision. Defaults to 16.
 
+    Returns:
+        tuple[float, np.ndarray]: A tuple containing:
+            - tau (float): The estimated time delay between the signals in seconds.
+            - cc (np.ndarray): The cross-correlation result array.
+    """
     # make sure the length for the FFT is larger or equal than len(sig) + len(refsig)
     n = sig.shape[0] + refsig.shape[0]
 

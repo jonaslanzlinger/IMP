@@ -15,7 +15,9 @@ from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
-environment1 = simulation.add_environment("Machine Environment", [(0, 0), (0, 10), (10, 10), (10, 0)])
+environment1 = simulation.add_environment(
+    "Machine Environment", [(0, 0), (0, 10), (10, 10), (10, 0)]
+)
 mic1 = environment1.add_microphone(6.61, 0)
 mic2 = environment1.add_microphone(6.61, 3.89)
 mic3 = environment1.add_microphone(0, 3.89)
@@ -61,7 +63,9 @@ audio_references = [
 SampleTrimmer.sync_audio(audio_references, audio_timestamps)
 
 # Splice all audio in environment to a smaller sample of 20 seconds (that includes a handclap)
-SampleTrimmer.slice_all_from_to(environment1, timedelta(seconds=15), timedelta(seconds=25))
+SampleTrimmer.slice_all_from_to(
+    environment1, timedelta(seconds=15), timedelta(seconds=25)
+)
 
 # Show claps in spectogram
 spectrogram_plot(mic1.get_audio())

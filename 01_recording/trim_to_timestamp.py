@@ -10,14 +10,14 @@ from pydub import AudioSegment
 folder_path = input("Please enter the path to the folder containing the audio files: ")
 
 # Define a regex pattern to extract timestamps from filenames
-pattern = re.compile(r'output_MIC\d+_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_\d{6})\.wav')
+pattern = re.compile(r"output_MIC\d+_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_\d{6})\.wav")
 
 # Initialize a dictionary to store timestamps, file paths, and durations
 file_info = {}
 
 # Iterate through each file in the folder
 for filename in os.listdir(folder_path):
-    if filename.endswith('.wav'):
+    if filename.endswith(".wav"):
         match = pattern.search(filename)
         if match:
             # Parse the timestamp from the filename
@@ -30,11 +30,18 @@ for filename in os.listdir(folder_path):
             duration_ms = len(audio)  # Duration in milliseconds
 
             # Store start timestamp, file path, and duration
-            file_info[filename] = {"path": file_path, "start": timestamp, "duration": duration_ms}
+            file_info[filename] = {
+                "path": file_path,
+                "start": timestamp,
+                "duration": duration_ms,
+            }
 
 # Find the latest start timestamp and the earliest end timestamp
 latest_start = max(info["start"] for info in file_info.values())
-earliest_end = min(info["start"] + timedelta(milliseconds=info["duration"]) for info in file_info.values())
+earliest_end = min(
+    info["start"] + timedelta(milliseconds=info["duration"])
+    for info in file_info.values()
+)
 
 # Calculate the duration all files should have after trimming
 sync_duration_ms = int((earliest_end - latest_start).total_seconds() * 1000)
@@ -49,7 +56,9 @@ for filename, info in file_info.items():
 
     # Load the audio file and trim start and end
     audio = AudioSegment.from_wav(info["path"])
-    trimmed_audio = audio[offset_ms:offset_ms + sync_duration_ms]  # Trim start and end
+    trimmed_audio = audio[
+        offset_ms : offset_ms + sync_duration_ms
+    ]  # Trim start and end
 
     # Always overwrite the trimmed file (if it exists)
     print(f"Overwriting trimmed file: {trimmed_file_path}")
