@@ -1,13 +1,13 @@
 import pysoundlocalization.config as config
-from pysoundlocalization.core.Room import Room
+from pysoundlocalization.core.Environment import Environment
 
 
 class Simulation:
     def __init__(self):
         """
-        Initialize the Simulation with an empty list of rooms.
+        Initialize the Simulation with an empty list of environments.
         """
-        self.__rooms: list[Room] = []
+        self.__environments: list[Environment] = []
 
     @classmethod
     def create(cls) -> "Simulation":
@@ -19,53 +19,53 @@ class Simulation:
         """
         return cls()
 
-    def add_room(
+    def add_environment(
         self,
         name: str,
         vertices: list[tuple[float, float]],
         sound_speed: float = config.DEFAULT_SOUND_SPEED,
-    ) -> Room:
+    ) -> Environment:
         """
-        Add a new room to the simulation.
+        Add a new environment to the simulation.
 
         Args:
-            name (str): The name of the room.
-            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape in the format ((x1,y1), (xi,yi)).
-            sound_speed (float): Optional speed of sound within the room. Defaults to config.DEFAULT_SOUND_SPEED.
+            name (str): The name of the environment.
+            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the environment's shape in the format ((x1,y1), (xi,yi)).
+            sound_speed (float): Optional speed of sound within the environment. Defaults to config.DEFAULT_SOUND_SPEED.
 
         Returns:
-            Room: The newly created Room instance.
+            Environment: The newly created Environment instance.
         """
-        room = Room(name, vertices, sound_speed)
-        self.__rooms.append(room)
-        print(f"Room '{name}' added with vertices {vertices}")
-        return room
+        environment = Environment(name, vertices, sound_speed)
+        self.__environments.append(environment)
+        print(f"Environment '{name}' added with vertices {vertices}")
+        return environment
 
-    def print_all_rooms_to_console(self) -> None:
+    def print_all_environments_to_console(self) -> None:
         """
-        Print a list of all rooms in the simulation with their names and vertices.
+        Print a list of all environments in the simulation with their names and vertices.
         """
-        if not self.__rooms:
-            print("No rooms available in the simulation.")
+        if not self.__environments:
+            print("No environments available in the simulation.")
         else:
-            print(f"List of Rooms ({len(self.__rooms)}):")
-            for room in self.__rooms:
-                print(f"Room: {room.get_name()}, Vertices: {room.__vertices}")
+            print(f"List of Environments ({len(self.__environments)}):")
+            for environment in self.__environments:
+                print(f"Environment: {environment.get_name()}, Vertices: {environment.__vertices}")
 
-    def get_rooms(self) -> list[Room]:
+    def get_environments(self) -> list[Environment]:
         """
-        Get a list of all rooms in the simulation.
+        Get a list of all environments in the simulation.
 
         Returns:
-            list[Room]: List of Room instances.
+            list[Environment]: List of Environment instances.
         """
-        return self.__rooms
+        return self.__environments
 
-    def set_rooms(self, rooms: list[Room]) -> None:
+    def set_environments(self, environments: list[Environment]) -> None:
         """
-        Set the list of rooms in the simulation.
+        Set the list of environments in the simulation.
 
         Args:
-            rooms (list[Room]): List of Room instances.
+            environments (list[Environment]): List of Environment instances.
         """
-        self.__rooms = rooms
+        self.__environments = environments

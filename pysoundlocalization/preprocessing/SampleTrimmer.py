@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 from pysoundlocalization.core.Audio import Audio
-from pysoundlocalization.core.Room import Room
+from pysoundlocalization.core.Environment import Environment
 
 
 class SampleTrimmer:
@@ -112,32 +112,32 @@ class SampleTrimmer:
         return audio
 
     @staticmethod
-    def slice_all_from_to(room: Room, start_time: timedelta, end_time: timedelta):
+    def slice_all_from_to(environment: Environment, start_time: timedelta, end_time: timedelta):
         """
-        Slice all audio signals in room (associated with a mic) to keep only the part between the start and end timestamps.
+        Slice all audio signals in environment (associated with a mic) to keep only the part between the start and end timestamps.
 
         Args:
-            room (Room): The room to slice all audio signals from.
+            environment (Environment): The environment to slice all audio signals from.
             start_time (timedelta): The start timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
             end_time (timedelta): The end timestamp as a timedelta. Use format timedelta(days=5, seconds=5, milliseconds=5, ...)
 
         Returns:
-            Room: The room with all audio signals sliced.
+            Environment: The environment with all audio signals sliced.
         """
-        for mic in room.get_mics():
+        for mic in environment.get_mics():
             SampleTrimmer.slice_from_to(mic.get_audio(), start_time, end_time)
-        return room
+        return environment
 
     @staticmethod
-    def sync_room(room: Room) -> Room | None:
+    def sync_environment(environment: Environment) -> Environment | None:
 
-        if len(room.get_mics()) == 0:
-            raise ValueError("Room has no microphones.")
+        if len(environment.get_mics()) == 0:
+            raise ValueError("Environment has no microphones.")
 
         list_audio = []
         list_start_times = []
 
-        for mic in room.get_mics():
+        for mic in environment.get_mics():
 
             if mic.get_audio() is None:
                 raise ValueError(f"MIC {mic.get_name()} has no audio signal.")
@@ -149,7 +149,7 @@ class SampleTrimmer:
 
         SampleTrimmer.sync_audio(list_audio, list_start_times)
 
-        return room
+        return environment
 
     @staticmethod
     def sync_audio(audio_files: list[Audio], start_times: list[datetime]):

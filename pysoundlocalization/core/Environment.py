@@ -13,7 +13,7 @@ from pysoundlocalization.core.TdoaPair import TdoaPair
 from pysoundlocalization.core.DoaPair import DoaPair
 
 
-class Room:
+class Environment:
     def __init__(
         self,
         name: str,
@@ -21,16 +21,16 @@ class Room:
         sound_speed: float = config.DEFAULT_SOUND_SPEED,
     ):
         """
-        Initialize a Room instance with a name, vertices defining the room shape.
+        Initialize an Environment instance with a name, vertices defining the environment shape.
 
         Args:
-            name (str): The name of the room.
-            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
+            name (str): The name of the environment.
+            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the environment's shape.
             sound_speed (float): The speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
         """
         self.__sound_speed = sound_speed  # Default speed of sound in m/s
         self.__name = name
-        self.__vertices = vertices  # List of (x, y) coordinates for the room's shape
+        self.__vertices = vertices  # List of (x, y) coordinates for the environment's shape
         self.__mics: list[Microphone] = []
         self.__sound_source_position: tuple[float, float] | None = (
             None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
@@ -40,7 +40,7 @@ class Room:
         self, x: float, y: float, name: str | None = None
     ) -> Microphone | None:
         """
-        Add a microphone at the specified coordinates if it is within room boundaries and not duplicated.
+        Add a microphone at the specified coordinates if it is within environment boundaries and not duplicated.
 
         Args:
             x (float): X-coordinate of the microphone position.
@@ -56,13 +56,13 @@ class Room:
                 print(f"A microphone already exists at position ({x}, {y})")
                 return None
 
-        if self.is_within_room(x, y):
+        if self.is_within_environment(x, y):
             mic = Microphone(x, y, name)
             self.__mics.append(mic)
             print(f"Microphone added at position ({x}, {y})")
             return mic
         else:
-            print(f"Microphone at ({x}, {y}) is outside the room bounds!")
+            print(f"Microphone at ({x}, {y}) is outside the environment bounds!")
 
     # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
     def add_sound_source_position(self, x: float, y: float) -> None:
@@ -75,9 +75,9 @@ class Room:
         """
         self.__sound_source_position = (x, y)
 
-    def is_within_room(self, x: float, y: float) -> bool:
+    def is_within_environment(self, x: float, y: float) -> bool:
         """
-        Check if a point (x, y) is inside the room's polygon defined by its vertices.
+        Check if a point (x, y) is inside the environment's polygon defined by its vertices.
 
         Implementation of the ray-casting algorithm to solve the point-in-polygon problem.
 
@@ -125,7 +125,7 @@ class Room:
 
         return max_mic_distance / self.__sound_speed
 
-    # TODO: should computation methods be in room class? if yes, move to separate room_computations.py file and import here?
+    # TODO: should computation methods be in environment class? if yes, move to separate environment_computations.py file and import here?
     # TODO: allow selection of algorithm
     def compute_tdoa(
         self,
@@ -156,7 +156,7 @@ class Room:
         self, debug_threshold_sample_index: bool = False
     ) -> list[TdoaPair]:
         """
-        Compute TDoA for all microphone pairs in the room based on a threshold.
+        Compute TDoA for all microphone pairs in the environment based on a threshold.
 
         Returns:
             list[TdoaPair]: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
@@ -200,7 +200,7 @@ class Room:
         print_intermediate_results: bool = False,
     ) -> TdoaPair | None:
         """
-        Compute TDoA for all microphone pairs in the room.
+        Compute TDoA for all microphone pairs in the environment.
 
         Args:
             sample_rate (int): Sample rate of the recorded audio in Hz.
@@ -314,11 +314,11 @@ class Room:
 
     def visualize(self) -> None:
         """
-        Visualizes the room layout, microphones, and sound source positions using Matplotlib.
+        Visualizes the environment layout, microphones, and sound source positions using Matplotlib.
         """
         fig, ax = plt.subplots()
 
-        # Create a polygon representing the room shape
+        # Create a polygon representing the environment shape
         polygon = patches.Polygon(
             self.__vertices,
             closed=True,
@@ -328,7 +328,7 @@ class Room:
         )
         ax.add_patch(polygon)
 
-        # Set limits based on the room's shape
+        # Set limits based on the environment's shape
         ax.set_xlim(
             min(x for x, y in self.__vertices) - 1,
             max(x for x, y in self.__vertices) + 1,
@@ -357,14 +357,14 @@ class Room:
 
         ax.set_xlabel("X coordinate")
         ax.set_ylabel("Y coordinate")
-        ax.set_title(f"Room: {self.__name} with Microphones")
+        ax.set_title(f"Environment: {self.__name} with Microphones")
         plt.legend()
         plt.grid(True)
         plt.show()
 
     def get_sound_speed(self) -> float:
         """
-        Get the speed of sound in the room.
+        Get the speed of sound in the environment.
 
         Returns:
             float: The speed of sound in m/s.
@@ -373,7 +373,7 @@ class Room:
 
     def set_sound_speed(self, speed: float) -> None:
         """
-        Set the speed of sound in the room.
+        Set the speed of sound in the environment.
 
         Args:
             speed (float): The speed of sound in m/s.
@@ -382,55 +382,55 @@ class Room:
 
     def get_name(self) -> str:
         """
-        Get the name of the room.
+        Get the name of the environment.
 
         Returns:
-            str: The name of the room.
+            str: The name of the environment.
         """
         return self.__name
 
     def set_name(self, name: str) -> None:
         """
-        Set the name of the room.
+        Set the name of the environment.
 
         Args:
-            name (str): The name of the room.
+            name (str): The name of the environment.
         """
         self.__name = name
 
     def get_vertices(self) -> list[tuple[float, float]]:
         """
-        Get the vertices of the room.
+        Get the vertices of the environment.
 
         Returns:
-            list[tuple[float, float]]: List of (x, y) coordinates defining the room's shape.
+            list[tuple[float, float]]: List of (x, y) coordinates defining the environment's shape.
         """
         return self.__vertices
 
     def set_vertices(self, vertices: list[tuple[float, float]]) -> None:
         """
-        Set the vertices of the room.
+        Set the vertices of the environment.
 
         Args:
-            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the room's shape.
+            vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the environment's shape.
         """
         self.__vertices = vertices
 
     def get_mics(self) -> list[Microphone]:
         """
-        Get the microphones in the room.
+        Get the microphones in the environment.
 
         Returns:
-            list[Microphone]: List of Microphone objects in the room.
+            list[Microphone]: List of Microphone objects in the environment.
         """
         return self.__mics
 
     def set_mics(self, mics: list[Microphone]) -> None:
         """
-        Set the microphones in the room.
+        Set the microphones in the environment.
 
         Args:
-            mics (list[Microphone]): List of Microphone objects in the room.
+            mics (list[Microphone]): List of Microphone objects in the environment.
         """
         self.__mics = mics
 

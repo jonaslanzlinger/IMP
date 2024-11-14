@@ -6,13 +6,13 @@ from pysoundlocalization.preprocessing.LowPassFilter import LowPassFilter
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 
-# Create simulation and add a room with 4 microphones
+# Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
-room1 = simulation.add_room("Square Room", [(0, 0), (0, 4), (4, 4), (4, 0)])
-mic1 = room1.add_microphone(1, 1)
-mic2 = room1.add_microphone(1, 2)
-mic3 = room1.add_microphone(2, 2)
-mic4 = room1.add_microphone(2, 1)
+environment1 = simulation.add_environment("Square Environment", [(0, 0), (0, 4), (4, 4), (4, 0)])
+mic1 = environment1.add_microphone(1, 1)
+mic2 = environment1.add_microphone(1, 2)
+mic3 = environment1.add_microphone(2, 2)
+mic4 = environment1.add_microphone(2, 1)
 
 # Add audio
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -46,26 +46,26 @@ mic4.set_audio(Audio(filepath=audio4_filepath))
 sample_rate = mic1.get_audio().get_sample_rate()
 mic4.get_audio().convert_to_desired_sample_rate(sample_rate)
 
-# Use the SampleRateConverter if necessary to change sample rates on the room-level
+# Use the SampleRateConverter if necessary to change sample rates on the environment-level
 print(
-    f"Lowest sample rate in Room: {SampleRateConverter.get_lowest_sample_rate(room1)}"
+    f"Lowest sample rate in Environment: {SampleRateConverter.get_lowest_sample_rate(environment1)}"
 )
-SampleRateConverter.convert_all_to_lowest_sample_rate(room1)
-SampleRateConverter.convert_all_to_defined_sample_rate(room1, 44100)
-SampleRateConverter.convert_all_to_sample_rate_of_audio_file(room1, audio)
+SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
+SampleRateConverter.convert_all_to_defined_sample_rate(environment1, 44100)
+SampleRateConverter.convert_all_to_sample_rate_of_audio_file(environment1, audio)
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(
+tdoa_pairs = environment1.compute_all_tdoa(
     sample_rate=sample_rate, print_intermediate_results=True
 )
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-doa_pairs = room1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
+doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
 # Approximate and visualize the sound source position
-x, y = room1.multilaterate_sound_source(tdoa_pairs)
+x, y = environment1.multilaterate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
-room1.add_sound_source_position(x, y)
-room1.visualize()
+environment1.add_sound_source_position(x, y)
+environment1.visualize()

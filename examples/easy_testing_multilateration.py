@@ -18,14 +18,14 @@ import numpy as np
 from pysoundlocalization.visualization.wave_plot import wave_plot
 from pysoundlocalization.core.Audio import Audio
 
-# Create simulation and add a room with 5 microphones
+# Create simulation and add an environment with 5 microphones
 simulation = Simulation.create()
-room1 = simulation.add_room("School Room", [(0, 0), (0, 3000), (3000, 3000), (3000, 0)])
-mic1 = room1.add_microphone(1000, 1000, name="1")
-mic2 = room1.add_microphone(1000, 2000, name="2")
-mic3 = room1.add_microphone(2000, 2000, name="3")
-mic4 = room1.add_microphone(2000, 1000, name="4")
-# mic5 = room1.add_microphone(0, 0, name="5")
+environment1 = simulation.add_environment("School Environment", [(0, 0), (0, 3000), (3000, 3000), (3000, 0)])
+mic1 = environment1.add_microphone(1000, 1000, name="1")
+mic2 = environment1.add_microphone(1000, 2000, name="2")
+mic3 = environment1.add_microphone(2000, 2000, name="3")
+mic4 = environment1.add_microphone(2000, 1000, name="4")
+# mic5 = environment1.add_microphone(0, 0, name="5")
 
 sample_rate = 44100
 duration_sine = 0.1
@@ -55,14 +55,14 @@ audio = Audio.create_from_signal(audio_signal, 44100)
 mic4.set_audio(audio)
 
 # # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = room1.compute_all_tdoa(
-    sample_rate=SampleRateConverter.get_lowest_sample_rate(room1),
+tdoa_pairs = environment1.compute_all_tdoa(
+    sample_rate=SampleRateConverter.get_lowest_sample_rate(environment1),
     print_intermediate_results=True,
 )
 
 # Approximate and visualize the sound source position
-x, y = room1.multilaterate_sound_source(tdoa_pairs)
+x, y = environment1.multilaterate_sound_source(tdoa_pairs)
 print(f"Approximated source position: x={x}, y={y}")
 
-room1.add_sound_source_position(x, y)
-room1.visualize()
+environment1.add_sound_source_position(x, y)
+environment1.visualize()
