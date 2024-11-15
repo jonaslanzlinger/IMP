@@ -24,7 +24,7 @@ class Audio:
         """
         self.__filepath = filepath
         self.__convert_to_sample_rate = convert_to_sample_rate
-        self.__audio_signal = audio_signal
+        self.__audio_signal = [audio_signal]
         self.__sample_rate = sample_rate
         if audio_signal is not None and sample_rate is not None:
             self.__duration = len(audio_signal) / sample_rate
@@ -47,8 +47,8 @@ class Audio:
         return cls(audio_signal=audio_signal, sample_rate=sample_rate)
 
     def __str__(self):
-        shape = self.__audio_signal.shape
-        return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, shape={shape}, channels={1 if len(shape) == 1 else shape[1]}, duration={self.__duration}s, audio_signal={self.__audio_signal})"
+        chunks = len(self.__audio_signal)
+        return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, chunks={chunks}, duration={self.__duration}s, audio_signal={self.__audio_signal})"
 
     def load_audio_file(self, filepath: str = None) -> tuple[int, np.ndarray]:
         """
@@ -69,58 +69,43 @@ class Audio:
             )
 
         # Load the audio file using soundfile
-        self.__audio_signal, self.__sample_rate = sf.read(filepath)
+        audio_signal, self.__sample_rate = sf.read(filepath)
+        self.__audio_signal = [audio_signal]
 
         # If desired sample rate is provided, convert audio to new sample rate
         if (
             self.__convert_to_sample_rate is not None
             and self.__sample_rate != self.__convert_to_sample_rate
         ):
-            self.__audio_signal = self.resample_audio(
-                self.__audio_signal, self.__sample_rate, self.__convert_to_sample_rate
-            )
+            self.__audio_signal = self.resample_audio()
             self.__sample_rate = self.__convert_to_sample_rate
 
         return self.__sample_rate, self.__audio_signal
 
-    def resample_audio(
-        self, audio_signal: np.ndarray, original_rate: int, target_rate: int
-    ) -> np.ndarray:
+    def resample_audio(self, target_rate: int | None = None) -> list[np.ndarray]:
         """
         Resamples the audio signal to the desired sampling rate.
 
         Args:
-            audio_signal (np.ndarray): The audio signal to be resampled.
-            original_rate (int): The original sample rate of the audio signal.
-            target_rate (int): The desired sample rate of the audio signal.
-
-        Returns:
-            np.ndarray: The resampled audio signal.
+            target_rate (int): The desired sampling rate of the resampled audio signal
         """
-        if original_rate == target_rate:
-            return audio_signal
-        return librosa.resample(
-            audio_signal, orig_sr=original_rate, target_sr=target_rate
-        )
 
-    def convert_to_desired_sample_rate(
-        self, desired_sample_rate: int
-    ) -> tuple[int, np.ndarray]:
-        """
-        Converts the audio to the desired sample rate.
+        if target_rate is None:
+            target_rate = self.__convert_to_sample_rate
 
-        Args:
-            desired_sample_rate (int): The desired sample rate of the converted audio signal.
+        if self.__sample_rate == target_rate:
+            return self.__audio_signal
 
-        Returns:
-            tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
-        """
-        if self.__sample_rate != desired_sample_rate:
-            self.__audio_signal = self.resample_audio(
-                self.__audio_signal, self.__sample_rate, desired_sample_rate
+        for i in range(len(self.__audio_signal)):
+            self.__audio_signal[i] = librosa.resample(
+                self.__audio_signal[i],
+                orig_sr=self.__sample_rate,
+                target_sr=target_rate,
             )
-            self.__sample_rate = desired_sample_rate
-        return self.__sample_rate, self.__audio_signal
+
+        self.__sample_rate = self.__convert_to_sample_rate
+
+        return self.__audio_signal
 
     def chunk_audio_signal(self, chunk_size: int | None = 1000) -> None:
         """
@@ -129,41 +114,68 @@ class Audio:
         Args:
             chunk_size (int): The duration of each audio chunk in milliseconds.
         """
+
+        if len(self.__audio_signal) > 1:
+            raise ValueError("Audio signal is already chunked. Cannot chunk it again.")
+
         chunk_in_samples = int(self.__sample_rate * chunk_size / 1000)
         chunks = []
-        for i in range(0, len(self.__audio_signal), chunk_in_samples):
-            next_chunk = self.__audio_signal[i : i + chunk_in_samples]
+        for i in range(0, len(self.__audio_signal[0]), chunk_in_samples):
+            next_chunk = self.__audio_signal[0][i : i + chunk_in_samples]
             if len(next_chunk) == chunk_in_samples:
                 chunks.append(next_chunk)
             else:
                 chunks.append(
                     np.pad(next_chunk, (0, chunk_in_samples - len(next_chunk)))
                 )
-        self.__audio_signal = np.array(chunks)
 
-    def get_audio_signal(self) -> np.ndarray:
+        self.__audio_signal = chunks
+
+    def get_filepath(self) -> str:
         """
-        Return the audio signal data of the audio file.
-        The audio is automatically loaded from the filepath if not audio_signal is empty.
+        Return the file path of the audio file.
+
+        Returns:
+            str: The file path of the audio file.
+        """
+        return self.__filepath
+
+    def get_audio_signal_by_index(self, index: int | None = 0) -> np.ndarray:
+        """
+        Return the audio signal data of the audio file at a specific index.
+
+        Args:
+            index (int): The index of the audio signal in the list of audio signals.
 
         Returns:
             np.ndarray: The audio signal data as a numpy array.
-
-        Raises:
-            FileNotFoundError: If the audio file needs to be loaded but the file path is not set.
         """
         if self.__audio_signal is None:
             self.load_audio_file()
+
+        return self.__audio_signal[index]
+
+    def get_audio_signal(self) -> list[np.ndarray]:
+        """
+        Return the list of audio signal data of the audio file.
+
+        Returns:
+            list[np.ndarray]: The list of audio signal data as numpy arrays.
+        """
+        if self.__audio_signal is None:
+            self.load_audio_file()
+
         return self.__audio_signal
 
-    def set_audio_signal(self, audio_signal: np.ndarray) -> None:
+    def set_audio_signal(self, audio_signal: np.ndarray, index: int | None = 0) -> None:
         """
         Set the audio signal data of the audio file.
 
         Args:
             audio_signal (np.ndarray): The audio signal data as a numpy array.
+            index (int): The index of the audio signal in the list of audio signals.
         """
-        self.__audio_signal = audio_signal
+        self.__audio_signal[index] = audio_signal
 
     def get_sample_rate(self) -> int:
         """
@@ -191,7 +203,15 @@ class Audio:
         """
         if self.__audio_signal is None:
             self.load_audio_file()
-        return len(self.__audio_signal) / self.__sample_rate
+
+        self.__duration = 0
+
+        for i in range(len(self.__audio_signal)):
+            self.__duration = (
+                self.__duration + len(self.__audio_signal[i]) / self.__sample_rate
+            )
+
+        return self.__duration
 
     def play(self) -> None:
         """
@@ -203,5 +223,6 @@ class Audio:
         if self.__audio_signal is None:
             self.load_audio_file()
 
-        sd.play(self.__audio_signal, self.__sample_rate)
-        sd.wait()
+        for i in range(len(self.__audio_signal)):
+            sd.play(self.__audio_signal[i], self.__sample_rate)
+            sd.wait()

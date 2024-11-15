@@ -17,12 +17,12 @@ class NoiseReducer:
         Returns:
             Audio: The audio object with the noise reduced audio signal.
         """
-        audio_sound = audio.get_audio_signal()
+        audio_signal = audio.get_audio_signal_by_index(index=0)
         sr = audio.get_sample_rate()
 
         if noise_sample is None:
-            noise_sample = audio_sound[0 : int(sr * 1)]
+            noise_sample = audio_signal[0 : int(sr * 1)]
 
-        audio_sound = nr.reduce_noise(y=audio_sound, sr=sr, y_noise=noise_sample)
-        audio.set_audio_signal(audio_sound)
+        audio_signal = nr.reduce_noise(y=audio_signal, sr=sr, y_noise=noise_sample)
+        audio.set_audio_signal(audio_signal)
         return audio

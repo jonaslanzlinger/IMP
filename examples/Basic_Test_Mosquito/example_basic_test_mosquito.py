@@ -1,6 +1,7 @@
 import os
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
@@ -29,12 +30,23 @@ mic4.set_audio(Audio(filepath=audio4_filepath, convert_to_sample_rate=44100))
 
 # Compute all TDoA and DoA for all mic pairs
 # TODO: Support multiple sound localizations. Currently, the mosquito sound is localized, but the handclap is ignored.
-tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
-print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-# Approximate and visualize the sound source position
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-print(f"Approximated source position: x={x}, y={y}")
+algorithm_choice = "threshold"
 
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+dict = environment1.multilaterate(algorithm=algorithm_choice, number_of_sound_sources=1)
+
+for i, object in enumerate(dict):
+    print(dict[object])
+
+multilaterate_plot(environment1, dict)
+
+
+# tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
+# print(f"TDoA for all mic pairs: {tdoa_pairs}")
+
+# # Approximate and visualize the sound source position
+# x, y = environment1.multilaterate_sound_source(tdoa_pairs)
+# print(f"Approximated source position: x={x}, y={y}")
+
+# environment1.add_sound_source_position(x, y)
+# environment1.visualize()

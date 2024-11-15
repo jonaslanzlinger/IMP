@@ -4,6 +4,7 @@ from pysoundlocalization.core.Simulation import Simulation
 import os
 
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 # Create a new simulation
 simulation = Simulation.create()
@@ -22,18 +23,10 @@ environment1.visualize()
 
 # Add and pre-process audio
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
 audio1_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav")
-audio1 = Audio(filepath=audio1_filepath)
-sample_rate1, audio_signal1 = audio1.load_audio_file()
+mic1.set_audio(Audio(filepath=audio1_filepath))
 
-# print(f"Sample Rate: {sample_rate1}")
-# print(f"Audio Signal: {audio_signal1[:10]}")  # Print first 10 samples of the audio
-
-# Associate audio with mic
-mic1.set_audio(audio1)
-# print(mic1.get_audio())
-
-# Add more audio files to mics
 audio2_filepath = os.path.join(root, "examples", "example_audio", "pi2_audio.wav")
 mic2.set_audio(Audio(filepath=audio2_filepath))
 
@@ -51,9 +44,9 @@ max_tau = environment1.get_max_tau()
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = environment1.compute_tdoa(
-    audio1=mic1.get_audio().get_audio_signal(),
-    audio2=mic2.get_audio().get_audio_signal(),
-    sample_rate=sample_rate1,
+    audio1=mic1.get_audio().get_audio_signal_by_index(index=0),
+    audio2=mic2.get_audio().get_audio_signal_by_index(index=0),
+    sample_rate=44100,
     max_tau=max_tau,  # Optional argument, may be left out to have max_tau computed automatically
 )
 print(f"TDoA between mic1 and mic2: {tdoa12:.6f} seconds")
@@ -63,15 +56,21 @@ doa = environment1.compute_doa(tdoa12)
 print(f"Direction of arrival (DoA) of sound (mics 1 and 2): {doa:.6f} degrees")
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
+tdoa_pairs = environment1.compute_all_tdoa_of_chunk_index_by_gcc_phat(
+    chunk_index=0, threshold=0.1, debug=True
+)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
-# Approximate and visualize the sound source position
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-print(f"Approximated source position: x={x}, y={y}")
+algorithm_choice = "threshold"
 
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
+)
+
+for i, object in enumerate(dict):
+    print(dict[object])
+
+multilaterate_plot(environment1, dict)

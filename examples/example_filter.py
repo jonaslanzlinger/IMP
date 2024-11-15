@@ -13,12 +13,19 @@ audio = Audio(filepath=filepath)
 audio.load_audio_file()
 
 
-spectrogram_plot(audio)
-
+spectrogram_plot(
+    audio_signal=audio.get_audio_signal_by_index(index=0),
+    sample_rate=audio.get_sample_rate(),
+)
+print(audio.get_audio_signal_by_index(index=0))
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
 frequency_filter_chain.apply(audio)
 
+print(audio.get_audio_signal_by_index(index=0))
 # audio.play()
 
-spectrogram_plot(audio)
+spectrogram_plot(
+    audio_signal=audio.get_audio_signal_by_index(index=0),
+    sample_rate=audio.get_sample_rate(),
+)

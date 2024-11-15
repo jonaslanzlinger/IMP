@@ -16,6 +16,9 @@ class FrequencyFilterChain(IFrequencyFilter):
         Args:
             audio (Audio): The audio object to process with each filter.
         """
+        if len(audio.get_audio_signal()) > 1:
+            raise ValueError("Audio signal can not be chunked during pre-processing.")
+
         for filter in self.__filters:
             filter.apply(audio)
 

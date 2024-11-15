@@ -5,6 +5,7 @@ import numpy as np
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 simulation = Simulation.create()
 environment1 = simulation.add_environment(
@@ -30,41 +31,30 @@ mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
 # Because of system latency, the timestamps are off by a few milliseconds.
 # Therefore, we concatenate some slience to the beginning of some of the audio files.
 mic1.get_audio().set_audio_signal(
-    np.concatenate([np.zeros(3800), mic1.get_audio().get_audio_signal()])
+    np.concatenate([np.zeros(3800), mic1.get_audio().get_audio_signal_by_index()])
 )
 mic2.get_audio().set_audio_signal(
-    np.concatenate([np.zeros(1500), mic2.get_audio().get_audio_signal()])
+    np.concatenate([np.zeros(1500), mic2.get_audio().get_audio_signal_by_index()])
 )
 
 environment1 = SampleTrimmer.sync_environment(environment1)
 
-# chunking the audio files
-# environment1.chunk_audio_signals(chunk_size=1000)
-# print(len(mic1.get_audio().get_audio_signal()))
-# print(len(mic2.get_audio().get_audio_signal()))
-# print(len(mic3.get_audio().get_audio_signal()))
-
-
 # isolate individual sound sources
 # TODO: implement this in a smart way
 
+# chunking
+# for each chunk: compute tdoa, multilaterate, add sound source position to environment
+# chunking the audio files
+environment1.chunk_audio_signals(chunk_size=1000)
+number_of_chunks = len(environment1.get_mics()[0].get_audio().get_audio_signal())
 
-algorithm_choise = "threshold"
+algorithm_choice = "threshold"
 
-if algorithm_choise == "gcc_phat":
-    tdoa_pairs = environment1.compute_all_tdoa(
-        print_intermediate_results=False,
-    )
-elif algorithm_choise == "threshold":
-    tdoa_pairs = environment1.compute_all_tdoa_by_threshold(
-        debug_threshold_sample_index=True
-    )
+dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
+)
 
-print(tdoa_pairs)
+for i, object in enumerate(dict):
+    print(dict[object])
 
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-
-print(f"Approximated source position: x={x}, y={y}")
-
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+multilaterate_plot(environment1, dict)

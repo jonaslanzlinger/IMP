@@ -17,6 +17,7 @@ from pysoundlocalization.visualization.wave_plot import wave_plot
 import numpy as np
 from pysoundlocalization.visualization.wave_plot import wave_plot
 from pysoundlocalization.core.Audio import Audio
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 # Create simulation and add an environment with 5 microphones
 simulation = Simulation.create()
@@ -40,30 +41,30 @@ sine_wave = amplitude * np.sin(2 * np.pi * frequency * t_sine)
 silence = np.zeros(int(sample_rate * silence_duration))
 
 # Corrected concatenation for each microphone
-audio_signal = np.concatenate([silence] * 0 + [sine_wave] * 10 + [silence] * 90)
+audio_signal = np.concatenate([silence] * 10 + [sine_wave] * 10 + [silence] * 10)
 audio = Audio.create_from_signal(audio_signal, 44100)
 mic1.set_audio(audio)
 
-audio_signal = np.concatenate([silence] * 29 + [sine_wave] * 10 + [silence] * 61)
+audio_signal = np.concatenate([silence] * 10 + [sine_wave] * 10 + [silence] * 10)
 audio = Audio.create_from_signal(audio_signal, 44100)
 mic2.set_audio(audio)
 
-audio_signal = np.concatenate([silence] * 37 + [sine_wave] * 10 + [silence] * 53)
+audio_signal = np.concatenate([silence] * 10 + [sine_wave] * 10 + [silence] * 10)
 audio = Audio.create_from_signal(audio_signal, 44100)
 mic3.set_audio(audio)
 
-audio_signal = np.concatenate([silence] * 29 + [sine_wave] * 10 + [silence] * 61)
+audio_signal = np.concatenate([silence] * 10 + [sine_wave] * 10 + [silence] * 10)
 audio = Audio.create_from_signal(audio_signal, 44100)
 mic4.set_audio(audio)
 
-# # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(
-    print_intermediate_results=True,
+
+algorithm_choice = "threshold"
+
+dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
 )
 
-# Approximate and visualize the sound source position
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-print(f"Approximated source position: x={x}, y={y}")
+for i, object in enumerate(dict):
+    print(dict[object])
 
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+multilaterate_plot(environment1, dict)

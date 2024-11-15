@@ -5,6 +5,7 @@ from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilt
 from pysoundlocalization.preprocessing.LowPassFilter import LowPassFilter
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
@@ -26,7 +27,11 @@ audio = Audio(filepath=audio_filepath)
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
 frequency_filter_chain.apply(audio)
-spectrogram_plot(audio)
+
+spectrogram_plot(
+    audio_signal=audio.get_audio_signal_by_index(index=0),
+    sample_rate=audio.get_sample_rate(),
+)
 
 # Careful of potentially loud sound
 # audio1.play()
@@ -46,7 +51,7 @@ mic4.set_audio(Audio(filepath=audio4_filepath))
 
 # Manually convert audio to different sample rate if needed
 sample_rate = mic1.get_audio().get_sample_rate()
-mic4.get_audio().convert_to_desired_sample_rate(sample_rate)
+mic4.get_audio().resample_audio(target_rate=sample_rate)
 
 # Use the SampleRateConverter if necessary to change sample rates on the environment-level
 print(
@@ -57,15 +62,21 @@ SampleRateConverter.convert_all_to_defined_sample_rate(environment1, 44100)
 SampleRateConverter.convert_all_to_sample_rate_of_audio_file(environment1, audio)
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
+tdoa_pairs = environment1.compute_all_tdoa_of_chunk_index_by_gcc_phat(
+    chunk_index=0, threshold=0.1, debug=True
+)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
 print(f"DoA for all mic pairs: {doa_pairs}")
 
-# Approximate and visualize the sound source position
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-print(f"Approximated source position: x={x}, y={y}")
+algorithm_choice = "threshold"
 
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
+)
+
+for i, object in enumerate(dict):
+    print(dict[object])
+
+multilaterate_plot(environment1, dict)
