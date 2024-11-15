@@ -63,9 +63,7 @@ doa = environment1.compute_doa(tdoa12)
 print(f"Direction of arrival (DoA) of sound (mics 1 and 2): {doa:.6f} degrees")
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(
-    sample_rate=sample_rate1, print_intermediate_results=True
-)
+tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)

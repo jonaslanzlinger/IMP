@@ -57,9 +57,7 @@ SampleRateConverter.convert_all_to_defined_sample_rate(environment1, 44100)
 SampleRateConverter.convert_all_to_sample_rate_of_audio_file(environment1, audio)
 
 # Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(
-    sample_rate=sample_rate, print_intermediate_results=True
-)
+tdoa_pairs = environment1.compute_all_tdoa(print_intermediate_results=True)
 print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
 doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)

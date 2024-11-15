@@ -207,7 +207,6 @@ class Environment:
 
     def compute_all_tdoa(
         self,
-        sample_rate: int,
         max_tau: float = None,
         print_intermediate_results: bool = False,
     ) -> TdoaPair | None:
@@ -215,13 +214,19 @@ class Environment:
         Compute TDoA for all microphone pairs in the environment.
 
         Args:
-            sample_rate (int): Sample rate of the recorded audio in Hz.
             max_tau (float): The maximum possible TDoA between the microphones, usually determined by: (mic_distance / speed_of_sound).
             print_intermediate_results (bool): Print intermediate results if True.
 
         Returns:
             list[TdoaPair] | None: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
         """
+
+        from pysoundlocalization.preprocessing.SampleRateConverter import (
+            SampleRateConverter,
+        )
+
+        sample_rate = SampleRateConverter.get_lowest_sample_rate(self)
+
         if len(self.__mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
             return None

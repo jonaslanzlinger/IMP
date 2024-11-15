@@ -58,7 +58,6 @@ mic4.set_audio(audio)
 
 # # Compute all TDoA and DoA for all mic pairs
 tdoa_pairs = environment1.compute_all_tdoa(
-    sample_rate=SampleRateConverter.get_lowest_sample_rate(environment1),
     print_intermediate_results=True,
 )
 
