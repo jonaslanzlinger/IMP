@@ -18,6 +18,16 @@ class Microphone:
         self.__recording_start_time: datetime | None = None
         self.__audio: Audio | None = None
 
+    def chunk_audio_signal(self, chunk_size: int | None = 1000) -> None:
+        """
+        Chunk the audio signal into chunks of a specific duration.
+
+        Args:
+            chunk_size (int): The duration of each audio chunk in milliseconds.
+        """
+        if self.__audio is not None:
+            self.__audio.chunk_audio_signal(chunk_size=chunk_size)
+
     def get_name(self) -> str:
         """
         Get the name of the microphone.

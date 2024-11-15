@@ -39,6 +39,16 @@ mic2.get_audio().set_audio_signal(
 
 environment1 = SampleTrimmer.sync_environment(environment1)
 
+# chunking the audio files
+# environment1.chunk_audio_signals(chunk_size=1000)
+# print(len(mic1.get_audio().get_audio_signal()))
+# print(len(mic2.get_audio().get_audio_signal()))
+# print(len(mic3.get_audio().get_audio_signal()))
+
+
+# isolate individual sound sources
+# TODO: implement this in a smart way
+
 
 algorithm_choise = "threshold"
 

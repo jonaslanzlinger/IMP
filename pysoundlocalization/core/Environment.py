@@ -127,6 +127,16 @@ class Environment:
 
         return max_mic_distance / self.__sound_speed
 
+    def chunk_audio_signals(self, chunk_size: int | None = 1000) -> None:
+        """
+        Chunk the audio signals of all microphones into chunks of a specified duration.
+
+        Args:
+            chunk_size (int | None): The duration of each chunk in milliseconds. Defaults to 1000 ms.
+        """
+        for mic in self.__mics:
+            mic.chunk_audio_signal(chunk_size=chunk_size)
+
     # TODO: should computation methods be in environment class? if yes, move to separate environment_computations.py file and import here?
     # TODO: allow selection of algorithm
     def compute_tdoa(
@@ -166,7 +176,7 @@ class Environment:
 
         def compute_sample_index_threshold(mic: Microphone, debug: bool = False) -> int:
             threshold = 0.3
-            for i, sample in enumerate(mic.get_audio().audio_signal):
+            for i, sample in enumerate(mic.get_audio().get_audio_signal()):
                 if abs(sample) > threshold:
                     if debug:
                         print(

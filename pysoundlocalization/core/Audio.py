@@ -122,6 +122,25 @@ class Audio:
             self.__sample_rate = desired_sample_rate
         return self.__sample_rate, self.__audio_signal
 
+    def chunk_audio_signal(self, chunk_size: int | None = 1000) -> None:
+        """
+        Chunk the audio signal into chunks of a specific duration.
+
+        Args:
+            chunk_size (int): The duration of each audio chunk in milliseconds.
+        """
+        chunk_in_samples = int(self.__sample_rate * chunk_size / 1000)
+        chunks = []
+        for i in range(0, len(self.__audio_signal), chunk_in_samples):
+            next_chunk = self.__audio_signal[i : i + chunk_in_samples]
+            if len(next_chunk) == chunk_in_samples:
+                chunks.append(next_chunk)
+            else:
+                chunks.append(
+                    np.pad(next_chunk, (0, chunk_in_samples - len(next_chunk)))
+                )
+        self.__audio_signal = np.array(chunks)
+
     def get_audio_signal(self) -> np.ndarray:
         """
         Return the audio signal data of the audio file.
