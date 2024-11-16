@@ -50,7 +50,7 @@ class Audio:
         chunks = len(self.__audio_signal)
         return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, chunks={chunks}, duration={self.__duration}s, audio_signal={self.__audio_signal})"
 
-    def load_audio_file(self, filepath: str = None) -> tuple[int, np.ndarray]:
+    def load_audio_file(self, filepath: str = None) -> tuple[int, list[np.ndarray]]:
         """
         Manually load the audio file from the filepath. May be used to re-load the file from the filepath.
 
@@ -96,16 +96,31 @@ class Audio:
         if self.__sample_rate == target_rate:
             return self.__audio_signal
 
-        for i in range(len(self.__audio_signal)):
-            self.__audio_signal[i] = librosa.resample(
-                self.__audio_signal[i],
-                orig_sr=self.__sample_rate,
-                target_sr=target_rate,
-            )
+        self.__audio_signal = [
+            librosa.resample(signal, orig_sr=self.__sample_rate, target_sr=target_rate)
+            for signal in self.__audio_signal
+        ]
 
         self.__sample_rate = self.__convert_to_sample_rate
 
         return self.__audio_signal
+
+    def convert_to_sample_rate(
+        self, target_sample_rate: int
+    ) -> tuple[int, list[np.ndarray]]:
+        """
+        Converts the audio to the desired sample rate.
+
+        Args:
+            target_sample_rate (int): The desired sample rate of the converted audio signal.
+
+        Returns:
+            tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
+        """
+        if self.__sample_rate != target_sample_rate:
+            self.__audio_signal = self.resample_audio(target_sample_rate)
+            self.__sample_rate = target_sample_rate
+        return self.__sample_rate, self.__audio_signal
 
     def chunk_audio_signal(self, chunk_size: int | None = 1000) -> None:
         """
@@ -223,6 +238,6 @@ class Audio:
         if self.__audio_signal is None:
             self.load_audio_file()
 
-        for i in range(len(self.__audio_signal)):
-            sd.play(self.__audio_signal[i], self.__sample_rate)
+        for chunk in self.__audio_signal:
+            sd.play(chunk, self.__sample_rate)
             sd.wait()
