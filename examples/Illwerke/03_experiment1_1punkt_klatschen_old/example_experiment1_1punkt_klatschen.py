@@ -57,12 +57,13 @@ wave_plot(
     mic1.get_audio().get_sample_rate(),
 )
 
+# mic1.get_audio().play()
+
 algorithm_choice = "gcc_phat"
 
 dict = environment1.multilaterate(
     algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.15
 )
-mic1.get_audio().play()
 
 for i, object in enumerate(dict):
     print(dict[object])
