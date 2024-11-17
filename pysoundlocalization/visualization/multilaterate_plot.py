@@ -52,20 +52,29 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
     slider_ax = plt.axes([0.2, 0.05, 0.6, 0.03])
     slider = Slider(slider_ax, "Timeline", 0, len(data) - 1, valinit=0, valstep=1)
 
-    # Update function for the slider
-    def update(val):
-        idx = int(slider.val)
-        entry = list(data.keys())[idx]
-        position = data[entry]
+    # Check the number of data points
+    if len(data) > 1:
+        # Add a slider if there are multiple data points
+        slider_ax = plt.axes([0.2, 0.05, 0.6, 0.03])
+        slider = Slider(slider_ax, "Timeline", 0, len(data) - 1, valinit=0, valstep=1)
 
-        if position is not None:
-            print(position)
-            sound_scatter.set_data([position[0]], [position[1]])
-        else:
-            sound_scatter.set_data([], [])
+        def update(val):
+            idx = int(slider.val)
+            entry = list(data.keys())[idx]
+            position = data[entry]
 
-        fig.canvas.draw_idle()
+            if position is not None:
+                sound_scatter.set_data([position[0]], [position[1]])
+            else:
+                sound_scatter.set_data([], [])
 
-    slider.on_changed(update)
+            fig.canvas.draw_idle()
+
+        slider.on_changed(update)
+    else:
+        # Handle a single data point
+        only_entry = list(data.values())[0]
+        if only_entry is not None:
+            sound_scatter.set_data([only_entry[0]], [only_entry[1]])
 
     plt.show()
