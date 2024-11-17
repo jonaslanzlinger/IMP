@@ -12,6 +12,8 @@ from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilt
 from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
+from pysoundlocalization.visualization.wave_plot import wave_plot
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
@@ -68,7 +70,9 @@ SampleTrimmer.slice_all_from_to(
 )
 
 # Show claps in spectogram
-spectrogram_plot(mic1.get_audio())
+spectrogram_plot(
+    mic1.get_audio().get_audio_signal_by_index(0), mic1.get_audio().get_sample_rate()
+)
 # mic1.get_audio().play()
 
 # Try to remove frequencies of machine sound
@@ -78,6 +82,9 @@ frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 nmf = NonNegativeMatrixFactorization()
 
 for mic in environment1.get_mics():
+    wave_plot(
+        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    )
     frequency_filter_chain.apply(mic.get_audio())
     NoiseReducer.reduce_noise(audio=mic.get_audio())
 
@@ -91,20 +98,39 @@ for mic in environment1.get_mics():
     #     audio = Audio.create_from_signal(reconstructed_sounds[i], mic.get_audio().get_sample_rate())
     #     audio = NoiseReducer.reduce_noise(audio=audio)
     #     audio.play()
-    print(mic.get_audio())
+    # print(mic.get_audio())
+    wave_plot(
+        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    )
 
-# Compute all TDoA and DoA for all mic pairs
-tdoa_pairs = environment1.compute_all_tdoa(
-    print_intermediate_results=True,
+# for mic in environment1.get_mics():
+#     wave_plot(
+#         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+#     )
+
+algorithm_choice = "gcc_phat"
+
+dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.06
 )
-print(f"TDoA for all mic pairs: {tdoa_pairs}")
 
-doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
-print(f"DoA for all mic pairs: {doa_pairs}")
+for i, object in enumerate(dict):
+    print(dict[object])
 
-# Approximate and visualize the sound source position
-x, y = environment1.multilaterate_sound_source(tdoa_pairs)
-print(f"Approximated source position: x={x}, y={y}")
+multilaterate_plot(environment1, dict)
 
-environment1.add_sound_source_position(x, y)
-environment1.visualize()
+# # Compute all TDoA and DoA for all mic pairs
+# tdoa_pairs = environment1.compute_all_tdoa(
+#     print_intermediate_results=True,
+# )
+# print(f"TDoA for all mic pairs: {tdoa_pairs}")
+
+# doa_pairs = environment1.compute_all_doa(tdoa_pairs, print_intermediate_results=True)
+# print(f"DoA for all mic pairs: {doa_pairs}")
+
+# # Approximate and visualize the sound source position
+# x, y = environment1.multilaterate_sound_source(tdoa_pairs)
+# print(f"Approximated source position: x={x}, y={y}")
+
+# environment1.add_sound_source_position(x, y)
+# environment1.visualize()
