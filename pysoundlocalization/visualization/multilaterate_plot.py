@@ -1,21 +1,24 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.widgets import Slider
 from pysoundlocalization.core.Environment import Environment
+import matplotlib
 
 
-def multilaterate_plot(environment: Environment, dict: list[(int, int)]) -> None:
+def multilaterate_plot(environment: Environment, data: dict) -> None:
     """
     Visualizes the environment layout, microphones, and sound source positions using Matplotlib.
-    The sound source positions are approximated using the multilateration algorithm, stored in the dict object.
+    The sound source positions are approximated using the multilateration algorithm, stored in the data dictionary.
 
     Args:
         environment (Environment): Environment object containing the environment layout and microphones.
-        dict (object): Dictionary containing the sound source positions approximated using the multilateration algorithm.
+        data (dict): Dictionary containing the sound source positions approximated using the multilateration algorithm.
     """
 
     fig, ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.2)
+    ax.set_aspect("equal")
 
-    # Create a polygon representing the environment shape
     polygon = patches.Polygon(
         environment.get_vertices(),
         closed=True,
@@ -25,7 +28,6 @@ def multilaterate_plot(environment: Environment, dict: list[(int, int)]) -> None
     )
     ax.add_patch(polygon)
 
-    # Set limits based on the environment's shape
     ax.set_xlim(
         min(x for x, y in environment.get_vertices()) - 1,
         max(x for x, y in environment.get_vertices()) + 1,
@@ -35,43 +37,35 @@ def multilaterate_plot(environment: Environment, dict: list[(int, int)]) -> None
         max(y for x, y in environment.get_vertices()) + 1,
     )
 
-    ax.set_aspect("equal")
-
     # Plot microphones
     if environment.get_mics():
         mic_x, mic_y = zip(*[mic.get_position() for mic in environment.get_mics()])
         ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
-    # Iterate through the dict entries and update the plot
-    scatter_points = []
-    for i, entry in enumerate(dict):
+    # Create a scatter plot for sound sources (empty initially)
+    (sound_scatter,) = ax.plot([], [], "bo", label="Sound Source")
 
-        for scatter in scatter_points:
-            scatter.remove()
-        scatter_points.clear()
+    ax.set_title(f"Environment: {environment.get_name()} with Microphones")
+    ax.legend()
 
-        if dict[entry] is not None:
-            x, y = dict[entry]
-            scatter = ax.scatter(
-                x, y, color="blue", label=f"Approximated Sound Source {i + 1}"
-            )
-            scatter_points.append(scatter)
-            ax.legend()
+    # Add a slider for navigation
+    slider_ax = plt.axes([0.2, 0.05, 0.6, 0.03])
+    slider = Slider(slider_ax, "Timeline", 0, len(data) - 1, valinit=0, valstep=1)
 
-        # Pause for 1 second and update the plot
-        plt.pause(1)
-        plt.draw()
+    # Update function for the slider
+    def update(val):
+        idx = int(slider.val)
+        entry = list(data.keys())[idx]
+        position = data[entry]
+
+        if position is not None:
+            print(position)
+            sound_scatter.set_data([position[0]], [position[1]])
+        else:
+            sound_scatter.set_data([], [])
+
+        fig.canvas.draw_idle()
+
+    slider.on_changed(update)
 
     plt.show()
-
-    # OLD!!! (TODO: maybe take the legend stuff from here)
-    # Iterate over the dictionary containing the sound source positions
-    # for i, (x, y) in enumerate(dict):
-    #     ax.scatter(x, y, color="blue", label=f"Approximated Sound Source {i + 1}")
-
-    # ax.set_xlabel("X coordinate")
-    # ax.set_ylabel("Y coordinate")
-    # ax.set_title(f"Environment: {environment.get_name()} with Microphones")
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
