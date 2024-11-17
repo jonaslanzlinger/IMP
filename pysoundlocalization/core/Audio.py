@@ -241,3 +241,35 @@ class Audio:
         for chunk in self.__audio_signal:
             sd.play(chunk, self.__sample_rate)
             sd.wait()
+
+    def export(self, output_filepath: str) -> None:
+        """
+        Export the entire audio signal to the specified file.
+        Supports all audio formats supported by soundfile (like WAV, FLAC, AIFF, OGG).
+
+        Args:
+            output_filepath (str): The path where the audio file will be saved. The file extension determines the format.
+
+        Raises:
+            ValueError: If the audio signal is not loaded.
+            RuntimeError: If the export fails for any reason.
+        """
+        if not self.__audio_signal:
+            raise ValueError(
+                "An audio signal must be loaded before it can be exported."
+            )
+
+        # Concatenate all audio chunks into one signal
+        combined_signal = np.concatenate(self.__audio_signal)
+
+        # Create directory if not exists yet
+        directory = os.path.dirname(output_filepath)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+
+        try:
+            # Export the combined audio signal
+            sf.write(output_filepath, combined_signal, self.__sample_rate)
+            print(f"Audio successfully exported to {output_filepath}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to export audio: {e}")
