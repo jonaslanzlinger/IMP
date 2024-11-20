@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import numpy as np
 
 from pysoundlocalization.core.Audio import Audio
@@ -45,7 +45,9 @@ environment1 = SampleTrimmer.sync_environment(environment1)
 # chunking
 # for each chunk: compute tdoa, multilaterate, add sound source position to environment
 # chunking the audio files
-environment1.chunk_audio_signals(chunk_size=1000)
+environment1.chunk_audio_signals_by_duration(
+    chunk_duration=timedelta(milliseconds=1000)
+)
 number_of_chunks = len(environment1.get_mics()[0].get_audio().get_audio_signal())
 
 algorithm_choice = "threshold"

@@ -3,6 +3,7 @@ import numpy as np
 import os
 import soundfile as sf
 import sounddevice as sd
+from datetime import timedelta
 
 
 class Audio:
@@ -118,27 +119,35 @@ class Audio:
             self.__sample_rate = target_sample_rate
         return self.__sample_rate, self.__audio_signal
 
-    def chunk_audio_signal(self, chunk_size: int | None = 1000) -> None:
+    def chunk_audio_signal_by_duration(
+        self, chunk_duration: timedelta | None = timedelta(milliseconds=1000)
+    ) -> None:
         """
         Chunk the audio signal into chunks of a specific duration.
 
         Args:
-            chunk_size (int): The duration of each audio chunk in milliseconds.
+            chunk_duration (timedelta): The duration of each audio chunk as a timedelta.
         """
+        chunk_in_samples = int(self.__sample_rate * chunk_duration.total_seconds())
+        self.chunk_audio_signal_by_samples(chunk_in_samples)
 
+    def chunk_audio_signal_by_samples(self, chunk_samples: int) -> None:
+        """
+        Core implementation to chunk the audio signal by desired samples per chunk.
+
+        Args:
+            chunk_samples (int): The number of samples in each chunk. The sample rate of the audio defines how many samples are in a given timeframe.
+        """
         if len(self.__audio_signal) > 1:
             raise ValueError("Audio signal is already chunked. Cannot chunk it again.")
 
-        chunk_in_samples = int(self.__sample_rate * chunk_size / 1000)
         chunks = []
-        for i in range(0, len(self.__audio_signal[0]), chunk_in_samples):
-            next_chunk = self.__audio_signal[0][i : i + chunk_in_samples]
-            if len(next_chunk) == chunk_in_samples:
+        for i in range(0, len(self.__audio_signal[0]), chunk_samples):
+            next_chunk = self.__audio_signal[0][i : i + chunk_samples]
+            if len(next_chunk) == chunk_samples:
                 chunks.append(next_chunk)
-            else:
-                chunks.append(
-                    np.pad(next_chunk, (0, chunk_in_samples - len(next_chunk)))
-                )
+            else:  # TODO: do we want to enfore equal_chunk_size? currently, the last chunk is always padded to have same length as those before..
+                chunks.append(np.pad(next_chunk, (0, chunk_samples - len(next_chunk))))
 
         self.__audio_signal = chunks
 

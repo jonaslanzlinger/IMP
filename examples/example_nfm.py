@@ -173,7 +173,9 @@ for i, mic in enumerate(environment1.get_mics()):
 # wait
 # time.sleep(3)
 
-environment1.chunk_audio_signals(chunk_size=1000)
+environment1.chunk_audio_signals_by_duration(
+    chunk_duration=timedelta(milliseconds=1000)
+)
 number_of_chunks = len(environment1.get_mics()[0].get_audio().get_audio_signal())
 
 algorithm_choice = "threshold"

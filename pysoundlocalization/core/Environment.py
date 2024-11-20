@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from itertools import combinations
@@ -127,15 +129,29 @@ class Environment:
 
         return max_mic_distance / self.__sound_speed
 
-    def chunk_audio_signals(self, chunk_size: int | None = 1000) -> None:
+    def chunk_audio_signals_by_duration(
+        self, chunk_duration: timedelta | None = timedelta(milliseconds=1000)
+    ) -> None:
         """
         Chunk the audio signals of all microphones into chunks of a specified duration.
 
         Args:
-            chunk_size (int | None): The duration of each chunk in milliseconds. Defaults to 1000 ms.
+            chunk_duration (timedelta | None): The duration of each chunk. Defaults to 1000 ms.
         """
         for mic in self.__mics:
-            mic.chunk_audio_signal(chunk_size=chunk_size)
+            mic.get_audio().chunk_audio_signal_by_duration(
+                chunk_duration=chunk_duration
+            )
+
+    def chunk_audio_signals_by_samples(self, chunk_samples: int) -> None:
+        """
+        Chunk the audio signals of all microphones into chunks of specified number of samples.
+
+        Args:
+            chunk_samples (int): The number of samples in each chunk. The sample rate of the audio defines how many samples are in a given timeframe.
+        """
+        for mic in self.__mics:
+            mic.get_audio().chunk_audio_signal_by_samples(chunk_samples=chunk_samples)
 
     def multilaterate(
         self,
