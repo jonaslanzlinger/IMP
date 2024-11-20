@@ -36,7 +36,7 @@ mic4.set_audio(Audio(filepath=audio4_filepath))
 SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 
 spectrogram_plot(
-    mic1.get_audio().get_audio_signal_by_index(index=0),
+    mic1.get_audio().get_unchuncked_audio_signal(),
     mic1.get_audio().get_sample_rate(),
 )
 
@@ -48,7 +48,7 @@ frequency_filter_chain.apply(mic3.get_audio())
 frequency_filter_chain.apply(mic4.get_audio())
 
 spectrogram_plot(
-    mic1.get_audio().get_audio_signal_by_index(index=0),
+    mic1.get_audio().get_unchuncked_audio_signal(),
     mic1.get_audio().get_sample_rate(),
 )
 

@@ -5,7 +5,6 @@ import soundfile as sf
 import sounddevice as sd
 
 
-# TODO: Move towards a generic SoundInput wrapper class?
 class Audio:
     def __init__(
         self,
@@ -181,6 +180,12 @@ class Audio:
             self.load_audio_file()
 
         return self.__audio_signal
+
+    def get_unchuncked_audio_signal(self) -> np.ndarray:
+        """
+        Return the audio_signal as a single numpy array. If the audio_signal is a list of audio signal chunks, converts it to a single concatenated audio signal.
+        """
+        return np.concatenate(self.__audio_signal)
 
     def set_audio_signal(self, audio_signal: np.ndarray, index: int | None = 0) -> None:
         """
