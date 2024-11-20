@@ -25,10 +25,7 @@ class Audio:
         self.__convert_to_sample_rate = convert_to_sample_rate
         self.__audio_signal = [audio_signal]
         self.__sample_rate = sample_rate
-        if audio_signal is not None and sample_rate is not None:
-            self.__duration = len(audio_signal) / sample_rate
-        elif audio_signal is None and sample_rate is None:
-            self.__duration = None
+        if audio_signal is None and sample_rate is None:
             self.load_audio_file(filepath)
 
     @classmethod
@@ -47,7 +44,7 @@ class Audio:
 
     def __str__(self):
         chunks = len(self.__audio_signal)
-        return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, chunks={chunks}, duration={self.__duration}s, audio_signal={self.__audio_signal})"
+        return f"Audio(filepath={self.__filepath}, sample_rate={self.__sample_rate}, chunks={chunks}, duration={self.get_duration()}s, audio_signal={self.__audio_signal})"
 
     def load_audio_file(self, filepath: str = None) -> tuple[int, list[np.ndarray]]:
         """
@@ -223,15 +220,7 @@ class Audio:
         """
         if self.__audio_signal is None:
             self.load_audio_file()
-
-        self.__duration = 0
-
-        for i in range(len(self.__audio_signal)):
-            self.__duration = (
-                self.__duration + len(self.__audio_signal[i]) / self.__sample_rate
-            )
-
-        return self.__duration
+        return len(self.get_unchuncked_audio_signal()) / self.__sample_rate
 
     def play(self) -> None:
         """
