@@ -35,14 +35,14 @@ NoiseReducer.reduce_noise(audio=audio2)
 nmf = NonNegativeMatrixFactorization()
 
 # Returns a list of reconstructed audio signals from single audio (split by dominant sounds)
-nfm_all_audio_from_audio1 = nmf.run_for_single_audio(audio1)
-print(nfm_all_audio_from_audio1)
+nmf_all_audio_from_audio1 = nmf.run_for_single_audio(audio1)
+print(nmf_all_audio_from_audio1)
 
-nfm_all_audio_from_audio2 = nmf.run_for_single_audio(audio2)
-print(nfm_all_audio_from_audio2)
+nmf_all_audio_from_audio2 = nmf.run_for_single_audio(audio2)
+print(nmf_all_audio_from_audio2)
 
 
-# Run NFM for all audio in the environment associated with a mic
+# Run nmf for all audio in the environment associated with a mic
 # Note that the resulting splits are quite similar / the same as when running nmf individually for the audio files
-nfm_all_audio_from_environment = nmf.run_for_all_audio_in_environment(environment1)
-print(nfm_all_audio_from_environment)
+nmf_all_audio_from_environment = nmf.run_for_all_audio_in_environment(environment1)
+print(nmf_all_audio_from_environment)

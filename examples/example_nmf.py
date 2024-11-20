@@ -3,7 +3,6 @@ from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from datetime import timedelta
 from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
-from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
 from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
     NonNegativeMatrixFactorization,
