@@ -1,3 +1,4 @@
+from core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 import math
 import numpy as np
@@ -21,7 +22,39 @@ class NonNegativeMatrixFactorization:
         self.__D = None
         self.__cost_function = None
 
-    def run(self, audio: Audio):
+    def run_for_single_audio(self, audio: Audio):
+        """
+        Run NFM for a single audio file.
+
+        Args:
+            audio (Audio): The audio to run nfm for.
+        """
+        return self.__run(audio)
+
+    # TODO: we need to use the concatenate "hack" to ensure that the splits are the same order for all audio files
+    def run_for_all_audio_in_environment(self, environment: Environment):
+        """
+        Run NFM for all audio files in the environment that are associated with a mic.
+
+        Args:
+            environment (Environment): The environment to run nfm for.
+
+        Returns:
+            A dict containing
+        """
+        results = {}
+        for mic in environment.get_mics():
+            mic_id = mic.get_name()
+            audio = mic.get_audio()
+            if audio is not None:
+                print(f"Running NMF for microphone {mic_id}...")
+                results[mic_id] = self.__run(audio)
+            else:
+                print(f"No audio data found for microphone {mic_id}. Skipping.")
+
+        return results
+
+    def __run(self, audio: Audio):
 
         sound_stft = librosa.stft(
             audio.get_audio_signal_by_index(index=0),

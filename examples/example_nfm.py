@@ -99,7 +99,7 @@ print(audio_concatinated.get_duration())
 
 # TODO: IMPORTANT: nmf returns a signal that is slighly shorter than the original concatenated signal.
 nmf = NonNegativeMatrixFactorization()
-audio_signal_concatinated_nmf = nmf.run(audio_concatinated)
+audio_signal_concatinated_nmf = nmf.run_for_single_audio(audio_concatinated)
 
 
 for i, audio_concatinated_source_signal in enumerate(audio_signal_concatinated_nmf):
