@@ -104,21 +104,22 @@ for mic in environment1.get_mics():
         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
     )
 
-AudioNormalizer.peak_normalize(environment1, -10)
+AudioNormalizer.peak_normalize(environment1, -17)
 for mic in environment1.get_mics():
     wave_plot(
         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
     )
+    # mic.get_audio().play()
 
 # for mic in environment1.get_mics():
 #     wave_plot(
 #         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
 #     )
 
-algorithm_choice = "gcc_phat"
+algorithm_choice = "gcc_path"
 
 dict = environment1.multilaterate(
-    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.06
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.1
 )
 
 for i, object in enumerate(dict):
