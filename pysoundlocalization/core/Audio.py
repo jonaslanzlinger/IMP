@@ -187,7 +187,7 @@ class Audio:
 
         return self.__audio_signal
 
-    def get_unchuncked_audio_signal(self) -> np.ndarray:
+    def get_unchunked_audio_signal(self) -> np.ndarray:
         """
         Return the audio_signal as a single numpy array. If the audio_signal is a list of audio signal chunks, converts it to a single concatenated audio signal.
         """
@@ -224,7 +224,7 @@ class Audio:
         Returns:
             int: The number of samples in the audio signal.
         """
-        return self.get_unchuncked_audio_signal().shape[0]
+        return self.get_unchunked_audio_signal().shape[0]
 
     def get_duration(self) -> float:
         """
@@ -238,7 +238,7 @@ class Audio:
         """
         if self.__audio_signal is None:
             self.load_audio_file()
-        return len(self.get_unchuncked_audio_signal()) / self.__sample_rate
+        return len(self.get_unchunked_audio_signal()) / self.__sample_rate
 
     def play(self) -> None:
         """

@@ -122,7 +122,7 @@ class SampleTrimmer:
 
         # Slice the audio signal between start and end samples
         audio.set_audio_signal(
-            audio.get_unchuncked_audio_signal()[start_sample:end_sample]
+            audio.get_unchunked_audio_signal()[start_sample:end_sample]
         )
 
         return audio

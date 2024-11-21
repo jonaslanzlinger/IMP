@@ -14,18 +14,18 @@ audio.load_audio_file()
 
 
 spectrogram_plot(
-    audio_signal=audio.get_audio_signal_by_index(index=0),
+    audio_signal=audio.get_unchunked_audio_signal(),
     sample_rate=audio.get_sample_rate(),
 )
-print(audio.get_audio_signal_by_index(index=0))
+print(audio.get_unchunked_audio_signal())
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
 frequency_filter_chain.apply(audio)
 
-print(audio.get_audio_signal_by_index(index=0))
+print(audio.get_unchunked_audio_signal())
 # audio.play()
 
 spectrogram_plot(
-    audio_signal=audio.get_audio_signal_by_index(index=0),
+    audio_signal=audio.get_unchunked_audio_signal(),
     sample_rate=audio.get_sample_rate(),
 )

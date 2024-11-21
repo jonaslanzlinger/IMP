@@ -32,8 +32,8 @@ print("Unchunked audio with 5 chunks:")
 print(mic1.get_audio())
 
 print("Printing the chunked audio as a single audio signal")
-print(mic1.get_audio().get_unchuncked_audio_signal())
-print(mic1.get_audio().get_unchuncked_audio_signal().shape)
+print(mic1.get_audio().get_unchunked_audio_signal())
+print(mic1.get_audio().get_unchunked_audio_signal().shape)
 
 
 ####

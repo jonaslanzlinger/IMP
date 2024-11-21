@@ -11,16 +11,15 @@ from pysoundlocalization.core.Simulation import Simulation
 import numpy as np
 from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-import time
 
 simulation = Simulation.create()
 environment1 = simulation.add_environment(
     "Machine Environment", [(0, 0), (0, 10), (10, 10), (10, 0)]
 )
-mic1 = environment1.add_microphone(8.61, 2)
-mic2 = environment1.add_microphone(8.61, 5.89)
-mic3 = environment1.add_microphone(2, 5.89)
-mic4 = environment1.add_microphone(2, 2)
+mic1 = environment1.add_microphone(8.61, 2, "mic1")
+mic2 = environment1.add_microphone(8.61, 5.89, "mic2")
+mic3 = environment1.add_microphone(2, 5.89, "mic3")
+mic4 = environment1.add_microphone(2, 2, "mic4")
 
 audio_file1 = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC1_2024-11-07_10-30-45_977581.wav"
 audio1 = Audio(filepath=audio_file1, convert_to_sample_rate=11025)
@@ -56,7 +55,7 @@ SampleTrimmer.trim_from_end(audio4, timedelta(seconds=5))
 
 
 # spectrogram_plot(
-#     audio_signal=audio.get_audio_signal_by_index(index=0),
+#     audio_signal=audio.get_unchuncked_audio_signal(),
 #     sample_rate=audio.get_sample_rate(),
 # )
 
@@ -79,15 +78,15 @@ audio4 = NoiseReducer.reduce_noise(audio=audio4)
 
 # audio.play()
 
-# spectrogram_plot(audio.get_audio_signal_by_index(index=0), audio.get_sample_rate())
+# spectrogram_plot(audio.get_unchuncked_audio_signal(), audio.get_sample_rate())
 
-# concatenate all 4 audio signals (audio.get_audio_signal_by_index(index=0) is the first audio signal)
+# concatenate all 4 audio signals (audio.get_unchuncked_audio_signal() is the first audio signal)
 audio_signal_concatenated = np.concatenate(
     [
-        audio1.get_audio_signal_by_index(index=0),
-        audio2.get_audio_signal_by_index(index=0),
-        audio3.get_audio_signal_by_index(index=0),
-        audio4.get_audio_signal_by_index(index=0),
+        audio1.get_unchunked_audio_signal(),
+        audio2.get_unchunked_audio_signal(),
+        audio3.get_unchunked_audio_signal(),
+        audio4.get_unchunked_audio_signal(),
     ],
     axis=0,
 )
@@ -103,31 +102,31 @@ audio_signal_concatinated_nmf = nmf.run_for_single_audio(audio_concatinated)
 
 for i, audio_concatinated_source_signal in enumerate(audio_signal_concatinated_nmf):
     new_audio1_signal = audio_concatinated_source_signal[
-        0 : len(audio1.get_audio_signal_by_index(index=0))
+        0 : len(audio1.get_unchunked_audio_signal())
     ]
     new_audio2_signal = audio_concatinated_source_signal[
-        len(audio1.get_audio_signal_by_index(index=0)) : len(
-            audio1.get_audio_signal_by_index(index=0)
+                        len(audio1.get_unchunked_audio_signal()): len(
+            audio1.get_unchunked_audio_signal()
         )
-        + len(audio2.get_audio_signal_by_index(index=0))
+                                                                  + len(audio2.get_unchunked_audio_signal())
     ]
     new_audio3_signal = audio_concatinated_source_signal[
-        len(audio1.get_audio_signal_by_index(index=0))
-        + len(audio2.get_audio_signal_by_index(index=0)) : len(
-            audio1.get_audio_signal_by_index(index=0)
+        len(audio1.get_unchunked_audio_signal())
+        + len(audio2.get_unchunked_audio_signal()): len(
+            audio1.get_unchunked_audio_signal()
         )
-        + len(audio2.get_audio_signal_by_index(index=0))
-        + len(audio3.get_audio_signal_by_index(index=0))
+                                                    + len(audio2.get_unchunked_audio_signal())
+                                                    + len(audio3.get_unchunked_audio_signal())
     ]
     new_audio4_signal = audio_concatinated_source_signal[
-        len(audio1.get_audio_signal_by_index(index=0))
-        + len(audio2.get_audio_signal_by_index(index=0))
-        + len(audio3.get_audio_signal_by_index(index=0)) : len(
-            audio1.get_audio_signal_by_index(index=0)
+        len(audio1.get_unchunked_audio_signal())
+        + len(audio2.get_unchunked_audio_signal())
+        + len(audio3.get_unchunked_audio_signal()): len(
+            audio1.get_unchunked_audio_signal()
         )
-        + len(audio2.get_audio_signal_by_index(index=0))
-        + len(audio3.get_audio_signal_by_index(index=0))
-        + len(audio4.get_audio_signal_by_index(index=0))
+                                                    + len(audio2.get_unchunked_audio_signal())
+                                                    + len(audio3.get_unchunked_audio_signal())
+                                                    + len(audio4.get_unchunked_audio_signal())
     ]
     audio1.set_audio_signal(audio_signal=new_audio1_signal, index=0)
     audio2.set_audio_signal(audio_signal=new_audio2_signal, index=0)
@@ -187,7 +186,9 @@ for i, object in enumerate(dict):
     print(dict[object])
 
 for i, mic in enumerate(environment1.get_mics()):
-    print(f"MIC{i+1} has {len(mic.get_audio().get_audio_signal())} chunks")
+    print(
+        f"MIC{i+1} ({mic.get_name()}) has {len(mic.get_audio().get_audio_signal())} chunks"
+    )
     # play
     # mic.get_audio().play()
 

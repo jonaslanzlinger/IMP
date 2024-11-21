@@ -44,8 +44,8 @@ max_tau = environment1.get_max_tau()
 
 # Compute TDoA and DoA for mic pair 1+2
 tdoa12, cc = environment1.compute_tdoa(
-    audio1=mic1.get_audio().get_audio_signal_by_index(index=0),
-    audio2=mic2.get_audio().get_audio_signal_by_index(index=0),
+    audio1=mic1.get_audio().get_unchunked_audio_signal(),
+    audio2=mic2.get_audio().get_unchunked_audio_signal(),
     sample_rate=44100,
     max_tau=max_tau,  # Optional argument, may be left out to have max_tau computed automatically
 )

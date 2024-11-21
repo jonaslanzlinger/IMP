@@ -24,10 +24,10 @@ audio_timestamps = [audio1_timestamp, audio2_timestamp]
 
 audio_files = [audio1, audio2]
 
-print(audio1.get_unchuncked_audio_signal().shape)
-print(audio2.get_unchuncked_audio_signal().shape)
+print(audio1.get_unchunked_audio_signal().shape)
+print(audio2.get_unchunked_audio_signal().shape)
 # TODO: currently, sync_audio has a rounding error (likely from duration) that makes it such that audio2 has just 1 sample more than audio1
 SampleTrimmer.sync_audio(audio_files, audio_timestamps)
 
-print(audio1.get_unchuncked_audio_signal().shape)
-print(audio2.get_unchuncked_audio_signal().shape)
+print(audio1.get_unchunked_audio_signal().shape)
+print(audio2.get_unchunked_audio_signal().shape)
