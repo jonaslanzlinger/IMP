@@ -4,17 +4,18 @@ from datetime import datetime
 
 class Microphone:
 
-    def __init__(self, x: float, y: float, name: str = "NoName"):
+    def __init__(self, x: float, y: float, name: str = None):
         """
         Initialize the Microphone with a specified (x, y) position.
 
         Args:
             x (float): X-coordinate of the microphone position.
             y (float): Y-coordinate of the microphone position.
+            name (str, optional): Name of the microphone. Defaults to "(x, y)" if not provided.
         """
-        self.__name = name
-        self.__x = x
-        self.__y = y
+        self.__x: float = x
+        self.__y: float = y
+        self.__name: str = name if name is not None else f"({x}, {y})"
         self.__recording_start_time: datetime | None = None
         self.__audio: Audio | None = None
 
