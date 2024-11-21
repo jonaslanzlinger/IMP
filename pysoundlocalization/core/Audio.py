@@ -226,6 +226,15 @@ class Audio:
         """
         return self.get_unchunked_audio_signal().shape[0]
 
+    def get_num_chunks(self) -> int:
+        """
+        Get the number of chunks the audio signal was split into. Returns 1 if the audio signal was not split.
+
+        Returns:
+            int: The number of chunks the audio signal was split into.
+        """
+        return len(self.__audio_signal)
+
     def get_duration(self) -> float:
         """
         Return the duration of the audio file in seconds.
