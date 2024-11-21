@@ -112,12 +112,17 @@ class SampleTrimmer:
         end_seconds = end_time.total_seconds()
 
         # Calculate the start and end sample indices
-        start_sample = int(start_seconds * audio.get_sample_rate())
-        end_sample = int(end_seconds * audio.get_sample_rate())
+        start_sample = int(round(start_seconds * audio.get_sample_rate()))
+        end_sample = int(round(end_seconds * audio.get_sample_rate()))
+
+        # Ensure the indices are within the bounds of the audio signal
+        total_samples = audio.get_num_samples()
+        start_sample = max(0, min(start_sample, total_samples))
+        end_sample = max(0, min(end_sample, total_samples))
 
         # Slice the audio signal between start and end samples
         audio.set_audio_signal(
-            audio.get_audio_signal_by_index(index=0)[start_sample:end_sample], index=0
+            audio.get_unchuncked_audio_signal()[start_sample:end_sample]
         )
 
         return audio
