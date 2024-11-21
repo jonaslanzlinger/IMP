@@ -172,6 +172,11 @@ class Environment:
 
         number_of_chunks = len(self.get_mics()[0].get_audio().get_audio_signal())
 
+        # Get chunk size in samples
+        chunk_size = int(
+            self.get_mics()[0].get_audio().get_num_samples() / number_of_chunks
+        )
+
         dict = {}
         for i in range(number_of_chunks):
 
@@ -187,12 +192,12 @@ class Environment:
                 )
 
             if tdoa_pairs_of_chunk is None:
-                dict[f"ChunkNr({i})"] = tdoa_pairs_of_chunk
+                dict[f"{i * chunk_size}"] = tdoa_pairs_of_chunk
                 continue
 
             sound_source_position = multilaterate_by_tdoa_pairs(tdoa_pairs_of_chunk)
 
-            dict[f"ChunkNr({i})"] = sound_source_position
+            dict[f"{i * chunk_size}"] = sound_source_position
 
         return dict
 
