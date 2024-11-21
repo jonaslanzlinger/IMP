@@ -49,9 +49,7 @@ def stft(signal, window_size, hop_length):
 
 window_size = 2048
 hop_length = 512
-stft_matrix = stft(
-    combined_audio.get_unchunked_audio_signal(), window_size, hop_length
-)
+stft_matrix = stft(combined_audio.get_unchunked_audio_signal(), window_size, hop_length)
 
 magnitude_spectrogram = np.abs(stft_matrix)
 print(f"Magnitude spectrogram shape: {magnitude_spectrogram.shape}")
@@ -84,6 +82,4 @@ filtered_audio = notch_filter(combined_audio, noise_frequency)
 
 # filtered_audio.play()
 
-wave_plot(
-    filtered_audio.get_unchunked_audio_signal(), filtered_audio.get_sample_rate()
-)
+wave_plot(filtered_audio.get_unchunked_audio_signal(), filtered_audio.get_sample_rate())

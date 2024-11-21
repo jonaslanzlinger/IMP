@@ -105,28 +105,28 @@ for i, audio_concatinated_source_signal in enumerate(audio_signal_concatinated_n
         0 : len(audio1.get_unchunked_audio_signal())
     ]
     new_audio2_signal = audio_concatinated_source_signal[
-                        len(audio1.get_unchunked_audio_signal()): len(
+        len(audio1.get_unchunked_audio_signal()) : len(
             audio1.get_unchunked_audio_signal()
         )
-                                                                  + len(audio2.get_unchunked_audio_signal())
+        + len(audio2.get_unchunked_audio_signal())
     ]
     new_audio3_signal = audio_concatinated_source_signal[
         len(audio1.get_unchunked_audio_signal())
-        + len(audio2.get_unchunked_audio_signal()): len(
+        + len(audio2.get_unchunked_audio_signal()) : len(
             audio1.get_unchunked_audio_signal()
         )
-                                                    + len(audio2.get_unchunked_audio_signal())
-                                                    + len(audio3.get_unchunked_audio_signal())
+        + len(audio2.get_unchunked_audio_signal())
+        + len(audio3.get_unchunked_audio_signal())
     ]
     new_audio4_signal = audio_concatinated_source_signal[
         len(audio1.get_unchunked_audio_signal())
         + len(audio2.get_unchunked_audio_signal())
-        + len(audio3.get_unchunked_audio_signal()): len(
+        + len(audio3.get_unchunked_audio_signal()) : len(
             audio1.get_unchunked_audio_signal()
         )
-                                                    + len(audio2.get_unchunked_audio_signal())
-                                                    + len(audio3.get_unchunked_audio_signal())
-                                                    + len(audio4.get_unchunked_audio_signal())
+        + len(audio2.get_unchunked_audio_signal())
+        + len(audio3.get_unchunked_audio_signal())
+        + len(audio4.get_unchunked_audio_signal())
     ]
     audio1.set_audio_signal(audio_signal=new_audio1_signal, index=0)
     audio2.set_audio_signal(audio_signal=new_audio2_signal, index=0)
