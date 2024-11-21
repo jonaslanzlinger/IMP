@@ -217,6 +217,15 @@ class Audio:
             self.load_audio_file()
         return self.__sample_rate
 
+    def get_num_samples(self) -> int:
+        """
+        Get the total number of samples in the audio signal.
+
+        Returns:
+            int: The number of samples in the audio signal.
+        """
+        return self.get_unchuncked_audio_signal().shape[0]
+
     def get_duration(self) -> float:
         """
         Return the duration of the audio file in seconds.
