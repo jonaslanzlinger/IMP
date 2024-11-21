@@ -31,33 +31,80 @@ class NonNegativeMatrixFactorization:
         """
         return self.__run(audio)
 
-    # TODO: we need to use the concatenate "hack" to ensure that the splits are the same order for all audio files
-    def run_for_all_audio_in_environment(self, environment: Environment):
+    def run_for_single_audio_signal(self, audio_signal: np.ndarray):
         """
-        Run NFM for all audio files in the environment that are associated with a mic.
+        Run NFM for a single audio signal of type ndarray.
+
+        Args:
+            audio_signal (np.ndarray): The audio signal to run nfm for.
+        """
+        return self.__run(Audio(audio_signal=audio_signal))
+
+    def experimental_run_for_all_audio_in_environment(self, environment: Environment):
+        """
+        This method is experimental and may change in the future. Method requires advanced understanding and should not be used unless the behaviour is understood.
+
+        Runs NFM on all audio files in an environment associated with a mic while preserving the splitting order.
+
+        NFM does not guarantee the order of the split audio, which is problematic when multiple audio signals are split
+        independently of each other. This is the case in a traditional for loop that runs NFM on each audio file.
+
+        To solve the issue, the audio files are concatenated first into a single audio file before running NFM.
+        Afterward, the reconstructed sound signal is split back into its audio parts, one for each mic.
 
         Args:
             environment (Environment): The environment to run nfm for.
 
         Returns:
-            A dict containing
+           A dictionary mapping each microphone to a list of updated Audio objects.
         """
-        results = {}
-        for mic in environment.get_mics():
-            mic_id = mic.get_name()
+        mics = environment.get_mics()
+        if not mics:
+            raise ValueError("No microphones found in the environment.")
+
+        # Collect relevant audio signals in environment and their lengths
+        # TODO: all checks before doing the splitting, like do all audio have same sample rate, start timestamp, etc
+        audios = []
+        mic_audio_lengths = []
+        for mic in mics:
             audio = mic.get_audio()
             if audio is not None:
-                print(f"Running NMF for microphone {mic_id}...")
-                results[mic_id] = self.__run(audio)
+                audio_signal = audio.get_unchunked_audio_signal()
+                audios.append(audio_signal)
+                mic_audio_lengths.append(len(audio_signal))
             else:
-                print(f"No audio data found for microphone {mic_id}. Skipping.")
+                print(
+                    f"Warning: No audio data found for microphone {mic.get_name()}. Skipping."
+                )
+
+        if not audios:
+            raise ValueError("No valid audio data found in the environment.")
+
+        # Run NMF on the concatenated audio signal (small trick to preserve splitting order across audio signals)
+        nmf_result = self.run_for_single_audio_signal(np.concatenate(audios))
+
+        # Iterate through nmf_result, which returns a list of reconstructed_sounds
+        # split first reconstructed sound and give one split to each mic respectively. repeat for the second.
+        # Initialize results dictionary to store the split audio for each mic
+        results = {mic: [] for mic in mics}
+
+        # Iterate through the NMF results and split each reconstructed sound for each microphone
+        for source_signal in nmf_result:
+            start_idx = 0
+            for mic_index, mic in enumerate(mics):
+                part_length = mic_audio_lengths[mic_index]
+                end_idx = start_idx + part_length
+
+                mic_part = source_signal[start_idx:end_idx]
+                results[mic].append(Audio(audio_signal=mic_part))
+                start_idx = end_idx
 
         return results
 
     def __run(self, audio: Audio):
 
         sound_stft = librosa.stft(
-            audio.get_audio_signal_by_index(index=0),
+            audio.get_unchunked_audio_signal(),
             n_fft=self.__FRAME,
             hop_length=self.__HOP,
         )
