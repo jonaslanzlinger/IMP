@@ -14,6 +14,7 @@ from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
@@ -99,6 +100,12 @@ for mic in environment1.get_mics():
     #     audio = NoiseReducer.reduce_noise(audio=audio)
     #     audio.play()
     # print(mic.get_audio())
+    wave_plot(
+        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    )
+
+AudioNormalizer.peak_normalize(environment1, -10)
+for mic in environment1.get_mics():
     wave_plot(
         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
     )
