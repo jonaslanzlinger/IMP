@@ -71,9 +71,9 @@ SampleTrimmer.slice_all_from_to(
 )
 
 # Show claps in spectogram
-spectrogram_plot(
-    mic1.get_audio().get_audio_signal_by_index(0), mic1.get_audio().get_sample_rate()
-)
+# spectrogram_plot(
+#     mic1.get_audio().get_audio_signal_by_index(0), mic1.get_audio().get_sample_rate()
+# )
 # mic1.get_audio().play()
 
 # Try to remove frequencies of machine sound
@@ -83,9 +83,9 @@ frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 nmf = NonNegativeMatrixFactorization()
 
 for mic in environment1.get_mics():
-    wave_plot(
-        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
-    )
+    # wave_plot(
+    #     mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    # )
     frequency_filter_chain.apply(mic.get_audio())
     NoiseReducer.reduce_noise(audio=mic.get_audio())
 
@@ -100,15 +100,17 @@ for mic in environment1.get_mics():
     #     audio = NoiseReducer.reduce_noise(audio=audio)
     #     audio.play()
     # print(mic.get_audio())
-    wave_plot(
-        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
-    )
+    # wave_plot(
+    #     mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    # )
 
-AudioNormalizer.peak_normalize(environment1, -17)
+# AudioNormalizer.peak_normalize(environment1, -17)
+AudioNormalizer.normalize_to_max_amplitude(environment1, 0.9)
 for mic in environment1.get_mics():
-    wave_plot(
-        mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
-    )
+    # wave_plot(
+    #     mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
+    # )
+    pass
     # mic.get_audio().play()
 
 # for mic in environment1.get_mics():
@@ -116,10 +118,10 @@ for mic in environment1.get_mics():
 #         mic.get_audio().get_audio_signal_by_index(0), mic.get_audio().get_sample_rate()
 #     )
 
-algorithm_choice = "gcc_path"
+algorithm_choice = "gcc_phat"
 
 dict = environment1.multilaterate(
-    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.1
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.6
 )
 
 for i, object in enumerate(dict):
