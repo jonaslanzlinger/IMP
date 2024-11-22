@@ -56,7 +56,7 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
 
     menu_ax = plt.axes([0.1, 0.25, 0.8, 0.15])
     radio_items = [mic.get_name() for mic in environment.get_mics()]
-    radio = RadioButtons(menu_ax, radio_items, active=0)
+    radio = RadioButtons(menu_ax, radio_items, active=0, activecolor="red")
 
     button_load_ax = plt.axes([0.6, 0.285, 0.125, 0.08])
     button_load = Button(button_load_ax, "Load")
