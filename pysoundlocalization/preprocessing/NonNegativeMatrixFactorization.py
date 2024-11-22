@@ -166,7 +166,8 @@ class NonNegativeMatrixFactorization:
             for mic, end_idx in zip(mics, cumulative_lengths):
                 split_signal = nmf_signal[start_idx:end_idx]
                 audio_with_new_signal = Audio(
-                    audio_signal=split_signal, sample_rate=self.__SR # TODO: use SR defined from object or from the actual audio, meaning reference_sample_rate?
+                    audio_signal=split_signal,
+                    sample_rate=self.__SR,  # TODO: use SR defined from object or from the actual audio, meaning reference_sample_rate?
                 )
                 results[mic].append(audio_with_new_signal)
                 start_idx = end_idx
