@@ -74,16 +74,12 @@ class NonNegativeMatrixFactorization:
         if not mics:
             raise ValueError("No microphones found in the environment.")
 
-        # Collect relevant audio signals in environment and their lengths
         # TODO: all checks before doing the splitting, like do all audio have same sample rate, start timestamp, etc
         audios = []
-        mic_audio_lengths = []
         for mic in mics:
             audio = mic.get_audio()
             if audio is not None:
-                audio_signal = audio.get_unchunked_audio_signal()
-                audios.append(audio_signal)
-                mic_audio_lengths.append(len(audio_signal))
+                audios.append(audio.get_unchunked_audio_signal())
             else:
                 print(
                     f"Warning: No audio data found for microphone {mic.get_name()}. Skipping."
@@ -93,21 +89,24 @@ class NonNegativeMatrixFactorization:
             raise ValueError("No valid audio data found in the environment.")
 
         # Run NMF on the concatenated audio signal (small trick to preserve splitting order across audio signals)
+        concatenated_audio = np.concatenate(audios)
         nmf_result = self.run_for_single_audio_signal(
-            np.concatenate(audios), visualize_results
+            concatenated_audio, visualize_results
         )
 
-        # Iterate through nmf_result, which returns a list of reconstructed_sounds
-        # split first reconstructed sound and give one split to each mic respectively. repeat for the second.
-        # Initialize results dictionary to store the split audio for each mic
+        # Split the initially concatenated signals back and add the audio to the respective mics
+        # Ensures that the order of NMF splitting is the same for all mic audio.
         results = {mic: [] for mic in mics}
-        cumulative_lengths = np.cumsum(mic_audio_lengths)
+        for nmf_signal in nmf_result:
+            # The reconstructed nmf_signal is possibly shorter than the original audio.
+            # Thus, ensure that the proportion remains correct when splitting back into the respective audios for each mic.
+            length_ratio = len(nmf_signal) / len(concatenated_audio)
+            processed_lengths = [int(len(audio) * length_ratio) for audio in audios]
+            cumulative_lengths = np.cumsum(processed_lengths)
 
-        # Iterate through the NMF results and split each reconstructed sound for each microphone
-        for source_signal in nmf_result:
             start_idx = 0
             for mic, end_idx in zip(mics, cumulative_lengths):
-                split_signal = source_signal[start_idx:end_idx]
+                split_signal = nmf_signal[start_idx:end_idx]
                 results[mic].append(Audio(audio_signal=split_signal))
                 start_idx = end_idx
 
