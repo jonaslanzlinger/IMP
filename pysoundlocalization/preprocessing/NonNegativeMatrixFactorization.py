@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import librosa
 
+
 # TODO: write credits to whoever wrote that
 class NonNegativeMatrixFactorization:
     def __init__(self):
@@ -26,25 +27,31 @@ class NonNegativeMatrixFactorization:
         self.__filtered_spectrograms = None
         self.__reconstructed_sounds = None
 
-    def run_for_single_audio(self, audio: Audio):
+    def run_for_single_audio(self, audio: Audio, visualize_results: bool = False):
         """
         Run NFM for a single audio file.
 
         Args:
             audio (Audio): The audio to run nfm for.
+            visualize_results (bool): Whether to visualize intermediate results.
         """
-        return self.__run(audio)
+        return self.__run(audio, visualize_results)
 
-    def run_for_single_audio_signal(self, audio_signal: np.ndarray):
+    def run_for_single_audio_signal(
+        self, audio_signal: np.ndarray, visualize_results: bool = False
+    ):
         """
         Run NFM for a single audio signal of type ndarray.
 
         Args:
             audio_signal (np.ndarray): The audio signal to run nfm for.
+            visualize_results (bool): Whether to visualize intermediate results.
         """
-        return self.__run(Audio(audio_signal=audio_signal))
+        return self.__run(Audio(audio_signal=audio_signal), visualize_results)
 
-    def experimental_run_for_all_audio_in_environment(self, environment: Environment):
+    def experimental_run_for_all_audio_in_environment(
+        self, environment: Environment, visualize_results: bool = False
+    ):
         """
         This method is experimental and may change in the future. Method requires advanced understanding and should not be used unless the behaviour is understood.
 
@@ -58,6 +65,7 @@ class NonNegativeMatrixFactorization:
 
         Args:
             environment (Environment): The environment to run nfm for.
+            visualize_results (bool): Whether to visualize intermediate results.
 
         Returns:
            A dictionary mapping each microphone to a list of updated Audio objects.
@@ -85,18 +93,15 @@ class NonNegativeMatrixFactorization:
             raise ValueError("No valid audio data found in the environment.")
 
         # Run NMF on the concatenated audio signal (small trick to preserve splitting order across audio signals)
-        nmf_result = self.run_for_single_audio_signal(np.concatenate(audios))
+        nmf_result = self.run_for_single_audio_signal(
+            np.concatenate(audios), visualize_results
+        )
 
         # Iterate through nmf_result, which returns a list of reconstructed_sounds
         # split first reconstructed sound and give one split to each mic respectively. repeat for the second.
         # Initialize results dictionary to store the split audio for each mic
         results = {mic: [] for mic in mics}
         cumulative_lengths = np.cumsum(mic_audio_lengths)
-        # print(cumulative_lengths)
-        # print(nmf_result[0])
-        # print(nmf_result[1])
-        # print(len(nmf_result[0]))
-        # print(len(nmf_result[1]))
 
         # Iterate through the NMF results and split each reconstructed sound for each microphone
         for source_signal in nmf_result:
@@ -108,8 +113,14 @@ class NonNegativeMatrixFactorization:
 
         return results
 
-    def __run(self, audio: Audio):
+    def __run(self, audio: Audio, visualize_results: bool = False):
+        """
+        Orchestrates the nfm algorithm.
 
+        Args:
+            audio (Audio): The audio to run nfm for.
+            visualize_results (bool): Set to true if all intermediate results should be visualized.
+        """
         sound_stft = librosa.stft(
             audio.get_unchunked_audio_signal(),
             n_fft=self.__FRAME,
@@ -127,7 +138,7 @@ class NonNegativeMatrixFactorization:
             beta=beta,
             threshold=0.05,
             MAXITER=5000,
-            display=False,  # Set to True if plots during optimization should be displayed
+            display=visualize_results,
             displayEveryNiter=1000,
         )
 
@@ -136,9 +147,9 @@ class NonNegativeMatrixFactorization:
             filtered_spectrograms, sound_stft_angle
         )
 
-        # Uncomment to see the possible visualizations
-        self.visualize_wave_form(reconstructed_sounds)
-        self.visualize_filtered_spectrograms(filtered_spectrograms)
+        if visualize_results:
+            self.visualize_wave_form(reconstructed_sounds)
+            self.visualize_filtered_spectrograms(filtered_spectrograms)
 
         return reconstructed_sounds
 
