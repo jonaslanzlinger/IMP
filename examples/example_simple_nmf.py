@@ -41,6 +41,8 @@ print(nmf_all_audio_from_audio1)
 nmf_all_audio_from_audio2 = nmf.run_for_single_audio(audio2)
 print(nmf_all_audio_from_audio2)
 
+for mic in environment1.get_mics():
+    print(mic.get_audio().get_unchunked_audio_signal().shape)
 
 # Run nmf for all audio in the environment associated with a mic
 # Note that the resulting splits are quite similar (or practically speaking the same) as when running nmf individually for the audio files
@@ -52,3 +54,6 @@ for mic, audio_list in nmf_all_audio_from_environment.items():
     for idx, audio in enumerate(audio_list):
         print(f"  Audio {idx + 1}: {len(audio.get_unchunked_audio_signal())} samples")
         audio.play()
+
+nmf.visualize_wave_form()
+nmf.visualize_filtered_spectrograms()

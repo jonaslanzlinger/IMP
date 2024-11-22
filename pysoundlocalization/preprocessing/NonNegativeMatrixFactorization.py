@@ -22,6 +22,10 @@ class NonNegativeMatrixFactorization:
         self.__D = None
         self.__cost_function = None
 
+        # Store relevant results of NFM for later access (e.g. visualizations)
+        self.__filtered_spectrograms = None
+        self.__reconstructed_sounds = None
+
     def run_for_single_audio(self, audio: Audio):
         """
         Run NFM for a single audio file.
@@ -117,101 +121,106 @@ class NonNegativeMatrixFactorization:
         self.__V = sound_sftf_magnitude + self.__EPSILON
 
         beta = 2
-        self.__W, self.__H, self.__cost_function = self.NMF(
+        self.__W, self.__H, self.__cost_function = self.__NMF(
             self.__V,
             self.__S,
             beta=beta,
             threshold=0.05,
             MAXITER=5000,
-            display=True,
+            display=False,  # Set to True if plots during optimization should be displayed
             displayEveryNiter=1000,
         )
 
-        filtered_spectrograms = self.visualize_filtered_spectrograms()
-        reconstructed_sounds = self._reconstruct_sounds(
+        filtered_spectrograms = self.__generate_filtered_spectrograms()
+        reconstructed_sounds = self.__reconstruct_sounds(
             filtered_spectrograms, sound_stft_angle
         )
+
+        # Uncomment to see the possible visualizations
         self.visualize_wave_form(reconstructed_sounds)
+        self.visualize_filtered_spectrograms(filtered_spectrograms)
 
         return reconstructed_sounds
 
-    def _reconstruct_sounds(
-        self, filtered_spectrograms: list[float], sound_stft_angle: np.ndarray
+    def __NMF(
+        self,
+        V,
+        S,
+        beta=2,
+        threshold=0.05,
+        MAXITER=5000,
+        display=False,
+        displayEveryNiter=None,
     ):
         """
-        Reconstruct sounds from filtered spectrograms.
+        inputs :
+        --------
 
-        Args:
-            filtered_spectrograms (list): List of filtered spectrograms for each source.
-            sound_stft_angle (ndarray): The phase angle of the original STFT.
+            V         : Mixture signal : |TFST|
+            S         : The number of sources to extract
+            beta      : Beta divergence considered, default=2 (Euclidean)
+            threshold : Stop criterion
+            MAXITER   : The number of maximum iterations, default=1000
+            display   : Display plots during optimization :
+            displayEveryNiter : only display last iteration
 
-        Returns:
-            list: List of reconstructed audio signals.
+
+        outputs :
+        ---------
+
+            W : dictionary matrix [KxS], W>=0
+            H : activation matrix [SxN], H>=0
+            cost_function : the optimised cost function over iterations
+
+        Algorithm :
+        -----------
+
+        1) Randomly initialize W and H matrices
+        2) Multiplicative update of W and H
+        3) Repeat step (2) until convergence or after MAXITER
+
+
         """
-        reconstructed_sounds = []
-        for i in range(self.__S):
-            reconstruct = filtered_spectrograms[i] * np.exp(1j * sound_stft_angle)
-            new_sound = librosa.istft(
-                reconstruct, n_fft=self.__FRAME, hop_length=self.__HOP
+        counter = 0
+        self.__cost_function = []
+        beta_divergence = 1
+
+        self.__K, self.__N = np.shape(V)
+
+        # Initialisation of W and H matrices : The initialization is generally random
+        self.__W = np.abs(np.random.normal(loc=0, scale=2.5, size=(self.__K, S)))
+        self.__H = np.abs(np.random.normal(loc=0, scale=2.5, size=(S, self.__N)))
+
+        # Plotting the first initialization
+        if display == True:
+            self._plot_NMF_iter(beta, counter)
+
+        while beta_divergence >= threshold and counter <= MAXITER:
+            # Update of W and H
+            self.__H *= (self.__W.T @ (((self.__W @ self.__H) ** (beta - 2)) * V)) / (
+                self.__W.T @ ((self.__W @ self.__H) ** (beta - 1)) + 10e-10
             )
-            reconstructed_sounds.append(new_sound)
-        return reconstructed_sounds
-
-    # def _generate_filtered_spectrograms(self):
-
-
-    def visualize_filtered_spectrograms(self):
-        # After NMF, each audio source S can be expressed as a frequency mask over time
-        f, axs = plt.subplots(nrows=1, ncols=self.__S, figsize=(20, 5))
-        filtered_spectrograms = []
-        for i in range(self.__S):
-            axs[i].set_title(f"Frequency Mask of Audio Source s = {i + 1}")
-            # Filter each source components
-            filtered_spectrogram = (
-                self.__W[:, [i]]
-                @ self.__H[[i], :]
-                / (self.__W @ self.__H + self.__EPSILON)
-                * self.__V
+            self.__W *= (((self.__W @ self.__H) ** (beta - 2) * V) @ self.__H.T) / (
+                (self.__W @ self.__H) ** (beta - 1) @ self.__H.T + 10e-10
             )
-            # Compute the filtered spectrogram
-            D = librosa.amplitude_to_db(filtered_spectrogram, ref=np.max)
-            # Show the filtered spectrogram
-            librosa.display.specshow(
-                D,
-                y_axis="hz",
-                sr=self.__SR,
-                hop_length=self.__HOP,
-                x_axis="time",
-                cmap=matplotlib.cm.jet,
-                ax=axs[i],
-            )
-            filtered_spectrograms.append(filtered_spectrogram)
 
-        return filtered_spectrograms
+            # Compute cost function
+            beta_divergence = self.__divergence(V, beta=2)
+            self.__cost_function.append(beta_divergence)
 
-    def visualize_wave_form(self, reconstructed_sounds: list[np.ndarray]):
-        """
-        Visualize waveforms of reconstructed audio signals.
+            if display == True and counter % displayEveryNiter == 0:
+                self._plot_NMF_iter(beta, counter)
 
-        Args:
-            reconstructed_sounds (list): List of reconstructed audio signals.
-        """
-        colors = ["r", "g", "b", "c"]
-        fig, ax = plt.subplots(nrows=self.__S, ncols=1, sharex=True, figsize=(10, 8))
-        for i in range(self.__S):
-            librosa.display.waveshow(
-                reconstructed_sounds[i],
-                sr=self.__SR,
-                color=colors[i],
-                ax=ax[i],
-                label=f"Source {i}",
-                axis="time",
-            )
-            ax[i].set(xlabel="Time [s]")
-            ax[i].legend()
-        plt.show()
+            counter += 1
 
-    def divergence(self, V, beta=2):
+        if counter - 1 == MAXITER:
+            print(f"Stop after {MAXITER} iterations.")
+        else:
+            print(f"Convergence after {counter-1} iterations.")
+
+        return self.__W, self.__H, self.__cost_function
+
+    def __divergence(self, V, beta=2):
         """
         beta = 2 : Euclidean cost function
         beta = 1 : Kullback-Leibler cost function
@@ -231,7 +240,115 @@ class NonNegativeMatrixFactorization:
         if beta == 2:
             return 1 / 2 * np.linalg.norm(self.__W @ self.__H - V)
 
-    def plot_NMF_iter(self, beta, iteration=None):
+    def __reconstruct_sounds(
+        self, filtered_spectrograms: list[float], sound_stft_angle: np.ndarray
+    ):
+        """
+        Reconstruct sounds from filtered spectrograms.
+
+        Args:
+            filtered_spectrograms (list): List of filtered spectrograms for each source.
+            sound_stft_angle (ndarray): The phase angle of the original STFT.
+
+        Returns:
+            list: List of reconstructed audio signals.
+        """
+        reconstructed_sounds = []
+        for i in range(self.__S):
+            reconstruct = filtered_spectrograms[i] * np.exp(1j * sound_stft_angle)
+            new_sound = librosa.istft(
+                reconstruct, n_fft=self.__FRAME, hop_length=self.__HOP
+            )
+            reconstructed_sounds.append(new_sound)
+        self.__reconstructed_sounds = reconstructed_sounds
+        return reconstructed_sounds
+
+    def __generate_filtered_spectrograms(self):
+        """
+        Generate filtered spectrograms for each audio source.
+
+        Returns:
+            list: A list of filtered spectrograms for each source.
+        """
+        filtered_spectrograms = []
+        for i in range(self.__S):
+            filtered_spectrogram = (
+                self.__W[:, [i]]
+                @ self.__H[[i], :]
+                / (self.__W @ self.__H + self.__EPSILON)
+                * self.__V
+            )
+            filtered_spectrograms.append(filtered_spectrogram)
+        self.__filtered_spectrograms = filtered_spectrograms
+        return filtered_spectrograms
+
+    def visualize_filtered_spectrograms(
+        self, filtered_spectrograms: list[float] | None = None
+    ) -> None:
+        """
+        Visualize frequency masks of audio sources. Must either run NMF beforehand or provide the filtered_spectrograms.
+
+        Args:
+            filtered_spectrograms (list): List of filtered spectrograms for each source.
+        """
+        # Use the provided parameter if available, otherwise fall back to the stored value
+        if filtered_spectrograms is None:
+            if self.__filtered_spectrograms is None:
+                raise ValueError(
+                    "No filtered_spectrograms provided or available in object."
+                )
+            filtered_spectrograms = self.__filtered_spectrograms
+
+        f, axs = plt.subplots(nrows=1, ncols=self.__S, figsize=(20, 5))
+        for i, filtered_spectrogram in enumerate(filtered_spectrograms):
+            axs[i].set_title(f"Frequency Mask of Audio Source s = {i + 1}")
+            # Convert to decibel scale for visualization
+            D = librosa.amplitude_to_db(filtered_spectrogram, ref=np.max)
+            # Display the spectrogram
+            librosa.display.specshow(
+                D,
+                y_axis="hz",
+                sr=self.__SR,
+                hop_length=self.__HOP,
+                x_axis="time",
+                cmap=matplotlib.cm.jet,
+                ax=axs[i],
+            )
+        plt.show()
+
+    def visualize_wave_form(
+        self, reconstructed_sounds: list[np.ndarray] | None = None
+    ) -> None:
+        """
+        Visualize waveforms of reconstructed audio signals. Must either run NMF beforehand or provide the reconstructed sounds.
+
+        Args:
+            reconstructed_sounds (list): List of reconstructed audio signals.
+        """
+        # Use the provided parameter if available, otherwise fall back to the stored value
+        if reconstructed_sounds is None:
+            if self.__reconstructed_sounds is None:
+                raise ValueError(
+                    "No reconstructed_sounds provided or available in the object."
+                )
+            reconstructed_sounds = self.__reconstructed_sounds
+
+        colors = ["r", "g", "b", "c"]
+        fig, ax = plt.subplots(nrows=self.__S, ncols=1, sharex=True, figsize=(10, 8))
+        for i in range(self.__S):
+            librosa.display.waveshow(
+                reconstructed_sounds[i],
+                sr=self.__SR,
+                color=colors[i],
+                ax=ax[i],
+                label=f"Source {i}",
+                axis="time",
+            )
+            ax[i].set(xlabel="Time [s]")
+            ax[i].legend()
+        plt.show()
+
+    def _plot_NMF_iter(self, beta, iteration=None):
 
         f = plt.figure(figsize=(4, 4))
         f.suptitle(
@@ -280,82 +397,3 @@ class NonNegativeMatrixFactorization:
         W_plot.axes.get_xaxis().set_visible(False)
         H_plot.axes.get_xaxis().set_visible(False)
         V_plot.axes.get_yaxis().set_visible(False)
-
-    def NMF(
-        self,
-        V,
-        S,
-        beta=2,
-        threshold=0.05,
-        MAXITER=5000,
-        display=True,
-        displayEveryNiter=None,
-    ):
-        """
-        inputs :
-        --------
-
-            V         : Mixture signal : |TFST|
-            S         : The number of sources to extract
-            beta      : Beta divergence considered, default=2 (Euclidean)
-            threshold : Stop criterion
-            MAXITER   : The number of maximum iterations, default=1000
-            display   : Display plots during optimization :
-            displayEveryNiter : only display last iteration
-
-
-        outputs :
-        ---------
-
-            W : dictionary matrix [KxS], W>=0
-            H : activation matrix [SxN], H>=0
-            cost_function : the optimised cost function over iterations
-
-        Algorithm :
-        -----------
-
-        1) Randomly initialize W and H matrices
-        2) Multiplicative update of W and H
-        3) Repeat step (2) until convergence or after MAXITER
-
-
-        """
-        counter = 0
-        self.__cost_function = []
-        beta_divergence = 1
-
-        self.__K, self.__N = np.shape(V)
-
-        # Initialisation of W and H matrices : The initialization is generally random
-        self.__W = np.abs(np.random.normal(loc=0, scale=2.5, size=(self.__K, S)))
-        self.__H = np.abs(np.random.normal(loc=0, scale=2.5, size=(S, self.__N)))
-
-        # Plotting the first initialization
-        if display == True:
-            self.plot_NMF_iter(beta, counter)
-
-        while beta_divergence >= threshold and counter <= MAXITER:
-
-            # Update of W and H
-            self.__H *= (self.__W.T @ (((self.__W @ self.__H) ** (beta - 2)) * V)) / (
-                self.__W.T @ ((self.__W @ self.__H) ** (beta - 1)) + 10e-10
-            )
-            self.__W *= (((self.__W @ self.__H) ** (beta - 2) * V) @ self.__H.T) / (
-                (self.__W @ self.__H) ** (beta - 1) @ self.__H.T + 10e-10
-            )
-
-            # Compute cost function
-            beta_divergence = self.divergence(V, beta=2)
-            self.__cost_function.append(beta_divergence)
-
-            if display == True and counter % displayEveryNiter == 0:
-                self.plot_NMF_iter(beta, counter)
-
-            counter += 1
-
-        if counter - 1 == MAXITER:
-            print(f"Stop after {MAXITER} iterations.")
-        else:
-            print(f"Convergeance after {counter-1} iterations.")
-
-        return self.__W, self.__H, self.__cost_function
