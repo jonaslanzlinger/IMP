@@ -49,5 +49,5 @@ for mic, audio_list in nmf_all_audio_from_environment.items():
 
 # NOTE: As audio1 is 3 seconds and Audio2 6 seconds, the sample count of the reconstructed signals is in a 1:2 proportion, as it should be.
 
-#nmf.visualize_wave_form()
-#nmf.visualize_filtered_spectrograms()
+# nmf.visualize_wave_form()
+# nmf.visualize_filtered_spectrograms()

@@ -8,7 +8,6 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
     NonNegativeMatrixFactorization,
 )
 from pysoundlocalization.core.Simulation import Simulation
-import numpy as np
 from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
@@ -24,35 +23,39 @@ mic4 = environment1.add_microphone(2, 2, "mic4")
 audio_file1 = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC1_2024-11-07_10-30-45_977581.wav"
 audio1 = Audio(filepath=audio_file1, convert_to_sample_rate=11025)
 mic1.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 977581))
+mic1.set_audio(audio1)
 print(audio1.get_duration())
-
-SampleTrimmer.trim_from_beginning(audio1, timedelta(seconds=17))
-SampleTrimmer.trim_from_end(audio1, timedelta(seconds=5))
 
 audio_file2 = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC2_2024-11-07_10-30-45_474498.wav"
 audio2 = Audio(filepath=audio_file2, convert_to_sample_rate=11025)
 mic2.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 474498))
+mic2.set_audio(audio2)
 print(audio2.get_duration())
-
-SampleTrimmer.trim_from_beginning(audio2, timedelta(seconds=17))
-SampleTrimmer.trim_from_end(audio2, timedelta(seconds=5))
 
 audio_file3 = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC3_2024-11-07_10-30-46_550904.wav"
 audio3 = Audio(filepath=audio_file3, convert_to_sample_rate=11025)
 mic3.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 46, 550904))
+mic3.set_audio(audio3)
 print(audio3.get_duration())
-
-SampleTrimmer.trim_from_beginning(audio3, timedelta(seconds=17))
-SampleTrimmer.trim_from_end(audio3, timedelta(seconds=5))
 
 audio_file4 = "Illwerke/03_experiment1_1punkt_klatschen_old/first25seconds_trimmed_output_MIC4_2024-11-07_10-30-45_728052.wav"
 audio4 = Audio(filepath=audio_file4, convert_to_sample_rate=11025)
 mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
+mic4.set_audio(audio4)
 print(audio4.get_duration())
 
-SampleTrimmer.trim_from_beginning(audio4, timedelta(seconds=17))
-SampleTrimmer.trim_from_end(audio4, timedelta(seconds=5))
-
+SampleTrimmer.slice_from_to(
+    audio1, start_time=timedelta(seconds=17), end_time=timedelta(seconds=20)
+)
+SampleTrimmer.slice_from_to(
+    audio2, start_time=timedelta(seconds=17), end_time=timedelta(seconds=20)
+)
+SampleTrimmer.slice_from_to(
+    audio3, start_time=timedelta(seconds=17), end_time=timedelta(seconds=20)
+)
+SampleTrimmer.slice_from_to(
+    audio4, start_time=timedelta(seconds=17), end_time=timedelta(seconds=20)
+)
 
 # spectrogram_plot(
 #     audio_signal=audio.get_unchuncked_audio_signal(),
@@ -60,7 +63,6 @@ SampleTrimmer.trim_from_end(audio4, timedelta(seconds=5))
 # )
 
 # audio.play()
-
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
@@ -71,68 +73,27 @@ frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 
 # audio.play()
 
-audio1 = NoiseReducer.reduce_noise(audio=audio1)
-audio2 = NoiseReducer.reduce_noise(audio=audio2)
-audio3 = NoiseReducer.reduce_noise(audio=audio3)
-audio4 = NoiseReducer.reduce_noise(audio=audio4)
+NoiseReducer.reduce_noise(audio=mic1.get_audio())
+NoiseReducer.reduce_noise(audio=mic2.get_audio())
+NoiseReducer.reduce_noise(audio=mic3.get_audio())
+NoiseReducer.reduce_noise(audio=mic4.get_audio())
 
 # audio.play()
 
 # spectrogram_plot(audio.get_unchuncked_audio_signal(), audio.get_sample_rate())
 
-# concatenate all 4 audio signals (audio.get_unchuncked_audio_signal() is the first audio signal)
-audio_signal_concatenated = np.concatenate(
-    [
-        audio1.get_unchunked_audio_signal(),
-        audio2.get_unchunked_audio_signal(),
-        audio3.get_unchunked_audio_signal(),
-        audio4.get_unchunked_audio_signal(),
-    ],
-    axis=0,
-)
-
-audio_concatinated = Audio.create_from_signal(audio_signal_concatenated, 11025)
-print(audio_concatinated.get_duration())
-# audio_concatinated.play()
-
 # TODO: IMPORTANT: nmf returns a signal that is slighly shorter than the original concatenated signal.
 nmf = NonNegativeMatrixFactorization()
-audio_signal_concatinated_nmf = nmf.run_for_single_audio(audio_concatinated)
+audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
+    environment=environment1
+)
 
-
-for i, audio_concatinated_source_signal in enumerate(audio_signal_concatinated_nmf):
-    new_audio1_signal = audio_concatinated_source_signal[
-        0 : len(audio1.get_unchunked_audio_signal())
-    ]
-    new_audio2_signal = audio_concatinated_source_signal[
-        len(audio1.get_unchunked_audio_signal()) : len(
-            audio1.get_unchunked_audio_signal()
-        )
-        + len(audio2.get_unchunked_audio_signal())
-    ]
-    new_audio3_signal = audio_concatinated_source_signal[
-        len(audio1.get_unchunked_audio_signal())
-        + len(audio2.get_unchunked_audio_signal()) : len(
-            audio1.get_unchunked_audio_signal()
-        )
-        + len(audio2.get_unchunked_audio_signal())
-        + len(audio3.get_unchunked_audio_signal())
-    ]
-    new_audio4_signal = audio_concatinated_source_signal[
-        len(audio1.get_unchunked_audio_signal())
-        + len(audio2.get_unchunked_audio_signal())
-        + len(audio3.get_unchunked_audio_signal()) : len(
-            audio1.get_unchunked_audio_signal()
-        )
-        + len(audio2.get_unchunked_audio_signal())
-        + len(audio3.get_unchunked_audio_signal())
-        + len(audio4.get_unchunked_audio_signal())
-    ]
-    audio1.set_audio_signal(audio_signal=new_audio1_signal, index=0)
-    audio2.set_audio_signal(audio_signal=new_audio2_signal, index=0)
-    audio3.set_audio_signal(audio_signal=new_audio3_signal, index=0)
-    audio4.set_audio_signal(audio_signal=new_audio4_signal, index=0)
-    break
+for mic, audio_list in audio_signals_nmf.items():
+    print(f"Mic: {mic.get_name()}")
+    for idx, audio in enumerate(audio_list):
+        print(f"  Audio {idx + 1}: {len(audio.get_unchunked_audio_signal())} samples")
+        # TODO: currently, the audio objectes returned from NMF only have the audio_signal and other parameters are missing, like sample_rate. That means that mic.set_audio(audio) does not work really.
+        mic.get_audio().set_audio_signal(audio.get_unchunked_audio_signal())
 
 # audio1.play()
 # audio2.play()
@@ -140,34 +101,33 @@ for i, audio_concatinated_source_signal in enumerate(audio_signal_concatinated_n
 # audio4.play()
 
 # reduce noise
-audio1 = NoiseReducer.reduce_noise(audio=audio1)
-audio2 = NoiseReducer.reduce_noise(audio=audio2)
-audio3 = NoiseReducer.reduce_noise(audio=audio3)
-audio4 = NoiseReducer.reduce_noise(audio=audio4)
+NoiseReducer.reduce_noise(audio=mic1.get_audio())
+NoiseReducer.reduce_noise(audio=mic2.get_audio())
+NoiseReducer.reduce_noise(audio=mic3.get_audio())
+NoiseReducer.reduce_noise(audio=mic4.get_audio())
 
 # audio1.play()
 # audio2.play()
 # audio3.play()
 # audio4.play()
 
-mic1.set_audio(audio1)
-mic2.set_audio(audio2)
-mic3.set_audio(audio3)
-mic4.set_audio(audio4)
 
 ########################
 # Pre-processing done! #
 ########################
 
+print("a")
 
 environment1 = SampleTrimmer.sync_environment(environment1)
 
+print("b")
 # play
 for i, mic in enumerate(environment1.get_mics()):
     print(f"MIC{i+1})")
     # mic.get_audio().play()
     # time.sleep(5)
 
+print("c")
 # wait
 # time.sleep(3)
 
