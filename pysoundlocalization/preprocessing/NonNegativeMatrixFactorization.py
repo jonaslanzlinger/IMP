@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import librosa
 
-
+# TODO: write credits to whoever wrote that
 class NonNegativeMatrixFactorization:
     def __init__(self):
         self.__FRAME = 512
@@ -127,13 +127,46 @@ class NonNegativeMatrixFactorization:
             displayEveryNiter=1000,
         )
 
+        filtered_spectrograms = self.visualize_filtered_spectrograms()
+        reconstructed_sounds = self._reconstruct_sounds(
+            filtered_spectrograms, sound_stft_angle
+        )
+        self.visualize_wave_form(reconstructed_sounds)
+
+        return reconstructed_sounds
+
+    def _reconstruct_sounds(
+        self, filtered_spectrograms: list[float], sound_stft_angle: np.ndarray
+    ):
+        """
+        Reconstruct sounds from filtered spectrograms.
+
+        Args:
+            filtered_spectrograms (list): List of filtered spectrograms for each source.
+            sound_stft_angle (ndarray): The phase angle of the original STFT.
+
+        Returns:
+            list: List of reconstructed audio signals.
+        """
+        reconstructed_sounds = []
+        for i in range(self.__S):
+            reconstruct = filtered_spectrograms[i] * np.exp(1j * sound_stft_angle)
+            new_sound = librosa.istft(
+                reconstruct, n_fft=self.__FRAME, hop_length=self.__HOP
+            )
+            reconstructed_sounds.append(new_sound)
+        return reconstructed_sounds
+
+    # def _generate_filtered_spectrograms(self):
+
+
+    def visualize_filtered_spectrograms(self):
         # After NMF, each audio source S can be expressed as a frequency mask over time
         f, axs = plt.subplots(nrows=1, ncols=self.__S, figsize=(20, 5))
         filtered_spectrograms = []
         for i in range(self.__S):
-            axs[i].set_title(f"Frequency Mask of Audio Source s = {i+1}")
-            # Filter eash source components
-            WsHs = self.__W[:, [i]] @ self.__H[[i], :]
+            axs[i].set_title(f"Frequency Mask of Audio Source s = {i + 1}")
+            # Filter each source components
             filtered_spectrogram = (
                 self.__W[:, [i]]
                 @ self.__H[[i], :]
@@ -152,18 +185,17 @@ class NonNegativeMatrixFactorization:
                 cmap=matplotlib.cm.jet,
                 ax=axs[i],
             )
-
             filtered_spectrograms.append(filtered_spectrogram)
 
-        reconstructed_sounds = []
-        for i in range(self.__S):
-            reconstruct = filtered_spectrograms[i] * np.exp(1j * sound_stft_angle)
-            new_sound = librosa.istft(
-                reconstruct, n_fft=self.__FRAME, hop_length=self.__HOP
-            )
-            reconstructed_sounds.append(new_sound)
+        return filtered_spectrograms
 
-        # Plotting the waveform
+    def visualize_wave_form(self, reconstructed_sounds: list[np.ndarray]):
+        """
+        Visualize waveforms of reconstructed audio signals.
+
+        Args:
+            reconstructed_sounds (list): List of reconstructed audio signals.
+        """
         colors = ["r", "g", "b", "c"]
         fig, ax = plt.subplots(nrows=self.__S, ncols=1, sharex=True, figsize=(10, 8))
         for i in range(self.__S):
@@ -178,8 +210,6 @@ class NonNegativeMatrixFactorization:
             ax[i].set(xlabel="Time [s]")
             ax[i].legend()
         plt.show()
-
-        return reconstructed_sounds
 
     def divergence(self, V, beta=2):
         """
