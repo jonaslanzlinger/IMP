@@ -225,8 +225,8 @@ class Environment:
         # Iterate over all possible pairs of microphones
         for mic1, mic2 in combinations(self.__mics, 2):
             # Retrieve the audio signals from each microphone
-            audio1 = mic1.get_audio().get_audio_signal()
-            audio2 = mic2.get_audio().get_audio_signal()
+            audio1 = mic1.get_audio().get_audio_signal_chunked()
+            audio2 = mic2.get_audio().get_audio_signal_chunked()
 
             # Check if both microphones have valid audio signals
             if audio1 is not None and audio2 is not None:

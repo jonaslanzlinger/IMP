@@ -103,7 +103,7 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
             if mic.get_name() == selected_item
         )
         wave_ax.clear()
-        wave_ax.plot(selected_audio.get_unchunked_audio_signal(), color="blue")
+        wave_ax.plot(selected_audio.get_audio_signal_unchunked(), color="blue")
         wave_ax.set_xlabel("Time (samples)")
         wave_ax.set_ylabel("Amplitude")
         global cursor_line
@@ -114,7 +114,7 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
         write(
             wav_file,
             selected_audio.get_sample_rate(),
-            (selected_audio.get_unchunked_audio_signal() * 32767).astype(np.int16),
+            (selected_audio.get_audio_signal_unchunked() * 32767).astype(np.int16),
         )
 
         pygame.mixer.music.stop()
@@ -151,12 +151,12 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
                 current_sample = int(
                     (playback_position_ms / 1000) * selected_audio.get_sample_rate()
                 )
-                if current_sample < len(selected_audio.get_unchunked_audio_signal()):
+                if current_sample < len(selected_audio.get_audio_signal_unchunked()):
                     cursor_line.set_xdata([current_sample])
                     fig.canvas.draw_idle()
                 else:
                     cursor_line.set_xdata(
-                        [len(selected_audio.get_unchunked_audio_signal()) - 1]
+                        [len(selected_audio.get_audio_signal_unchunked()) - 1]
                     )
                     fig.canvas.draw_idle()
 

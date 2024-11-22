@@ -24,7 +24,7 @@ class NonNegativeMatrixFactorization:
     def run(self, audio: Audio):
 
         sound_stft = librosa.stft(
-            audio.get_audio_signal(),
+            audio.get_audio_signal_chunked(),
             n_fft=self.__FRAME,
             hop_length=self.__HOP,
         )

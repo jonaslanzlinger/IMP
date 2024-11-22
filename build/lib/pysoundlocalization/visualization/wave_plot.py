@@ -14,11 +14,11 @@ def wave_plot(audio: Audio) -> None:
 
     timeline = np.linspace(
         0,
-        len(audio.get_audio_signal()) / audio.get_sample_rate(),
-        len(audio.get_audio_signal()),
+        len(audio.get_audio_signal_chunked()) / audio.get_sample_rate(),
+        len(audio.get_audio_signal_chunked()),
     )
 
-    plt.plot(timeline, audio.get_audio_signal())
+    plt.plot(timeline, audio.get_audio_signal_chunked())
     plt.title("Waveform")
     plt.ylabel("Amplitude")
     plt.xlabel("Time (seconds)")

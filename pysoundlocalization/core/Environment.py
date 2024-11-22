@@ -170,7 +170,9 @@ class Environment:
             TODO: dict: A dictionary containing the estimated (x, y) coordinates of the sound sources.
         """
 
-        number_of_chunks = len(self.get_mics()[0].get_audio().get_audio_signal())
+        number_of_chunks = len(
+            self.get_mics()[0].get_audio().get_audio_signal_chunked()
+        )
 
         # Get chunk size in samples
         chunk_size = int(
@@ -246,7 +248,7 @@ class Environment:
         def compute_sample_index_threshold(mic: Microphone, debug: bool = False) -> int:
 
             for i, sample in enumerate(
-                mic.get_audio().get_audio_signal_by_index(index=chunk_index)
+                mic.get_audio().get_audio_signal(index=chunk_index)
             ):
                 if abs(sample) > threshold:
                     if debug:
@@ -318,8 +320,8 @@ class Environment:
         # Iterate over all possible pairs of microphones
         for mic1, mic2 in combinations(self.__mics, 2):
             # Retrieve the audio signals from each microphone
-            audio1 = mic1.get_audio().get_audio_signal_by_index(index=chunk_index)
-            audio2 = mic2.get_audio().get_audio_signal_by_index(index=chunk_index)
+            audio1 = mic1.get_audio().get_audio_signal(index=chunk_index)
+            audio2 = mic2.get_audio().get_audio_signal(index=chunk_index)
 
             # TODO: be aware that if audio signals are not the same length, the chunking can result
             # that we have different amount of chunks per mic. This can lead to problems here!!!

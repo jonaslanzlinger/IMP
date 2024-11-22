@@ -79,7 +79,7 @@ class NonNegativeMatrixFactorization:
         for mic in mics:
             audio = mic.get_audio()
             if audio is not None:
-                audios.append(audio.get_unchunked_audio_signal())
+                audios.append(audio.get_audio_signal_unchunked())
             else:
                 print(
                     f"Warning: No audio data found for microphone {mic.get_name()}. Skipping."
@@ -121,7 +121,7 @@ class NonNegativeMatrixFactorization:
             visualize_results (bool): Set to true if all intermediate results should be visualized.
         """
         sound_stft = librosa.stft(
-            audio.get_unchunked_audio_signal(),
+            audio.get_audio_signal_unchunked(),
             n_fft=self.__FRAME,
             hop_length=self.__HOP,
         )

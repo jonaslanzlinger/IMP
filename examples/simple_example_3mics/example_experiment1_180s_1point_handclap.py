@@ -31,10 +31,10 @@ mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
 # Because of system latency, the timestamps are off by a few milliseconds.
 # Therefore, we concatenate some slience to the beginning of some of the audio files.
 mic1.get_audio().set_audio_signal(
-    np.concatenate([np.zeros(3800), mic1.get_audio().get_audio_signal_by_index()])
+    np.concatenate([np.zeros(3800), mic1.get_audio().get_audio_signal()])
 )
 mic2.get_audio().set_audio_signal(
-    np.concatenate([np.zeros(1500), mic2.get_audio().get_audio_signal_by_index()])
+    np.concatenate([np.zeros(1500), mic2.get_audio().get_audio_signal()])
 )
 
 environment1 = SampleTrimmer.sync_environment(environment1)
@@ -48,7 +48,9 @@ environment1 = SampleTrimmer.sync_environment(environment1)
 environment1.chunk_audio_signals_by_duration(
     chunk_duration=timedelta(milliseconds=1000)
 )
-number_of_chunks = len(environment1.get_mics()[0].get_audio().get_audio_signal())
+number_of_chunks = len(
+    environment1.get_mics()[0].get_audio().get_audio_signal_chunked()
+)
 
 algorithm_choice = "threshold"
 

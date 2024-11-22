@@ -19,7 +19,7 @@ class AudioNormalizer:
         """
         for mic in environment.get_mics():
             audio = mic.get_audio()
-            for i, chunk in enumerate(audio.get_audio_signal()):
+            for i, chunk in enumerate(audio.get_audio_signal_chunked()):
                 peak_normalized_audio = pyln.normalize.peak(chunk, target_peak)
                 audio.set_audio_signal(peak_normalized_audio, i)
 
@@ -41,7 +41,7 @@ class AudioNormalizer:
         """
         for mic in environment.get_mics():
             audio = mic.get_audio()
-            for i, chunk in enumerate(audio.get_audio_signal()):
+            for i, chunk in enumerate(audio.get_audio_signal_chunked()):
                 meter = pyln.Meter(audio.get_sample_rate())
                 loudness = meter.integrated_loudness(chunk)
                 loudness_normalized_audio = pyln.normalize.loudness(
@@ -67,7 +67,7 @@ class AudioNormalizer:
         """
         for mic in environment.get_mics():
             audio = mic.get_audio()
-            for i, chunk in enumerate(audio.get_audio_signal()):
+            for i, chunk in enumerate(audio.get_audio_signal_chunked()):
                 current_max = max(abs(chunk))
 
                 if current_max == 0:

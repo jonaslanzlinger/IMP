@@ -91,9 +91,9 @@ audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
 for mic, audio_list in audio_signals_nmf.items():
     print(f"Mic: {mic.get_name()}")
     for idx, audio in enumerate(audio_list):
-        print(f"  Audio {idx + 1}: {len(audio.get_unchunked_audio_signal())} samples")
+        print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
         # TODO: currently, the audio objectes returned from NMF only have the audio_signal and other parameters are missing, like sample_rate. That means that mic.set_audio(audio) does not work really.
-        mic.get_audio().set_audio_signal(audio.get_unchunked_audio_signal())
+        mic.get_audio().set_audio_signal(audio.get_audio_signal_unchunked())
 
 # audio1.play()
 # audio2.play()
@@ -134,7 +134,9 @@ print("c")
 environment1.chunk_audio_signals_by_duration(
     chunk_duration=timedelta(milliseconds=1000)
 )
-number_of_chunks = len(environment1.get_mics()[0].get_audio().get_audio_signal())
+number_of_chunks = len(
+    environment1.get_mics()[0].get_audio().get_audio_signal_chunked()
+)
 
 algorithm_choice = "threshold"
 
@@ -147,7 +149,7 @@ for i, object in enumerate(dict):
 
 for i, mic in enumerate(environment1.get_mics()):
     print(
-        f"MIC{i+1} ({mic.get_name()}) has {len(mic.get_audio().get_audio_signal())} chunks"
+        f"MIC{i+1} ({mic.get_name()}) has {len(mic.get_audio().get_audio_signal_chunked())} chunks"
     )
     # play
     # mic.get_audio().play()

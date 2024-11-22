@@ -21,7 +21,7 @@ class SampleTrimmer:
         samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.set_audio_signal(audio.get_audio_signal()[samples_to_trim:])
+        audio.set_audio_signal(audio.get_audio_signal_chunked()[samples_to_trim:])
 
         return audio
 
@@ -41,7 +41,7 @@ class SampleTrimmer:
         samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.set_audio_signal(audio.get_audio_signal()[:-samples_to_trim])
+        audio.set_audio_signal(audio.get_audio_signal_chunked()[:-samples_to_trim])
 
         return audio
 
@@ -61,7 +61,7 @@ class SampleTrimmer:
         samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep the specified portion of the audio signal
-        audio.set_audio_signal(audio.get_audio_signal()[:samples_to_keep])
+        audio.set_audio_signal(audio.get_audio_signal_chunked()[:samples_to_keep])
 
         return audio
 
@@ -81,7 +81,7 @@ class SampleTrimmer:
         samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep only the specified duration from the end of the audio signal
-        audio.set_audio_signal(audio.get_audio_signal()[-samples_to_keep:])
+        audio.set_audio_signal(audio.get_audio_signal_chunked()[-samples_to_keep:])
 
         return audio
 
@@ -107,7 +107,9 @@ class SampleTrimmer:
         end_sample = int(end_seconds * audio.get_sample_rate())
 
         # Slice the audio signal between start and end samples
-        audio.set_audio_signal(audio.get_audio_signal()[start_sample:end_sample])
+        audio.set_audio_signal(
+            audio.get_audio_signal_chunked()[start_sample:end_sample]
+        )
 
         return audio
 

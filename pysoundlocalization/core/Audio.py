@@ -160,7 +160,7 @@ class Audio:
         """
         return self.__filepath
 
-    def get_audio_signal_by_index(self, index: int | None = 0) -> np.ndarray:
+    def get_audio_signal(self, index: int | None = None) -> np.ndarray:
         """
         Return the audio signal data of the audio file at a specific index.
 
@@ -173,11 +173,14 @@ class Audio:
         if self.__audio_signal is None:
             self.load_audio_file()
 
+        # Return entire audio signal if no index is specified. If audio signal was chunked, concatenate and return.
+        if index is None:
+            return self.get_audio_signal_unchunked()
         return self.__audio_signal[index]
 
-    def get_audio_signal(self) -> list[np.ndarray]:
+    def get_audio_signal_chunked(self) -> list[np.ndarray]:
         """
-        Return the list of audio signal data of the audio file.
+        Return the list of chunked audio signals of the audio file.
 
         Returns:
             list[np.ndarray]: The list of audio signal data as numpy arrays.
@@ -187,9 +190,9 @@ class Audio:
 
         return self.__audio_signal
 
-    def get_unchunked_audio_signal(self) -> np.ndarray:
+    def get_audio_signal_unchunked(self) -> np.ndarray:
         """
-        Return the audio_signal as a single numpy array. If the audio_signal is a list of audio signal chunks, converts it to a single concatenated audio signal.
+        Return the audio_signal as a single (unchunked) numpy array. If the audio_signal is a list of audio signal chunks, converts it to a single concatenated audio signal.
         """
         return np.concatenate(self.__audio_signal)
 
@@ -224,7 +227,7 @@ class Audio:
         Returns:
             int: The number of samples in the audio signal.
         """
-        return self.get_unchunked_audio_signal().shape[0]
+        return self.get_audio_signal_unchunked().shape[0]
 
     def get_num_chunks(self) -> int:
         """
@@ -247,7 +250,7 @@ class Audio:
         """
         if self.__audio_signal is None:
             self.load_audio_file()
-        return len(self.get_unchunked_audio_signal()) / self.__sample_rate
+        return len(self.get_audio_signal_unchunked()) / self.__sample_rate
 
     def play(self) -> None:
         """

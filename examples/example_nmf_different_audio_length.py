@@ -44,7 +44,7 @@ nmf_all_audio_from_environment = nmf.experimental_run_for_all_audio_in_environme
 for mic, audio_list in nmf_all_audio_from_environment.items():
     print(f"Mic: {mic.get_name()}")
     for idx, audio in enumerate(audio_list):
-        print(f"  Audio {idx + 1}: {len(audio.get_unchunked_audio_signal())} samples")
+        print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
         # audio.play()
 
 # NOTE: As audio1 is 3 seconds and Audio2 6 seconds, the sample count of the reconstructed signals is in a 1:2 proportion, as it should be.

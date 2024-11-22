@@ -17,7 +17,7 @@ class NoiseReducer:
         Returns:
             Audio: The audio object with the noise reduced audio signal.
         """
-        audio_sound = audio.get_audio_signal()
+        audio_sound = audio.get_audio_signal_chunked()
         sr = audio.get_sample_rate()
 
         if noise_sample is None:

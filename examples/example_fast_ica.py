@@ -11,7 +11,7 @@ root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 speech_filepath = os.path.join(root, "examples", "example_audio", "speech_example.wav")
 speech_audio = Audio(filepath=speech_filepath)
 speech_audio.load_audio_file()
-speech_signal = speech_audio.get_unchunked_audio_signal()
+speech_signal = speech_audio.get_audio_signal_unchunked()
 speech_sample_rate = speech_audio.get_sample_rate()
 
 noise_frequency = 2500
@@ -34,8 +34,8 @@ combined_audio = Audio.create_from_signal(
 # combined_audio.play()
 
 signalSummation = np.c_[
-    speech_audio.get_unchunked_audio_signal(),
-    noise_audio.get_unchunked_audio_signal(),
+    speech_audio.get_audio_signal_unchunked(),
+    noise_audio.get_audio_signal_unchunked(),
 ]
 
 ica = FastICA(

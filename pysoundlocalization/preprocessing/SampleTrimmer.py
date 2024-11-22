@@ -21,9 +21,7 @@ class SampleTrimmer:
         samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.set_audio_signal(
-            audio.get_audio_signal_by_index(index=0)[samples_to_trim:]
-        )
+        audio.set_audio_signal(audio.get_audio_signal(index=0)[samples_to_trim:])
 
         return audio
 
@@ -43,9 +41,7 @@ class SampleTrimmer:
         samples_to_trim = int(seconds_to_trim * audio.get_sample_rate())
 
         # Trim the audio signal
-        audio.set_audio_signal(
-            audio.get_audio_signal_by_index(index=0)[:-samples_to_trim]
-        )
+        audio.set_audio_signal(audio.get_audio_signal(index=0)[:-samples_to_trim])
 
         return audio
 
@@ -65,9 +61,7 @@ class SampleTrimmer:
         samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep the specified portion of the audio signal
-        audio.set_audio_signal(
-            audio.get_audio_signal_by_index(index=0)[:samples_to_keep]
-        )
+        audio.set_audio_signal(audio.get_audio_signal(index=0)[:samples_to_keep])
 
         return audio
 
@@ -87,9 +81,7 @@ class SampleTrimmer:
         samples_to_keep = int(seconds_to_keep * audio.get_sample_rate())
 
         # Keep only the specified duration from the end of the audio signal
-        audio.set_audio_signal(
-            audio.get_audio_signal_by_index(index=0)[-samples_to_keep:]
-        )
+        audio.set_audio_signal(audio.get_audio_signal(index=0)[-samples_to_keep:])
 
         return audio
 
@@ -122,7 +114,7 @@ class SampleTrimmer:
 
         # Slice the audio signal between start and end samples
         audio.set_audio_signal(
-            audio.get_unchunked_audio_signal()[start_sample:end_sample]
+            audio.get_audio_signal_unchunked()[start_sample:end_sample]
         )
 
         return audio
@@ -153,7 +145,7 @@ class SampleTrimmer:
             raise ValueError("Environment has no microphones.")
 
         for mic in environment.get_mics():
-            if len(mic.get_audio().get_audio_signal()) > 1:
+            if len(mic.get_audio().get_audio_signal_chunked()) > 1:
                 raise ValueError(
                     "Audio signal is chunked. Can not sync environmnet on chunked audio."
                 )

@@ -17,7 +17,7 @@ audio_filepath = os.path.join(root, "examples", "example_audio", "speech_example
 mic1.set_audio(Audio(filepath=audio_filepath))
 
 print("Unchunked audio with 1 chunk:")
-print(mic1.get_audio().get_audio_signal())
+print(mic1.get_audio().get_audio_signal_chunked())
 print(mic1.get_audio())
 
 # Chunk audio into 1000ms chunks
@@ -32,8 +32,8 @@ print("Unchunked audio with 5 chunks:")
 print(mic1.get_audio())
 
 print("Printing the chunked audio as a single audio signal")
-print(mic1.get_audio().get_unchunked_audio_signal())
-print(mic1.get_audio().get_unchunked_audio_signal().shape)
+print(mic1.get_audio().get_audio_signal_unchunked())
+print(mic1.get_audio().get_audio_signal_unchunked().shape)
 
 
 ####
