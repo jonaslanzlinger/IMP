@@ -82,8 +82,7 @@ NoiseReducer.reduce_noise(audio=mic4.get_audio())
 
 # spectrogram_plot(audio.get_unchuncked_audio_signal(), audio.get_sample_rate())
 
-# TODO: IMPORTANT: nmf returns a signal that is slighly shorter than the original concatenated signal.
-nmf = NonNegativeMatrixFactorization()
+nmf = NonNegativeMatrixFactorization(sample_rate=mic1.get_audio().get_sample_rate())
 audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
     environment=environment1
 )
@@ -92,8 +91,7 @@ for mic, audio_list in audio_signals_nmf.items():
     print(f"Mic: {mic.get_name()}")
     for idx, audio in enumerate(audio_list):
         print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
-        # TODO: currently, the audio objectes returned from NMF only have the audio_signal and other parameters are missing, like sample_rate. That means that mic.set_audio(audio) does not work really.
-        mic.get_audio().set_audio_signal(audio.get_audio_signal_unchunked())
+        mic.set_audio(audio)
 
 # audio1.play()
 # audio2.play()
@@ -116,18 +114,15 @@ NoiseReducer.reduce_noise(audio=mic4.get_audio())
 # Pre-processing done! #
 ########################
 
-print("a")
+# TODO: sync_environment not working with timestamps empty
+# environment1 = SampleTrimmer.sync_environment(environment1)
 
-environment1 = SampleTrimmer.sync_environment(environment1)
-
-print("b")
 # play
-for i, mic in enumerate(environment1.get_mics()):
-    print(f"MIC{i+1})")
-    # mic.get_audio().play()
-    # time.sleep(5)
+# for i, mic in enumerate(environment1.get_mics()):
+#    print(f"(MIC{i+1})")
+# mic.get_audio().play()
+# time.sleep(5)
 
-print("c")
 # wait
 # time.sleep(3)
 
@@ -143,15 +138,15 @@ algorithm_choice = "threshold"
 dict = environment1.multilaterate(
     algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.05
 )
-
-for i, object in enumerate(dict):
-    print(dict[object])
-
-for i, mic in enumerate(environment1.get_mics()):
-    print(
-        f"MIC{i+1} ({mic.get_name()}) has {len(mic.get_audio().get_audio_signal_chunked())} chunks"
-    )
-    # play
-    # mic.get_audio().play()
-
-multilaterate_plot(environment1, dict)
+#
+# for i, object in enumerate(dict):
+#     print(dict[object])
+#
+# for i, mic in enumerate(environment1.get_mics()):
+#     print(
+#         f"MIC{i+1} ({mic.get_name()}) has {len(mic.get_audio().get_audio_signal_chunked())} chunks"
+#     )
+#     # play
+#     # mic.get_audio().play()
+#
+# multilaterate_plot(environment1, dict)

@@ -9,15 +9,50 @@ import librosa
 
 # TODO: write credits to whoever wrote that
 class NonNegativeMatrixFactorization:
-    def __init__(self):
-        self.__FRAME = 512
-        self.__HOP = 256
-        self.__SR = 44100
-        self.__EPSILON = 1e-10
+    def __init__(
+        self,
+        number_of_sources_to_extract: int = 2,
+        sample_rate: int = 44100,
+        frame: int = 512,
+        hop: int = 256,
+        epsilon: float = 1e-10,
+    ):
+        """
+        Initialize the Non-Negative Matrix Factorization (NMF) class with user-defined or default parameters.
+
+        # TODO: provide more parameters? Parameter and attributes description from ChatGPT, so needs to be verified.
+        Parameters:
+        - number_of_sources_to_extract (int): The number of audio sources to extract (default: 2).
+        - sample_rate (int): Sampling rate of the audio data, in Hz (default: 44100 Hz).
+        - frame (int): Size of each audio frame for STFT (default: 512).
+        - hop (int): Hop size (overlap) between frames for STFT (default: 256).
+        - epsilon (float): A small constant to prevent division by zero or log errors (default: 1e-10).
+
+        Attributes:
+        - __S (int): Number of sources to extract (set from `number_of_sources_to_extract`).
+        - __FRAME (int): Frame size for processing (set from `frame`).
+        - __HOP (int): Hop size for processing (set from `hop`).
+        - __SR (int): Sampling rate (set from `sample_rate`).
+        - __EPSILON (float): Small constant for numerical stability (set from `epsilon`).
+        - __V (np.ndarray): Spectrogram matrix to be factorized (initialized to None).
+        - __W (np.ndarray): Basis matrix of the factorization (initialized to None).
+        - __H (np.ndarray): Activation matrix of the factorization (initialized to None).
+        - __D (np.ndarray): Distance or cost matrix (initialized to None).
+        - __cost_function (str): Cost function for NMF optimization (initialized to None).
+        - __filtered_spectrograms (list): List to store filtered spectrograms (initialized to None).
+        - __reconstructed_sounds (list): List to store reconstructed audio data (initialized to None).
+
+        This class provides flexibility for audio source separation or matrix decomposition tasks.
+        Further customization options (e.g., cost functions, regularization) could be added.
+        """
+        self.__FRAME = frame
+        self.__HOP = hop
+        self.__SR = sample_rate
+        self.__EPSILON = epsilon
+        self.__S = number_of_sources_to_extract
         self.__V = None
         self.__K = None
         self.__N = None
-        self.__S = 2
         self.__W = None
         self.__H = None
         self.__D = None
@@ -38,16 +73,22 @@ class NonNegativeMatrixFactorization:
         return self.__run(audio, visualize_results)
 
     def run_for_single_audio_signal(
-        self, audio_signal: np.ndarray, visualize_results: bool = False
+        self,
+        audio_signal: np.ndarray,
+        sample_rate: int,
+        visualize_results: bool = False,
     ):
         """
         Run NFM for a single audio signal of type ndarray.
 
         Args:
             audio_signal (np.ndarray): The audio signal to run nfm for.
+            sample_rate (int): Sampling rate of the audio signal, in Hz.
             visualize_results (bool): Whether to visualize intermediate results.
         """
-        return self.__run(Audio(audio_signal=audio_signal), visualize_results)
+        return self.__run(
+            Audio(audio_signal=audio_signal, sample_rate=sample_rate), visualize_results
+        )
 
     def experimental_run_for_all_audio_in_environment(
         self, environment: Environment, visualize_results: bool = False
@@ -74,11 +115,28 @@ class NonNegativeMatrixFactorization:
         if not mics:
             raise ValueError("No microphones found in the environment.")
 
-        # TODO: all checks before doing the splitting, like do all audio have same sample rate, start timestamp, etc
         audios = []
+        reference_sample_rate = None
+        reference_num_samples = None
+
         for mic in mics:
             audio = mic.get_audio()
             if audio is not None:
+                sample_rate = audio.get_sample_rate()
+                num_samples = audio.get_num_samples()
+
+                if reference_sample_rate is None or reference_num_samples is None:
+                    reference_sample_rate = sample_rate
+                    reference_num_samples = num_samples
+                else:
+                    if sample_rate != reference_sample_rate:
+                        raise ValueError(
+                            f"Sample rate mismatch detected! All audio must have same sample rate."
+                        )
+                    if num_samples != reference_num_samples:
+                        raise ValueError(
+                            f"Number of samples mismatch detected! All audio must have same number of samples."
+                        )
                 audios.append(audio.get_audio_signal_unchunked())
             else:
                 print(
@@ -107,7 +165,10 @@ class NonNegativeMatrixFactorization:
             start_idx = 0
             for mic, end_idx in zip(mics, cumulative_lengths):
                 split_signal = nmf_signal[start_idx:end_idx]
-                results[mic].append(Audio(audio_signal=split_signal))
+                audio_with_new_signal = Audio(
+                    audio_signal=split_signal, sample_rate=self.__SR # TODO: use SR defined from object or from the actual audio, meaning reference_sample_rate?
+                )
+                results[mic].append(audio_with_new_signal)
                 start_idx = end_idx
 
         return results
