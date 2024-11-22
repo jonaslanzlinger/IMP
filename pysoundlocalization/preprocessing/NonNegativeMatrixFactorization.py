@@ -87,16 +87,19 @@ class NonNegativeMatrixFactorization:
         # split first reconstructed sound and give one split to each mic respectively. repeat for the second.
         # Initialize results dictionary to store the split audio for each mic
         results = {mic: [] for mic in mics}
+        cumulative_lengths = np.cumsum(mic_audio_lengths)
+        # print(cumulative_lengths)
+        # print(nmf_result[0])
+        # print(nmf_result[1])
+        # print(len(nmf_result[0]))
+        # print(len(nmf_result[1]))
 
         # Iterate through the NMF results and split each reconstructed sound for each microphone
         for source_signal in nmf_result:
             start_idx = 0
-            for mic_index, mic in enumerate(mics):
-                part_length = mic_audio_lengths[mic_index]
-                end_idx = start_idx + part_length
-
-                mic_part = source_signal[start_idx:end_idx]
-                results[mic].append(Audio(audio_signal=mic_part))
+            for mic, end_idx in zip(mics, cumulative_lengths):
+                split_signal = source_signal[start_idx:end_idx]
+                results[mic].append(Audio(audio_signal=split_signal))
                 start_idx = end_idx
 
         return results
