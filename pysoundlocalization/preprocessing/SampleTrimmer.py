@@ -85,6 +85,7 @@ class SampleTrimmer:
 
         return audio
 
+    # TODO: we still sometimes have sample discrepancies of 1-2 samples after syncing from duration float conversion
     @staticmethod
     def slice_from_to(audio: Audio, start_time: timedelta, end_time: timedelta):
         """
