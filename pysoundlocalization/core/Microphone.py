@@ -91,7 +91,7 @@ class Microphone:
         """
         return self.__recording_start_time
 
-    def set_recording_start_time(self, start_time: datetime):
+    def set_recording_start_time(self, start_time: datetime | None):
         """
         Set the start time of the recording.
 
@@ -116,11 +116,14 @@ class Microphone:
         """
         return self.__audio
 
-    def set_audio(self, audio: Audio):
+    def set_audio(self, audio: Audio, reset_recording_start_time: bool = False):
         """
         Set the audio associated with this microphone.
 
         Args:
             audio (Audio): The Audio object to associate with this microphone.
+            reset_recording_start_time (bool, optional): Reset the recording start time to None
         """
         self.__audio = audio
+        if reset_recording_start_time is True:
+            self.set_recording_start_time(None)

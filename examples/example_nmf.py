@@ -9,7 +9,6 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 )
 from pysoundlocalization.core.Simulation import Simulation
 from datetime import datetime
-from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 simulation = Simulation.create()
 environment1 = simulation.add_environment(
@@ -57,6 +56,8 @@ SampleTrimmer.slice_from_to(
     audio4, start_time=timedelta(seconds=17), end_time=timedelta(seconds=20)
 )
 
+environment1 = SampleTrimmer.sync_environment(environment1)
+
 # spectrogram_plot(
 #     audio_signal=audio.get_unchuncked_audio_signal(),
 #     sample_rate=audio.get_sample_rate(),
@@ -91,7 +92,7 @@ for mic, audio_list in audio_signals_nmf.items():
     print(f"Mic: {mic.get_name()}")
     for idx, audio in enumerate(audio_list):
         print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
-        mic.set_audio(audio)
+        mic.set_audio(audio, reset_recording_start_time=True)
 
 # audio1.play()
 # audio2.play()
@@ -99,10 +100,7 @@ for mic, audio_list in audio_signals_nmf.items():
 # audio4.play()
 
 # reduce noise
-NoiseReducer.reduce_noise(audio=mic1.get_audio())
-NoiseReducer.reduce_noise(audio=mic2.get_audio())
-NoiseReducer.reduce_noise(audio=mic3.get_audio())
-NoiseReducer.reduce_noise(audio=mic4.get_audio())
+NoiseReducer.reduce_all_noise(environment=environment1)
 
 # audio1.play()
 # audio2.play()
@@ -114,7 +112,7 @@ NoiseReducer.reduce_noise(audio=mic4.get_audio())
 # Pre-processing done! #
 ########################
 
-# TODO: sync_environment not working with timestamps empty
+# TODO: multilaterate only works if sync_environment is performed before preprocessing. I don't know why.
 # environment1 = SampleTrimmer.sync_environment(environment1)
 
 # play
