@@ -1,4 +1,5 @@
 import numpy as np
+from core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 import noisereduce as nr
 
@@ -6,7 +7,7 @@ import noisereduce as nr
 class NoiseReducer:
 
     @staticmethod
-    def reduce_noise(audio: Audio, noise_sample: np.ndarray = None) -> Audio:
+    def reduce_noise(audio: Audio, noise_sample: np.ndarray | None = None) -> Audio:
         """
         Reduces the noise from the audio signal using the noise sample.
 
@@ -26,3 +27,21 @@ class NoiseReducer:
         audio_signal = nr.reduce_noise(y=audio_signal, sr=sr, y_noise=noise_sample)
         audio.set_audio_signal(audio_signal)
         return audio
+
+    @staticmethod
+    def reduce_all_noise(
+        environment: Environment, noise_sample: np.ndarray = None
+    ) -> Environment:
+        """
+        Reduces the noise from all audio signals using the noise sample.
+
+        Args:
+            environment (Environment): The environment to reduce all associated mic audios for.
+            noise_sample (np.ndarray): The noise sample to reduce from the audio signal.
+
+        Returns:
+            environment: The environment for which the noise was reduced for all mic audios.
+        """
+        for mic in environment.get_mics():
+            NoiseReducer.reduce_noise(mic.get_audio(), noise_sample)
+        return environment
