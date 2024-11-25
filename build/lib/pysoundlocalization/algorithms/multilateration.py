@@ -5,7 +5,7 @@ from scipy.optimize import least_squares
 
 
 # TODO: think of adding z-coordinate to multilateration algorithm
-def multilaterate_sound_source(
+def multilaterate_by_tdoa_pairs(
     tdoa_pairs: TdoaPair,
     speed_of_sound: float = config.DEFAULT_SOUND_SPEED,
 ) -> tuple[float, float]:

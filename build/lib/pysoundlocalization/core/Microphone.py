@@ -4,17 +4,18 @@ from datetime import datetime
 
 class Microphone:
 
-    def __init__(self, x: float, y: float, name: str = "NoName"):
+    def __init__(self, x: float, y: float, name: str = None):
         """
         Initialize the Microphone with a specified (x, y) position.
 
         Args:
             x (float): X-coordinate of the microphone position.
             y (float): Y-coordinate of the microphone position.
+            name (str, optional): Name of the microphone. Defaults to "(x, y)" if not provided.
         """
-        self.__name = name
-        self.__x = x
-        self.__y = y
+        self.__x: float = x
+        self.__y: float = y
+        self.__name: str = name if name is not None else f"({x}, {y})"
         self.__recording_start_time: datetime | None = None
         self.__audio: Audio | None = None
 
@@ -90,7 +91,7 @@ class Microphone:
         """
         return self.__recording_start_time
 
-    def set_recording_start_time(self, start_time: datetime):
+    def set_recording_start_time(self, start_time: datetime | None):
         """
         Set the start time of the recording.
 
@@ -115,11 +116,14 @@ class Microphone:
         """
         return self.__audio
 
-    def set_audio(self, audio: Audio):
+    def set_audio(self, audio: Audio, reset_recording_start_time: bool = False):
         """
         Set the audio associated with this microphone.
 
         Args:
             audio (Audio): The Audio object to associate with this microphone.
+            reset_recording_start_time (bool, optional): Reset the recording start time to None
         """
         self.__audio = audio
+        if reset_recording_start_time is True:
+            self.set_recording_start_time(None)

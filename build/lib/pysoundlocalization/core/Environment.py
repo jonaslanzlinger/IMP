@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from itertools import combinations
@@ -7,7 +9,7 @@ import numpy as np
 import pysoundlocalization.config as config
 from pysoundlocalization.algorithms.gcc_phat import gcc_phat
 from pysoundlocalization.algorithms.doa import compute_doa
-from pysoundlocalization.algorithms.multilateration import multilaterate_sound_source
+from pysoundlocalization.algorithms.multilateration import multilaterate_by_tdoa_pairs
 from pysoundlocalization.core.Microphone import Microphone
 from pysoundlocalization.core.TdoaPair import TdoaPair
 from pysoundlocalization.core.DoaPair import DoaPair
@@ -127,6 +129,80 @@ class Environment:
 
         return max_mic_distance / self.__sound_speed
 
+    def chunk_audio_signals_by_duration(
+        self, chunk_duration: timedelta | None = timedelta(milliseconds=1000)
+    ) -> None:
+        """
+        Chunk the audio signals of all microphones into chunks of a specified duration.
+
+        Args:
+            chunk_duration (timedelta | None): The duration of each chunk. Defaults to 1000 ms.
+        """
+        for mic in self.__mics:
+            mic.get_audio().chunk_audio_signal_by_duration(
+                chunk_duration=chunk_duration
+            )
+
+    def chunk_audio_signals_by_samples(self, chunk_samples: int) -> None:
+        """
+        Chunk the audio signals of all microphones into chunks of specified number of samples.
+
+        Args:
+            chunk_samples (int): The number of samples in each chunk. The sample rate of the audio defines how many samples are in a given timeframe.
+        """
+        for mic in self.__mics:
+            mic.get_audio().chunk_audio_signal_by_samples(chunk_samples=chunk_samples)
+
+    def multilaterate(
+        self,
+        algorithm: str = "threshold",
+        number_of_sound_sources: int = 1,
+        threshold: float | None = 0.5,
+    ) -> dict:
+        """
+        Approximates the sound source given the algorithm and number of sound sources that shall be approximated.
+
+        Args:
+            algorithm (str): The algorithm to use for computing the TDoA values.
+            number_of_sound_sources (int): The number of sound sources to approximate.
+
+        Returns:
+            TODO: dict: A dictionary containing the estimated (x, y) coordinates of the sound sources.
+        """
+
+        number_of_chunks = len(
+            self.get_mics()[0].get_audio().get_audio_signal_chunked()
+        )
+
+        # Get chunk size in samples
+        chunk_size = int(
+            self.get_mics()[0].get_audio().get_num_samples() / number_of_chunks
+        )
+
+        dict = {}
+        for i in range(number_of_chunks):
+
+            if algorithm == "gcc_phat":
+                tdoa_pairs_of_chunk = self.compute_all_tdoa_of_chunk_index_by_gcc_phat(
+                    chunk_index=i,
+                    threshold=threshold,
+                    debug=False,
+                )
+            elif algorithm == "threshold":
+                tdoa_pairs_of_chunk = self.compute_all_tdoa_of_chunk_index_by_threshold(
+                    chunk_index=i, threshold=threshold, debug=True
+                )
+
+            if tdoa_pairs_of_chunk is None:
+                dict[f"{i * chunk_size}"] = tdoa_pairs_of_chunk
+                continue
+
+            sound_source_position = multilaterate_by_tdoa_pairs(tdoa_pairs_of_chunk)
+
+            dict[f"{i * chunk_size}"] = sound_source_position
+
+        return dict
+
     # TODO: should computation methods be in environment class? if yes, move to separate environment_computations.py file and import here?
     # TODO: allow selection of algorithm
     def compute_tdoa(
@@ -154,19 +230,26 @@ class Environment:
 
         return gcc_phat(audio1, audio2, fs=sample_rate, max_tau=max_tau)
 
-    def compute_all_tdoa_by_threshold(
-        self, debug_threshold_sample_index: bool = False
+    def compute_all_tdoa_of_chunk_index_by_threshold(
+        self, chunk_index: int = 0, threshold: float = 0.5, debug: bool | None = False
     ) -> list[TdoaPair]:
         """
         Compute TDoA for all microphone pairs in the environment based on a threshold.
+
+        Args:
+            chunk_index (int): The index of the chunk to compute TDoA for.
+            threshold (float): The threshold for the audio signal.
+            debug (bool): Print debug information if True.
 
         Returns:
             list[TdoaPair]: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
         """
 
         def compute_sample_index_threshold(mic: Microphone, debug: bool = False) -> int:
-            threshold = 0.3
-            for i, sample in enumerate(mic.get_audio().audio_signal):
+
+            for i, sample in enumerate(
+                mic.get_audio().get_audio_signal(index=chunk_index)
+            ):
                 if abs(sample) > threshold:
                     if debug:
                         print(
@@ -177,13 +260,20 @@ class Environment:
         tdoa_pairs = []
 
         for i in range(len(self.__mics)):
+
             mic1 = self.__mics[i]
-            mic1_sample_index = compute_sample_index_threshold(
-                mic1, debug=debug_threshold_sample_index
-            )
+            mic1_sample_index = compute_sample_index_threshold(mic1, debug=debug)
+
+            if mic1_sample_index is None:
+                return None
+
             for j in range(i + 1, len(self.__mics)):
                 mic2 = self.__mics[j]
                 mic2_sample_index = compute_sample_index_threshold(mic2, debug=False)
+
+                if mic2_sample_index is None:
+                    return None
+
                 tdoa_pairs.append(
                     TdoaPair(
                         mic1,
@@ -195,48 +285,67 @@ class Environment:
 
         return tdoa_pairs
 
-    def compute_all_tdoa(
+    def compute_all_tdoa_of_chunk_index_by_gcc_phat(
         self,
-        sample_rate: int,
-        max_tau: float = None,
-        print_intermediate_results: bool = False,
+        chunk_index: int = 0,
+        threshold: float = 0.5,
+        debug: bool = False,
     ) -> TdoaPair | None:
         """
         Compute TDoA for all microphone pairs in the environment.
 
         Args:
-            sample_rate (int): Sample rate of the recorded audio in Hz.
-            max_tau (float): The maximum possible TDoA between the microphones, usually determined by: (mic_distance / speed_of_sound).
-            print_intermediate_results (bool): Print intermediate results if True.
+            chunk_index (int): The index of the chunk to compute TDoA for.
+            threshold (float): The threshold for the audio signal.
+            debug (bool): Print debug information if True.
 
         Returns:
             list[TdoaPair] | None: A list of TdoaPair objects representing the computed TDoA for each microphone pair.
         """
+
+        from pysoundlocalization.preprocessing.SampleRateConverter import (
+            SampleRateConverter,
+        )
+
+        sample_rate = SampleRateConverter.get_lowest_sample_rate(self)
+
         if len(self.__mics) < 2:
             print("At least two microphones are needed to compute TDoA.")
             return None
 
-        # If max_tau is not provided via parameter, automatically compute via class method
-        if max_tau is None:
-            max_tau = self.get_max_tau()
+        max_tau = self.get_max_tau()
 
         tdoa_results = []
 
         # Iterate over all possible pairs of microphones
         for mic1, mic2 in combinations(self.__mics, 2):
             # Retrieve the audio signals from each microphone
-            audio1 = mic1.get_audio().get_audio_signal_chunked()
-            audio2 = mic2.get_audio().get_audio_signal_chunked()
+            audio1 = mic1.get_audio().get_audio_signal(index=chunk_index)
+            audio2 = mic2.get_audio().get_audio_signal(index=chunk_index)
 
+            # TODO: be aware that if audio signals are not the same length, the chunking can result
+            # that we have different amount of chunks per mic. This can lead to problems here!!!
             # Check if both microphones have valid audio signals
             if audio1 is not None and audio2 is not None:
+
+                # If the audio signals do not contain a dominant signal, don't compute TDoA
+                if (
+                    np.max(np.abs(audio1)) < threshold
+                    or np.max(np.abs(audio2)) < threshold
+                ):
+                    if debug:
+                        print(
+                            f"Audio signals for mics at {mic1.get_position()} and {mic2.get_position()} do not contain a dominant signal."
+                        )
+                    return None
+
                 # Compute TDoA using the compute_tdoa method
                 tdoa, cc = self.compute_tdoa(audio1, audio2, sample_rate, max_tau)
 
                 tdoa_pair = TdoaPair(mic1, mic2, tdoa)
                 tdoa_results.append(tdoa_pair)
 
-                if print_intermediate_results:
+                if debug:
                     print(str(tdoa_pair))
 
             else:
@@ -300,20 +409,7 @@ class Environment:
 
         return doa_results
 
-    def multilaterate_sound_source(
-        self, tdoa_pairs: list[TdoaPair]
-    ) -> tuple[float, float]:
-        """
-        Approximates the sound source given all microphone pairs and their computed TDoA values.
-
-        Args:
-            tdoa_pairs (list[TdoaPair]): A list of TdoaPair objects representing the computed TDoA for each microphone pair
-
-        Returns:
-            tuple[float, float]: The estimated (x, y) coordinates of the sound source.
-        """
-        return multilaterate_sound_source(tdoa_pairs)
-
+    # TODO: Needed?
     def visualize(self) -> None:
         """
         Visualizes the environment layout, microphones, and sound source positions using Matplotlib.
@@ -436,6 +532,7 @@ class Environment:
         """
         self.__mics = mics
 
+    # TODO: Needed?
     def get_sound_source_position(self) -> tuple[float, float] | None:
         """
         Get the coordinates of the sound source.
@@ -445,6 +542,7 @@ class Environment:
         """
         return self.__sound_source_position
 
+    # TODO: Needed?
     def set_sound_source_position(
         self, sound_source_position: tuple[float, float]
     ) -> None:

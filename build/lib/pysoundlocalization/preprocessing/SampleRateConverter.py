@@ -34,7 +34,7 @@ class SampleRateConverter:
         """
         lowest_rate = SampleRateConverter.get_lowest_sample_rate(environment)
         for mic in environment.get_mics():
-            mic.get_audio().convert_to_sample_rate(lowest_rate)
+            mic.get_audio().resample_audio(lowest_rate)
 
     @staticmethod
     def convert_all_to_defined_sample_rate(
@@ -48,7 +48,7 @@ class SampleRateConverter:
             target_sample_rate (int): The sample rate to convert to.
         """
         for mic in environment.get_mics():
-            mic.get_audio().convert_to_sample_rate(target_sample_rate)
+            mic.get_audio().resample_audio(target_rate=target_sample_rate)
 
     @staticmethod
     def convert_all_to_sample_rate_of_audio_file(

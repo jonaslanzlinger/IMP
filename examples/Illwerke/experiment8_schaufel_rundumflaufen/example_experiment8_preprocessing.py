@@ -55,7 +55,6 @@ SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 
 # Sync audio recordings based on their recording start timestamps
 # TODO: artificially adjust samples to ensure that they actually are in sync (hardware limitation)
-print("sync_environment")
 SampleTrimmer.sync_environment(environment1)
 
 # spectrogram_plot(

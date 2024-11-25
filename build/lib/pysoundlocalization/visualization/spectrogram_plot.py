@@ -1,16 +1,15 @@
-from pysoundlocalization.core.Audio import Audio
+import numpy as np
 import matplotlib.pyplot as plt
 
 
-def spectrogram_plot(audio: Audio) -> None:
+def spectrogram_plot(audio_signal: np.ndarray, sample_rate: int) -> None:
     """
     Plot the spectrogram of an audio signal.
 
     Args:
-        audio (Audio): Audio object containing the audio signal to plot.
+        audio_signal (np.ndarray): The audio signal to plot the spectrogram of.
+        sample_rate (int): The sample rate of the audio signal.
     """
-    sample_rate = audio.get_sample_rate()
-    audio_signal = audio.get_audio_signal_chunked()
 
     plt.figure(figsize=(10, 6))
 
