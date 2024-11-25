@@ -121,6 +121,21 @@ class SampleTrimmer:
         return audio
 
     @staticmethod
+    # TODO: currently not used!
+    def slice_from_to_samples(audio: Audio, start_sample: int, end_sample: int):
+        # Ensure the indices are within the bounds of the audio signal
+        total_samples = audio.get_num_samples()
+        start_sample = max(0, min(start_sample, total_samples))
+        end_sample = max(0, min(end_sample, total_samples))
+
+        # Slice the audio signal between start and end samples
+        audio.set_audio_signal(
+            audio.get_audio_signal_unchunked()[start_sample:end_sample]
+        )
+
+        return audio
+
+    @staticmethod
     def slice_all_from_to(
         environment: Environment, start_time: timedelta, end_time: timedelta
     ):
@@ -135,8 +150,11 @@ class SampleTrimmer:
         Returns:
             Environment: The environment with all audio signals sliced.
         """
+        list_audio = []
         for mic in environment.get_mics():
             SampleTrimmer.slice_from_to(mic.get_audio(), start_time, end_time)
+            list_audio.append(mic.get_audio())
+        SampleTrimmer.ensure_synced_audio(list_audio)
         return environment
 
     @staticmethod
@@ -155,7 +173,6 @@ class SampleTrimmer:
         list_start_times = []
 
         for mic in environment.get_mics():
-
             if mic.get_audio() is None:
                 raise ValueError(f"MIC {mic.get_name()} has no audio signal.")
             if mic.get_recording_start_time() is None:
@@ -210,5 +227,28 @@ class SampleTrimmer:
             offset = latest_start - start_time
             # Trim or pad the audio file accordingly using timedelta precision
             SampleTrimmer.slice_from_to(audio, offset, offset + sync_duration)
+
+        SampleTrimmer.ensure_synced_audio(list_audio)
+
+        return list_audio
+
+    @staticmethod
+    def ensure_synced_audio(list_audio: list[Audio]) -> list[Audio]:
+        # If all audio has the same sample count, return list unchanged
+        sample_counts = [audio.get_num_samples() for audio in list_audio]
+        if all(sample_count == sample_counts[0] for sample_count in sample_counts):
+            return list_audio
+
+        # TODO: usually this is only 1-2 samples due to float precision, but what if it's more? how to handle?
+        # Else, trim all audios to match the lowest sample count
+        min_sample_count = min(sample_counts)
+        for audio in list_audio:
+            signal = audio.get_audio_signal_unchunked()
+            trimmed_signal = signal[:min_sample_count]
+            audio.set_audio_signal(trimmed_signal)
+
+            # Print the number of samples trimmed
+            trimmed_count = audio.get_num_samples() - min_sample_count
+            print(f"Trimmed {trimmed_count} samples from audio to ensure sync: {audio}")
 
         return list_audio
