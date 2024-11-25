@@ -57,7 +57,6 @@ SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 # TODO: artificially adjust samples to ensure that they actually are in sync (hardware limitation)
 print("sync_environment")
 SampleTrimmer.sync_environment(environment1)
-print("done sync_environment")
 
 # spectrogram_plot(
 #     mic1.get_audio().get_audio_signal_unchunked(),

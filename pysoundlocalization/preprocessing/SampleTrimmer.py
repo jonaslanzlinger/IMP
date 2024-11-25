@@ -244,11 +244,15 @@ class SampleTrimmer:
         min_sample_count = min(sample_counts)
         for audio in list_audio:
             signal = audio.get_audio_signal_unchunked()
+            original_sample_count = audio.get_num_samples()
             trimmed_signal = signal[:min_sample_count]
             audio.set_audio_signal(trimmed_signal)
 
             # Print the number of samples trimmed
-            trimmed_count = audio.get_num_samples() - min_sample_count
-            print(f"Trimmed {trimmed_count} samples from audio to ensure sync: {audio}")
+            trimmed_count = original_sample_count - min_sample_count
+            if trimmed_count > 0:
+                print(
+                    f"Trimmed {trimmed_count} samples from audio to ensure sync: {audio}"
+                )
 
         return list_audio
