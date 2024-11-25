@@ -83,6 +83,7 @@ frequency_filter_chain.apply(mic4.get_audio())
 # for mic in environment1.get_mics():
 #     print(mic.get_audio().get_num_samples())
 
+# TODO: add better preprocessing to split sounds
 nmf = NonNegativeMatrixFactorization(sample_rate=mic1.get_audio().get_sample_rate())
 audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
     environment=environment1
