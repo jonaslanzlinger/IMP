@@ -1,5 +1,5 @@
 import numpy as np
-from core.Environment import Environment
+from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 import noisereduce as nr
 
