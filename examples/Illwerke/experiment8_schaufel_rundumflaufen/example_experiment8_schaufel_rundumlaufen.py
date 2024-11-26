@@ -1,8 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
-from preprocessing.SampleTrimmer import SampleTrimmer
-from preprocessing.NonNegativeMatrixFactorization import NonNegativeMatrixFactorization
+from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
+    NonNegativeMatrixFactorization,
+)
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
