@@ -62,7 +62,9 @@ class NonNegativeMatrixFactorization:
         self.__filtered_spectrograms = None
         self.__reconstructed_sounds = None
 
-    def run_for_single_audio(self, audio: Audio, visualize_results: bool = False):
+    def run_for_single_audio(
+        self, audio: Audio, visualize_results: bool = False
+    ) -> list[Audio]:
         """
         Run NFM for a single audio file.
 
@@ -70,14 +72,23 @@ class NonNegativeMatrixFactorization:
             audio (Audio): The audio to run nfm for.
             visualize_results (bool): Whether to visualize intermediate results.
         """
-        return self.__run(audio, visualize_results)
+        audio_signals = self.__run(audio, visualize_results)
+        nfm_audio = []
+        for audio_signal in audio_signals:
+            nfm_audio.append(
+                Audio(
+                    audio_signal=audio_signal,
+                    sample_rate=audio.get_sample_rate(),
+                )
+            )
+        return nfm_audio
 
     def run_for_single_audio_signal(
         self,
         audio_signal: np.ndarray,
         sample_rate: int,
         visualize_results: bool = False,
-    ):
+    ) -> list[np.ndarray]:
         """
         Run NFM for a single audio signal of type ndarray.
 

@@ -70,9 +70,9 @@ wave_plot(audio1_signal_nmf[0], audio1.get_sample_rate())
 wave_plot(audio1_signal_nmf[1], audio1.get_sample_rate())
 
 # apply NMF to audio1
-audio1_nmf = nmf.run_for_single_audio(audio1)
-wave_plot(audio1_nmf[0], audio1.get_sample_rate())
-wave_plot(audio1_nmf[1], audio1.get_sample_rate())
+audio1_nmf_audios = nmf.run_for_single_audio(audio1)
+wave_plot(audio1_nmf_audios[0].get_audio_signal_unchunked(), audio1.get_sample_rate())
+wave_plot(audio1_nmf_audios[1].get_audio_signal_unchunked(), audio1.get_sample_rate())
 
 all_audio_nmf = nmf.experimental_run_for_all_audio_in_environment(environment1)
 
