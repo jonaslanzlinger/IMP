@@ -1,4 +1,5 @@
 from build.lib.pysoundlocalization.visualization.wave_plot import wave_plot
+from examples.example_simple_gcc_phat import sample_rate
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from datetime import timedelta
@@ -6,7 +7,7 @@ from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilt
 from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
-from pysoundlocalization.preprocessing.NMF_old2 import (
+from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
     NonNegativeMatrixFactorization,
 )
 from pysoundlocalization.core.Simulation import Simulation
@@ -75,10 +76,10 @@ frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 # audio.play()
 
 # TODO: when I remove noisereducer, NMF doesn't work anymore (two splits, but cannot be used)
-audio1 = NoiseReducer.reduce_noise(audio=audio1)
-audio2 = NoiseReducer.reduce_noise(audio=audio2)
-audio3 = NoiseReducer.reduce_noise(audio=audio3)
-audio4 = NoiseReducer.reduce_noise(audio=audio4)
+# audio1 = NoiseReducer.reduce_noise(audio=audio1)
+# audio2 = NoiseReducer.reduce_noise(audio=audio2)
+# audio3 = NoiseReducer.reduce_noise(audio=audio3)
+# audio4 = NoiseReducer.reduce_noise(audio=audio4)
 
 # audio.play()
 
@@ -102,8 +103,14 @@ print(audio_concatinated.get_duration())
 ######
 # IMPORTANT: WE'RE USING THE NMF_old2.py HERE, AND NOT THE OPTIMIZED NMF class!!!
 ######
-nmf = NonNegativeMatrixFactorization()
-audio_signal_concatinated_nmf = nmf.run(audio_concatinated)
+nmf = NonNegativeMatrixFactorization(sample_rate=audio1.get_sample_rate())
+# audio_signal_concatinated_nmf = nmf.run(audio_concatinated)
+audio_signal_concatinated_nmf = nmf.run_for_single_audio_signal(
+    audio_signal_concatenated, sample_rate=audio1.get_sample_rate()
+)
+
+print("nmf audio")
+print(audio_signal_concatinated_nmf)
 
 wave_plot(audio_signal_concatinated_nmf[0], audio1.get_sample_rate())
 wave_plot(audio_signal_concatinated_nmf[1], audio1.get_sample_rate())
