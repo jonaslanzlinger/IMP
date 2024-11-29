@@ -196,7 +196,9 @@ class Audio:
         """
         return np.concatenate(self.__audio_signal)
 
-    def set_audio_signal(self, audio_signal: np.ndarray, index: int | None = 0) -> None:
+    def set_audio_signal(
+        self, audio_signal: np.ndarray, index: int | None = None
+    ) -> None:
         """
         Set the audio signal data of the audio file.
 
@@ -204,7 +206,10 @@ class Audio:
             audio_signal (np.ndarray): The audio signal data as a numpy array.
             index (int): The index of the audio signal in the list of audio signals.
         """
-        self.__audio_signal[index] = audio_signal
+        if index is None:
+            self.__audio_signal = [audio_signal]
+        else:
+            self.__audio_signal[index] = audio_signal
 
     def get_sample_rate(self) -> int:
         """
@@ -251,6 +256,15 @@ class Audio:
         if self.__audio_signal is None:
             self.load_audio_file()
         return len(self.get_audio_signal_unchunked()) / self.__sample_rate
+
+    def max_amplitude(self) -> float:
+        """
+        Return the maximum amplitude of the audio signal.
+
+        Returns:
+            float: The maximum amplitude of the audio signal.
+        """
+        return np.max(np.abs(self.get_audio_signal_unchunked()))
 
     def play(self) -> None:
         """
