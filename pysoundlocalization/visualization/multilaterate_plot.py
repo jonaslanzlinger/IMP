@@ -50,9 +50,11 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
         mic_x, mic_y = zip(*[mic.get_position() for mic in environment.get_mics()])
         ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
+    # (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
+    # (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
     (sound_scatter,) = ax.plot([], [], "bo", label="Sound Source")
 
-    ax.legend()
+    ax.legend(loc="upper right", bbox_to_anchor=(1.48, 0.7), borderaxespad=0.0)
 
     menu_ax = plt.axes([0.1, 0.25, 0.8, 0.15])
     radio_items = [mic.get_name() for mic in environment.get_mics()]
@@ -141,6 +143,21 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
                 if data[key] is not None:
                     sound_scatter.set_data([data[key][0]], [data[key][1]])
                     fig.canvas.draw_idle()
+
+            # HERE: Stub for having multiple sound sources
+            # for key in sorted(data[0].keys(), key=int):
+            #     if int(key) > current_sample:
+            #         break
+            #     if data[0][key] is not None:
+            #         sound_scatter_1.set_data([data[0][key][0]], [data[0][key][1]])
+            #         fig.canvas.draw_idle()
+
+            # for key in sorted(data[1].keys(), key=int):
+            #     if int(key) > current_sample:
+            #         break
+            #     if data[1][key] is not None:
+            #         sound_scatter_2.set_data([data[1][key][0]], [data[1][key][1]])
+            #         fig.canvas.draw_idle()
 
         def update_cursor(frame):
 
