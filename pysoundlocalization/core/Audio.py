@@ -29,6 +29,9 @@ class Audio:
         if audio_signal is None and sample_rate is None:
             self.load_audio_file(filepath)
 
+        if self.__audio_signal[0].ndim > 1:
+            self.__audio_signal[0] = np.mean(self.__audio_signal[0], axis=1)
+
     @classmethod
     def create_from_signal(cls, audio_signal: np.ndarray, sample_rate: int) -> "Audio":
         """

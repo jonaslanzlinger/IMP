@@ -65,3 +65,17 @@ class SampleRateConverter:
         SampleRateConverter.convert_all_to_defined_sample_rate(
             environment, target_sample_rate
         )
+
+    @staticmethod
+    def convert_list_of_audios_to_lowest_sample_rate(audio_list: list[Audio]) -> None:
+        """
+        Convert a list of audio files to the lowest sample rate of any existing audio file.
+
+        Args:
+            audio_list: A list of Audio instances.
+        """
+        lowest_sample_rate = min(audio.get_sample_rate() for audio in audio_list)
+        for audio in audio_list:
+            audio.resample_audio(lowest_sample_rate)
+
+        return lowest_sample_rate

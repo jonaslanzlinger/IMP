@@ -4,7 +4,6 @@ from pysoundlocalization.core.TdoaPair import TdoaPair
 from scipy.optimize import least_squares
 
 
-# TODO: think of adding z-coordinate to multilateration algorithm
 def multilaterate_by_tdoa_pairs(
     tdoa_pairs: TdoaPair,
     speed_of_sound: float = config.DEFAULT_SOUND_SPEED,
@@ -22,7 +21,6 @@ def multilaterate_by_tdoa_pairs(
     Raises:
         ValueError: If fewer than two microphone pairs are provided.
     """
-    print("tdoa_pairs", tdoa_pairs)
     if len(tdoa_pairs) < 2:
         raise ValueError(
             "At least two microphone pairs are required to approximate the sound source."
@@ -37,9 +35,6 @@ def multilaterate_by_tdoa_pairs(
         )
         for tdoa_pair in tdoa_pairs
     ]
-
-    for mic1, mic2, d in tdoa_distances:
-        print(mic1.get_name(), mic2.get_name(), d)
 
     # Define the system of equations based on the hyperbolic equations for TDOA
     def multilateration_fn(initial_guess):
@@ -64,8 +59,6 @@ def multilaterate_by_tdoa_pairs(
         initial_guess[1] += (y1 + y2) / 2
     initial_guess[0] /= len(tdoa_distances)
     initial_guess[1] /= len(tdoa_distances)
-
-    print("Initial guess:", initial_guess)
 
     # Solve using least squares optimization
     result = least_squares(multilateration_fn, initial_guess)

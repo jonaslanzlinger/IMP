@@ -54,11 +54,11 @@ class AudioNormalizer:
         return environment
 
     @staticmethod
-    def normalize_to_max_amplitude(
+    def normalize_environment_to_max_amplitude(
         environment: Environment, max_amplitude: float
     ) -> Environment:
         """
-        Normalize the audio so that its maximum amplitude matches the given value.
+        Normalize the audios of the environment so that the maximum amplitude of all microphones matches the given value.
 
         Args:
             environment: Environment object
@@ -69,17 +69,7 @@ class AudioNormalizer:
         """
         for mic in environment.get_mics():
             audio = mic.get_audio()
-            for i, chunk in enumerate(audio.get_audio_signal_chunked()):
-                current_max = max(abs(chunk))
-
-                if current_max == 0:
-                    scale_factor = 0
-                else:
-                    scale_factor = max_amplitude / current_max
-
-                normalized_audio = chunk * scale_factor
-
-                audio.set_audio_signal(normalized_audio, i)
+            AudioNormalizer.normalize_audio_to_max_amplitude(audio, max_amplitude)
 
         return environment
 
