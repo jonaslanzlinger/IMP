@@ -11,7 +11,7 @@ import librosa
 class NonNegativeMatrixFactorization:
     def __init__(
         self,
-        number_of_sources_to_extract: int = 2,
+        number_of_sources_to_extract: int = 1,
         sample_rate: int = 44100,
         frame: int = 512,
         hop: int = 256,
@@ -22,7 +22,7 @@ class NonNegativeMatrixFactorization:
 
         # TODO: provide more parameters? Parameter and attributes description from ChatGPT, so needs to be verified.
         Parameters:
-        - number_of_sources_to_extract (int): The number of audio sources to extract (default: 2).
+        - number_of_sources_to_extract (int): The number of audio sources to extract (default: 1).
         - sample_rate (int): Sampling rate of the audio data, in Hz (default: 44100 Hz).
         - frame (int): Size of each audio frame for STFT (default: 512).
         - hop (int): Hop size (overlap) between frames for STFT (default: 256).

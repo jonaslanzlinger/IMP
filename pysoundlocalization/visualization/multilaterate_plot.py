@@ -53,8 +53,10 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
     sound_scatter_list = []
     (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
     (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
+    (sound_scatter_3,) = ax.plot([], [], "yo", label="Source 3: third...")
     sound_scatter_list.append(sound_scatter_1)
     sound_scatter_list.append(sound_scatter_2)
+    sound_scatter_list.append(sound_scatter_3)
 
     ax.legend(loc="upper right", bbox_to_anchor=(1.48, 0.7), borderaxespad=0.0)
 
