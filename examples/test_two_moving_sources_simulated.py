@@ -28,10 +28,9 @@ mic3 = environment1.add_microphone(9, 9)
 mic4 = environment1.add_microphone(1, 9)
 
 source_positions = [
-    {22050: (5, 5)},
-    # {60000: (9, 9)},
-    # {140000: (9, 1)},
-    # {180000: (5, 5)},
+    {44100: (4, 9), 88200: (4, 7)},
+    {132300: (8, 1)},
+    {150000: (1, 1)},
     # {220000: (5, 5)},
     # {260000: (5, 5)},
     # {300000: (5, 5)},
@@ -48,8 +47,25 @@ audio4 = mic4.get_audio()
 
 AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
 
-# nmf = NonNegativeMatrixFactorization(sample_rate=audio1.get_sample_rate())
-# all_audio_nmf = nmf.experimental_run_for_all_audio_in_environment(environment1)
+wave_plot(
+    audio1.get_audio_signal(),
+    audio1.get_sample_rate(),
+)
+wave_plot(
+    audio2.get_audio_signal(),
+    audio2.get_sample_rate(),
+)
+wave_plot(
+    audio3.get_audio_signal(),
+    audio3.get_sample_rate(),
+)
+wave_plot(
+    audio4.get_audio_signal(),
+    audio4.get_sample_rate(),
+)
+
+nmf = NonNegativeMatrixFactorization(sample_rate=audio1.get_sample_rate())
+all_audio_nmf = nmf.experimental_run_for_all_audio_in_environment(environment1)
 
 algorithm_choice = "threshold"
 
@@ -57,30 +73,34 @@ all_dicts = []
 
 current_audio_index = 0
 
-# mic1.set_audio(all_audio_nmf[mic1][0])
-# mic2.set_audio(all_audio_nmf[mic2][0])
-# mic3.set_audio(all_audio_nmf[mic3][0])
-# mic4.set_audio(all_audio_nmf[mic4][0])
-# AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
-# environment1.chunk_audio_signals_by_duration(chunk_duration=timedelta(milliseconds=200))
-# result_dict = environment1.multilaterate(
-#     algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.5
-# )
-# all_dicts.append(result_dict)
-
-# mic1.set_audio(all_audio_nmf[mic1][1])
-# mic2.set_audio(all_audio_nmf[mic2][1])
-# mic3.set_audio(all_audio_nmf[mic3][1])
-# mic4.set_audio(all_audio_nmf[mic4][1])
-# AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
-# environment1.chunk_audio_signals_by_duration(chunk_duration=timedelta(milliseconds=200))
-# result_dict = environment1.multilaterate(
-#     algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.5
-# )
+mic1.set_audio(all_audio_nmf[mic1][0])
+mic2.set_audio(all_audio_nmf[mic2][0])
+mic3.set_audio(all_audio_nmf[mic3][0])
+mic4.set_audio(all_audio_nmf[mic4][0])
 AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
-result_dict = environment1.multilaterate(
-    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
+environment1.chunk_audio_signals_by_duration(
+    chunk_duration=timedelta(milliseconds=1000)
 )
+result_dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.5
+)
+all_dicts.append(result_dict)
+
+mic1.set_audio(all_audio_nmf[mic1][1])
+mic2.set_audio(all_audio_nmf[mic2][1])
+mic3.set_audio(all_audio_nmf[mic3][1])
+mic4.set_audio(all_audio_nmf[mic4][1])
+AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
+environment1.chunk_audio_signals_by_duration(
+    chunk_duration=timedelta(milliseconds=1000)
+)
+result_dict = environment1.multilaterate(
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.5
+)
+# AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
+# result_dict = environment1.multilaterate(
+#     algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.2
+# )
 all_dicts.append(result_dict)
 
 # FAKE
@@ -91,7 +111,7 @@ mic1.set_audio(audio1)
 mic2.set_audio(audio2)
 mic3.set_audio(audio3)
 mic4.set_audio(audio4)
-environment1.chunk_audio_signals_by_duration(chunk_duration=timedelta(milliseconds=200))
+# environment1.chunk_audio_signals_by_duration(chunk_duration=timedelta(milliseconds=200))
 
 for i, object in enumerate(all_dicts):
     print(dict[object])

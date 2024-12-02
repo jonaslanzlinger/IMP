@@ -43,20 +43,6 @@ def generate_microphone_audio(
 
     mic_audio = [np.zeros(total_samples) for _ in range(num_mics)]
 
-    # t = np.linspace(
-    #     0, sine_wave_duration, int(sample_rate * sine_wave_duration), endpoint=False
-    # )
-
-    # t_sine = np.linspace(
-    #     0, sine_wave_duration, int(sample_rate * sine_wave_duration), endpoint=False
-    # )
-    # sine_wave = np.sin(2 * np.pi * 440 * t_sine)
-
-    # t_sawtooth = np.linspace(
-    #     0, sawtooth_duration, int(sample_rate * sawtooth_duration), endpoint=False
-    # )
-    # sawtooth_wave = 2 * (t_sawtooth % (1 / 440)) * 440 - 1
-
     for idx, source in enumerate(source_positions):
         for start_sample_index, (x, y) in source.items():
             for mic_index, mic_position in enumerate(mic_positions):
@@ -68,13 +54,6 @@ def generate_microphone_audio(
                 sample_delay = int(sample_rate * time_delay)
 
                 start_index = start_sample_index + sample_delay
-
-                # if idx == 0:
-                #     wave = sine_wave
-                # elif idx == 1:
-                #     wave = sawtooth_wave
-                # else:
-                #     wave = sine_wave
 
                 wave = sounds[idx]
 
