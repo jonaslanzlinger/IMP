@@ -9,14 +9,14 @@ import numpy as np
 from matplotlib import animation
 
 
-def multilaterate_plot(environment: Environment, data: dict) -> None:
+def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
     """
     Visualizes the environment layout, microphones, and sound source positions using Matplotlib.
     The sound source positions are approximated using the multilateration algorithm, stored in the data dictionary.
 
     Args:
         environment (Environment): Environment object containing the environment layout and microphones.
-        data (dict): Dictionary containing the sound source positions approximated using the multilateration algorithm.
+        dict_list (list[dict]): List of dictionaries containing the sound source positions approximated using the multilateration algorithm.
     """
 
     plt.rcParams["toolbar"] = "none"
@@ -50,9 +50,11 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
         mic_x, mic_y = zip(*[mic.get_position() for mic in environment.get_mics()])
         ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
-    # (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
-    # (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
-    (sound_scatter,) = ax.plot([], [], "bo", label="Sound Source")
+    sound_scatter_list = []
+    (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
+    (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
+    sound_scatter_list.append(sound_scatter_1)
+    sound_scatter_list.append(sound_scatter_2)
 
     ax.legend(loc="upper right", bbox_to_anchor=(1.48, 0.7), borderaxespad=0.0)
 
@@ -137,27 +139,14 @@ def multilaterate_plot(environment: Environment, data: dict) -> None:
             current_sample = int(
                 (playback_position_ms / 1000) * selected_audio.get_sample_rate()
             )
-            for key in sorted(data.keys(), key=int):
-                if int(key) > current_sample:
-                    break
-                if data[key] is not None:
-                    sound_scatter.set_data([data[key][0]], [data[key][1]])
-                    fig.canvas.draw_idle()
 
-            # HERE: Stub for having multiple sound sources
-            # for key in sorted(data[0].keys(), key=int):
-            #     if int(key) > current_sample:
-            #         break
-            #     if data[0][key] is not None:
-            #         sound_scatter_1.set_data([data[0][key][0]], [data[0][key][1]])
-            #         fig.canvas.draw_idle()
-
-            # for key in sorted(data[1].keys(), key=int):
-            #     if int(key) > current_sample:
-            #         break
-            #     if data[1][key] is not None:
-            #         sound_scatter_2.set_data([data[1][key][0]], [data[1][key][1]])
-            #         fig.canvas.draw_idle()
+            for i, data in enumerate(dict_list):
+                for key in sorted(data.keys(), key=int):
+                    if int(key) > current_sample:
+                        break
+                    if data[key] is not None:
+                        sound_scatter_list[i].set_data([data[key][0]], [data[key][1]])
+                        fig.canvas.draw_idle()
 
         def update_cursor(frame):
 

@@ -180,7 +180,9 @@ class Environment:
         )
 
         dict = {}
+        print(f"Number of chunks: {number_of_chunks}")
         for i in range(number_of_chunks):
+            print(f"Chunk {i}")
 
             if algorithm == "gcc_phat":
                 tdoa_pairs_of_chunk = self.compute_all_tdoa_of_chunk_index_by_gcc_phat(
@@ -246,7 +248,6 @@ class Environment:
         """
 
         def compute_sample_index_threshold(mic: Microphone, debug: bool = False) -> int:
-
             for i, sample in enumerate(
                 mic.get_audio().get_audio_signal(index=chunk_index)
             ):
@@ -260,19 +261,30 @@ class Environment:
         tdoa_pairs = []
 
         for i in range(len(self.__mics)):
-
+            print(f"MIC {i}")
             mic1 = self.__mics[i]
             mic1_sample_index = compute_sample_index_threshold(mic1, debug=debug)
 
             if mic1_sample_index is None:
+                print("EXITING NONE")
                 return None
 
             for j in range(i + 1, len(self.__mics)):
+                print(f"MIC {j}")
                 mic2 = self.__mics[j]
                 mic2_sample_index = compute_sample_index_threshold(mic2, debug=False)
 
                 if mic2_sample_index is None:
                     return None
+
+                print("mics: ", mic1.get_name(), mic2.get_name())
+                print("sample indices: ", mic1_sample_index, mic2_sample_index)
+                print(
+                    f"abs(mic2_sample_index - mic1_sample_index): {abs(mic2_sample_index - mic1_sample_index)}"
+                )
+                print(
+                    f"tdoa: {abs(mic2_sample_index - mic1_sample_index) / mic1.get_audio().get_sample_rate()}"
+                )
 
                 tdoa_pairs.append(
                     TdoaPair(
@@ -282,7 +294,9 @@ class Environment:
                         / mic1.get_audio().get_sample_rate(),
                     )
                 )
+                # print(f"tdoa_pairs: {tdoa_pairs}")
 
+        print(f"tdoa_pairs: {tdoa_pairs}")
         return tdoa_pairs
 
     def compute_all_tdoa_of_chunk_index_by_gcc_phat(

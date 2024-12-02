@@ -22,6 +22,7 @@ def multilaterate_by_tdoa_pairs(
     Raises:
         ValueError: If fewer than two microphone pairs are provided.
     """
+    print("tdoa_pairs", tdoa_pairs)
     if len(tdoa_pairs) < 2:
         raise ValueError(
             "At least two microphone pairs are required to approximate the sound source."
@@ -36,6 +37,9 @@ def multilaterate_by_tdoa_pairs(
         )
         for tdoa_pair in tdoa_pairs
     ]
+
+    for mic1, mic2, d in tdoa_distances:
+        print(mic1.get_name(), mic2.get_name(), d)
 
     # Define the system of equations based on the hyperbolic equations for TDOA
     def multilateration_fn(initial_guess):

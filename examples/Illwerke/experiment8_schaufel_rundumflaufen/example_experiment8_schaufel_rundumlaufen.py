@@ -13,6 +13,8 @@ from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
 from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
+from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 
 # Create simulation and add an environment with 4 microphones
 simulation = Simulation.create()
@@ -42,13 +44,6 @@ audio4_filepath = "output_MIC4_2024-11-07_15-04-14_633864.wav"
 mic4.set_audio(Audio(filepath=audio4_filepath))
 mic4.set_recording_start_time(datetime(2024, 11, 7, 15, 4, 14, microsecond=633864))
 
-for mic in environment1.get_mics():
-    SampleTrimmer.slice_from_to(
-        mic.get_audio(),
-        start_time=timedelta(seconds=12),
-        end_time=timedelta(seconds=40),
-    )
-
 # Ensure that all audio files are of same sample rate
 SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 
@@ -56,53 +51,95 @@ SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 # TODO: artificially adjust samples to ensure that they actually are in sync (hardware limitation)
 SampleTrimmer.sync_environment(environment1)
 
-# 1. Sync audio
-# 2. Preprocessing, like NMF
-# 3. Chunk audio
-# 4. Multilaterate
-
-spectrogram_plot(
-    mic1.get_audio().get_audio_signal_unchunked(),
-    mic1.get_audio().get_sample_rate(),
-)
+for mic in environment1.get_mics():
+    SampleTrimmer.slice_from_to(
+        mic.get_audio(),
+        start_time=timedelta(seconds=12),
+        end_time=timedelta(seconds=16),
+    )
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=5000, order=5))
 frequency_filter_chain.apply(mic1.get_audio())
-frequency_filter_chain.apply(mic2.get_audio())
-frequency_filter_chain.apply(mic3.get_audio())
-frequency_filter_chain.apply(mic4.get_audio())
+# frequency_filter_chain.apply(mic2.get_audio())
+# frequency_filter_chain.apply(mic3.get_audio())
+# frequency_filter_chain.apply(mic4.get_audio())
 
-spectrogram_plot(
-    mic1.get_audio().get_audio_signal_unchunked(),
-    mic1.get_audio().get_sample_rate(),
+nmf = NonNegativeMatrixFactorization(44100)
+audio_signals_nmf = nmf.run_for_single_audio(
+    audio=mic1.get_audio(),
 )
+print(audio_signals_nmf)
+print(len(audio_signals_nmf))
+for idx, audio in enumerate(audio_signals_nmf):
+    wave_plot(
+        audio,
+        44100,
+    )
 
-wave_plot(
-    mic1.get_audio().get_audio_signal_unchunked(),
-    mic1.get_audio().get_sample_rate(),
-)
+# NoiseReducer.reduce_all_noise(environment1)
 
-for mic in environment1.get_mics():
-    print(mic.get_audio().get_num_samples())
+AudioNormalizer.normalize_to_max_amplitude(environment1, 0.5)
+
+# wave_plot(
+#     mic1.get_audio().get_audio_signal_unchunked(),
+#     mic1.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic2.get_audio().get_audio_signal_unchunked(),
+#     mic2.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic3.get_audio().get_audio_signal_unchunked(),
+#     mic3.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic4.get_audio().get_audio_signal_unchunked(),
+#     mic4.get_audio().get_sample_rate(),
+# )
 
 nmf = NonNegativeMatrixFactorization(sample_rate=mic1.get_audio().get_sample_rate())
 audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
     environment=environment1
 )
 
+print(audio_signals_nmf)
+
 for mic, audio_list in audio_signals_nmf.items():
     print(f"Mic: {mic.get_name()}")
     for idx, audio in enumerate(audio_list):
         print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
         mic.set_audio(audio, reset_recording_start_time=True)
+        wave_plot(
+            audio.get_audio_signal_unchunked(),
+            audio.get_sample_rate(),
+        )
 
-# TODO: Chunk audio
+environment1.chunk_audio_signals_by_duration(
+    chunk_duration=timedelta(milliseconds=1000)
+)
 
-algorithm_choice = "gcc_phat"
+# wave_plot(
+#     mic1.get_audio().get_audio_signal_unchunked(),
+#     mic1.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic2.get_audio().get_audio_signal_unchunked(),
+#     mic2.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic3.get_audio().get_audio_signal_unchunked(),
+#     mic3.get_audio().get_sample_rate(),
+# )
+# wave_plot(
+#     mic4.get_audio().get_audio_signal_unchunked(),
+#     mic4.get_audio().get_sample_rate(),
+# )
+
+algorithm_choice = "threshold"
 
 dict = environment1.multilaterate(
-    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.15
+    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.35
 )
 
 for i, object in enumerate(dict):

@@ -1,6 +1,8 @@
 import soundfile as sf
 import pyloudnorm as pyln
 from pysoundlocalization.core.Environment import Environment
+import numpy as np
+from pysoundlocalization.core.Audio import Audio
 
 
 class AudioNormalizer:
@@ -80,3 +82,29 @@ class AudioNormalizer:
                 audio.set_audio_signal(normalized_audio, i)
 
         return environment
+
+    @staticmethod
+    def normalize_audio_to_max_amplitude(audio: Audio, max_amplitude: float) -> Audio:
+        """
+        Normalize the audio so that its maximum amplitude matches the given value.
+
+        Args:
+            audio: Audio object
+            max_amplitude: Maximum desired amplitude (e.g., 0.9 for 90% of the full scale)
+
+        Returns:
+            Audio object with normalized audio
+        """
+        for i, chunk in enumerate(audio.get_audio_signal_chunked()):
+            current_max = max(abs(chunk))
+
+            if current_max == 0:
+                scale_factor = 0
+            else:
+                scale_factor = max_amplitude / current_max
+
+            normalized_audio = chunk * scale_factor
+
+            audio.set_audio_signal(normalized_audio, i)
+
+        return audio

@@ -59,10 +59,10 @@ SampleRateConverter.convert_all_to_lowest_sample_rate(environment1)
 # TODO: artificially adjust samples to ensure that they actually are in sync (hardware limitation)
 SampleTrimmer.sync_environment(environment1)
 
-# spectrogram_plot(
-#     mic1.get_audio().get_audio_signal_unchunked(),
-#     mic1.get_audio().get_sample_rate(),
-# )
+spectrogram_plot(
+    mic1.get_audio().get_audio_signal_unchunked(),
+    mic1.get_audio().get_sample_rate(),
+)
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=5000, order=5))
@@ -90,9 +90,9 @@ audio_signals_nmf = nmf.experimental_run_for_all_audio_in_environment(
     environment=environment1
 )
 
-for mic, audio_list in audio_signals_nmf.items():
-    print(f"Mic: {mic.get_name()}")
-    for idx, audio in enumerate(audio_list):
-        print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
-        # mic.set_audio(audio, reset_recording_start_time=True)
-        audio.export(f"nmf_{mic.get_name()}_{idx + 1}.wav")
+# for mic, audio_list in audio_signals_nmf.items():
+#     print(f"Mic: {mic.get_name()}")
+#     for idx, audio in enumerate(audio_list):
+#         print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
+#         # mic.set_audio(audio, reset_recording_start_time=True)
+#         audio.export(f"nmf_{mic.get_name()}_{idx + 1}.wav")
