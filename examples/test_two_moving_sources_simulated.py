@@ -27,6 +27,7 @@ mic2 = environment1.add_microphone(9, 1)
 mic3 = environment1.add_microphone(9, 9)
 mic4 = environment1.add_microphone(1, 9)
 
+# how to add sounds
 source_positions = [
     {44100: (4, 9), 88200: (4, 7)},
     {132300: (8, 1)},
@@ -45,7 +46,7 @@ audio2 = mic2.get_audio()
 audio3 = mic3.get_audio()
 audio4 = mic4.get_audio()
 
-AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 0.8)
 
 wave_plot(
     audio1.get_audio_signal(),
@@ -77,7 +78,7 @@ mic1.set_audio(all_audio_nmf[mic1][0])
 mic2.set_audio(all_audio_nmf[mic2][0])
 mic3.set_audio(all_audio_nmf[mic3][0])
 mic4.set_audio(all_audio_nmf[mic4][0])
-AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 0.8)
 environment1.chunk_audio_signals_by_duration(
     chunk_duration=timedelta(milliseconds=1000)
 )
@@ -90,7 +91,7 @@ mic1.set_audio(all_audio_nmf[mic1][1])
 mic2.set_audio(all_audio_nmf[mic2][1])
 mic3.set_audio(all_audio_nmf[mic3][1])
 mic4.set_audio(all_audio_nmf[mic4][1])
-AudioNormalizer.normalize_to_max_amplitude(environment1, 0.8)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 0.8)
 environment1.chunk_audio_signals_by_duration(
     chunk_duration=timedelta(milliseconds=1000)
 )
