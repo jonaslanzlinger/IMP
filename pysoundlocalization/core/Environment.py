@@ -138,6 +138,21 @@ class Environment:
         """
         return min(mic.get_audio().get_sample_rate() for mic in self.__mics)
 
+    def get_sample_rate(self) -> int:
+        """
+        Get the sample rate of the environment. If there are different
+        sample rates for the microphones, an exception is raised.
+
+        Returns:
+            int: The sample rate of the environment.
+        """
+        sample_rates = [mic.get_audio().get_sample_rate() for mic in self.__mics]
+        if len(set(sample_rates)) > 1:
+            raise ValueError(
+                "Different sample rates for microphones in the environment."
+            )
+        return sample_rates[0]
+
     def chunk_audio_signals_by_duration(
         self, chunk_duration: timedelta | None = timedelta(milliseconds=1000)
     ) -> None:
