@@ -13,53 +13,70 @@ from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.util.simulate_noise_util import generate_audios
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
+from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 
 simulation = Simulation.create()
 environment1 = simulation.add_environment(
-    "Simulation", [(0, 0), (100, 0), (150, 50), (100, 100), (0, 100)]
+    "Simulation",
+    [
+        (0, 10),
+        (50, 0),
+        (100, 10),
+        (100, 25),
+        (110, 25),
+        (110, 85),
+        (100, 85),
+        (100, 100),
+        (0, 100),
+    ],
 )
-mic1 = environment1.add_microphone(10, 10)
-mic2 = environment1.add_microphone(90, 10)
-mic3 = environment1.add_microphone(90, 90)
-mic4 = environment1.add_microphone(10, 90)
+mic1 = environment1.add_microphone(5, 15)
+mic2 = environment1.add_microphone(95, 15)
+mic3 = environment1.add_microphone(95, 95)
+mic4 = environment1.add_microphone(5, 95)
 
-sound1 = Audio(filepath="buzzer.wav")
-sound2 = Audio(filepath="hammer.wav")
-print(f"Sound 1 duration: {sound1.get_sample_rate()}")
-print(f"Sound 2 duration: {sound2.get_sample_rate()}")
+buzzer = Audio(filepath="buzzer_sound.wav")
+knock = Audio(filepath="knock_sound.wav")
+# print(f"Sound 1 duration: {buzzer.get_sample_rate()}")
+# print(f"Sound 2 duration: {knock.get_sample_rate()}")
 lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
-    [sound1, sound2]
+    [buzzer, knock]
 )
 source_positions = [
     {
-        "sound": sound1,
-        int(lowest_sample_rate * 1): (40, 80),
-        int(lowest_sample_rate * 2.5): (40, 80),
-        int(lowest_sample_rate * 4.1): (40, 80),
-        int(lowest_sample_rate * 5.5): (40, 80),
-        int(lowest_sample_rate * 7): (40, 80),
+        "sound": buzzer,
+        int(lowest_sample_rate * 1): (50, 85),
+        int(lowest_sample_rate * 3): (50, 85),
+        int(lowest_sample_rate * 5): (50, 85),
+        int(lowest_sample_rate * 7): (50, 85),
     },
     {
-        "sound": sound2,
-        int(lowest_sample_rate * 1.6): (75, 20),
-        int(lowest_sample_rate * 2.0): (85, 27),
-        int(lowest_sample_rate * 3.1): (98, 34),
-        int(lowest_sample_rate * 3.6): (105, 41),
-        int(lowest_sample_rate * 4.5): (112, 49),
-        int(lowest_sample_rate * 5.0): (122, 55),
-        int(lowest_sample_rate * 6.0): (130, 60),
+        "sound": knock,
+        int(lowest_sample_rate * 1.5): (10, 50),
+        int(lowest_sample_rate * 2.3): (25, 50),
+        int(lowest_sample_rate * 3.7): (40, 50),
+        int(lowest_sample_rate * 4.2): (55, 50),
+        int(lowest_sample_rate * 4.6): (70, 50),
+        int(lowest_sample_rate * 5.5): (85, 50),
+        int(lowest_sample_rate * 6.0): (100, 50),
     },
 ]
+
 n_sound_sources = len(source_positions)
 
-audio_background_noise = Audio(filepath="factory.wav")
-print(f"Background noise duration: {audio_background_noise.get_duration()}")
+factory_sound_audio = Audio(
+    filepath="factory_sound.wav", convert_to_sample_rate=lowest_sample_rate
+)
+# factory_sound_audio.play()
+# print(f"Background noise duration: {factory_sound_audio.get_duration()}")
+# print(f"sample rate: {factory_sound_audio.get_sample_rate()}")
 
 environment1 = generate_audios(
     environment=environment1,
     sample_rate=lowest_sample_rate,
     source_sources=source_positions,
-    background_noise=audio_background_noise,
+    background_noise=factory_sound_audio,
     loudness_mix=[0.3, 0.3, 1.0],
     default_sound_duration=0.3,
 )
@@ -70,14 +87,19 @@ original_audio1 = mic1.get_audio()
 original_audio2 = mic2.get_audio()
 original_audio3 = mic3.get_audio()
 original_audio4 = mic4.get_audio()
+original_audio1.play()
 
 frequency_filter_chain = FrequencyFilterChain()
-frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=300, order=5))
+frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=500, order=5))
+frequency_filter_chain.add_filter(NotchFilter(target_frequency=2760, quality_factor=10))
+frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
 for mic in environment1.get_mics():
     frequency_filter_chain.apply(mic.get_audio())
 
 for mic in environment1.get_mics():
     NoiseReducer.reduce_noise(mic.get_audio())
+
+AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 1.0)
 
 nmf = NonNegativeMatrixFactorization(
     number_of_sources_to_extract=n_sound_sources,
@@ -104,9 +126,10 @@ for i_sound_src in range(n_sound_sources):
     result_dict = environment1.multilaterate(
         algorithm=algorithm_choice,
         number_of_sound_sources=n_sound_sources,
-        threshold=0.3,
+        threshold=0.5,
     )
     all_multilaterations.append(result_dict)
+    environment1.get_mics()[0].get_audio().play()
 
 # Reset audio to original audio
 mic1.set_audio(original_audio1)
