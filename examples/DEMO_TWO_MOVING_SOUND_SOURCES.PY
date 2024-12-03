@@ -14,8 +14,6 @@ from pysoundlocalization.util.simulate_noise_util import generate_audios
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
-from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
-from pysoundlocalization.visualization.wave_plot import wave_plot
 from datetime import datetime
 from pysoundlocalization.visualization.spectrogram_plot import (
     spectrogram_plot_environment,
@@ -164,7 +162,7 @@ for i_sound_src in range(n_sound_sources):
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
     environment.chunk_audio_signals_by_duration(
-        chunk_duration=timedelta(milliseconds=500)
+        chunk_duration=timedelta(milliseconds=1000)
     )
 
     source_pos = environment.multilaterate(

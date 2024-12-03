@@ -34,7 +34,7 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         closed=True,
         edgecolor="black",
         facecolor="none",
-        linewidth=2,
+        linewidth=3,
     )
     ax.add_patch(polygon)
     ax.set_xlabel("Width (meters)")
@@ -51,7 +51,7 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
 
     if environment.get_mics():
         mic_x, mic_y = zip(*[mic.get_position() for mic in environment.get_mics()])
-        ax.scatter(mic_x, mic_y, color="red", label="Microphones")
+        ax.scatter(mic_x, mic_y, color="red", label="Microphones", marker="x", s=100)
 
     list_of_colors = ["purple", "orange", "green", "yellow", "blue", "pink"]
     sound_scatter_list = []
@@ -62,6 +62,7 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
             "o",
             color=list_of_colors[i % len(list_of_colors)],
             label=f"Source {i + 1}",
+            markersize=10,
         )
         sound_scatter_list.append(sound_scatter)
 
