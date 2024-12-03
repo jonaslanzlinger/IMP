@@ -101,7 +101,7 @@ class NonNegativeMatrixFactorization:
             Audio(audio_signal=audio_signal, sample_rate=sample_rate), visualize_results
         )
 
-    def experimental_run_for_all_audio_in_environment(
+    def run_for_environment(
         self, environment: Environment, visualize_results: bool = False
     ):
         """

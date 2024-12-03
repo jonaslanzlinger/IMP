@@ -7,6 +7,7 @@ import pygame
 from scipy.io.wavfile import write
 import numpy as np
 from matplotlib import animation
+import os
 
 
 def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
@@ -36,6 +37,8 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         linewidth=2,
     )
     ax.add_patch(polygon)
+    ax.set_xlabel("Width (meters)")
+    ax.set_ylabel("Height (meters)")
 
     ax.set_xlim(
         min(x for x, y in environment.get_vertices()) - 1,
@@ -50,20 +53,17 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         mic_x, mic_y = zip(*[mic.get_position() for mic in environment.get_mics()])
         ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
+    list_of_colors = ["purple", "orange", "green", "yellow", "blue", "pink"]
     sound_scatter_list = []
-    # for i, data in enumerate(dict_list):
-    #     for key in data.keys():
-    #         if data[key] is not None:
-    #             sound_scatter = ax.plot(
-    #                 data[key][0], data[key][1], "bo", label=f"Source {i + 1}"
-    #             )
-    #             sound_scatter_list.append(sound_scatter)
-    (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
-    (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
-    (sound_scatter_3,) = ax.plot([], [], "yo", label="Source 3: third...")
-    sound_scatter_list.append(sound_scatter_1)
-    sound_scatter_list.append(sound_scatter_2)
-    sound_scatter_list.append(sound_scatter_3)
+    for i, data in enumerate(dict_list):
+        (sound_scatter,) = ax.plot(
+            [],
+            [],
+            "o",
+            color=list_of_colors[i % len(list_of_colors)],
+            label=f"Source {i + 1}",
+        )
+        sound_scatter_list.append(sound_scatter)
 
     ax.legend(loc="upper right", bbox_to_anchor=(1.48, 0.7), borderaxespad=0.0)
 
@@ -137,6 +137,7 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         is_playing = False
 
         pygame.mixer.music.load(wav_file)
+        os.remove(wav_file)
         pygame.mixer.music.play()
         pygame.mixer.music.pause()
 
