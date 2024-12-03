@@ -17,7 +17,8 @@ from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 
 simulation = Simulation.create()
-environment1 = simulation.add_environment(
+
+environment = simulation.add_environment(
     "Simulation",
     [
         (0, 10),
@@ -31,10 +32,12 @@ environment1 = simulation.add_environment(
         (0, 100),
     ],
 )
-mic1 = environment1.add_microphone(5, 15)
-mic2 = environment1.add_microphone(95, 15)
-mic3 = environment1.add_microphone(95, 95)
-mic4 = environment1.add_microphone(5, 95)
+
+
+mic1 = environment.add_microphone(5, 15)
+mic2 = environment.add_microphone(95, 15)
+mic3 = environment.add_microphone(95, 95)
+mic4 = environment.add_microphone(5, 95)
 
 buzzer = Audio(filepath="buzzer_sound.wav")
 knock = Audio(filepath="knock_sound.wav")
@@ -72,8 +75,8 @@ factory_sound_audio = Audio(
 # print(f"Background noise duration: {factory_sound_audio.get_duration()}")
 # print(f"sample rate: {factory_sound_audio.get_sample_rate()}")
 
-environment1 = generate_audios(
-    environment=environment1,
+environment = generate_audios(
+    environment=environment,
     sample_rate=lowest_sample_rate,
     source_sources=source_positions,
     background_noise=factory_sound_audio,
@@ -81,55 +84,55 @@ environment1 = generate_audios(
     default_sound_duration=0.3,
 )
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 0.8)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
 
 original_audio1 = mic1.get_audio()
 original_audio2 = mic2.get_audio()
 original_audio3 = mic3.get_audio()
 original_audio4 = mic4.get_audio()
-original_audio1.play()
+# original_audio1.play()
 
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=500, order=5))
 frequency_filter_chain.add_filter(NotchFilter(target_frequency=2760, quality_factor=10))
 frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
-for mic in environment1.get_mics():
+for mic in environment.get_mics():
     frequency_filter_chain.apply(mic.get_audio())
 
-for mic in environment1.get_mics():
+for mic in environment.get_mics():
     NoiseReducer.reduce_noise(mic.get_audio())
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 1.0)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
 nmf = NonNegativeMatrixFactorization(
     number_of_sources_to_extract=n_sound_sources,
-    sample_rate=environment1.get_mics()[0].get_audio().get_sample_rate(),
+    sample_rate=environment.get_mics()[0].get_audio().get_sample_rate(),
 )
-all_sound_sources_nmf = nmf.experimental_run_for_all_audio_in_environment(environment1)
+all_sound_sources_nmf = nmf.experimental_run_for_all_audio_in_environment(environment)
 
 algorithm_choice = "threshold"
 all_multilaterations = []
 current_audio_index = 0
 
 for i_sound_src in range(n_sound_sources):
-    for mic in environment1.get_mics():
+    for mic in environment.get_mics():
         mic.set_audio(all_sound_sources_nmf[mic][i_sound_src])
     # for mic in environment.get_mics():
     #     audio = mic.get_audio()
     #     # wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
     #     # spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
     #     # audio.play()
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment1, 0.8)
-    environment1.chunk_audio_signals_by_duration(
+    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
+    environment.chunk_audio_signals_by_duration(
         chunk_duration=timedelta(milliseconds=1000)
     )
-    result_dict = environment1.multilaterate(
+    result_dict = environment.multilaterate(
         algorithm=algorithm_choice,
         number_of_sound_sources=n_sound_sources,
         threshold=0.5,
     )
     all_multilaterations.append(result_dict)
-    environment1.get_mics()[0].get_audio().play()
+    # environment.get_mics()[0].get_audio().play()
 
 # Reset audio to original audio
 mic1.set_audio(original_audio1)
@@ -137,4 +140,4 @@ mic2.set_audio(original_audio2)
 mic3.set_audio(original_audio3)
 mic4.set_audio(original_audio4)
 
-multilaterate_plot(environment1, all_multilaterations)
+multilaterate_plot(environment, all_multilaterations)
