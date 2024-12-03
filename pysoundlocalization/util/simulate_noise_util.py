@@ -3,6 +3,7 @@ from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.config import DEFAULT_SOUND_SPEED
+from scipy.signal.windows import tukey
 
 
 def generate_audios(
@@ -107,6 +108,10 @@ def generate_audios(
     # Add background noise
     if background_noise is not None:
         background_noise_signal = background_noise.get_audio_signal_unchunked()
+        # seamless_noise = create_seamless_background_noise(
+        #     background_noise_signal, total_samples
+        # )
+        # audio_seamless_noise = Audio.create_from_signal(seamless_noise, sample_rate)
         bg_noise_repeated = np.tile(
             background_noise_signal,
             int(np.ceil(total_samples / len(background_noise_signal))),
@@ -127,7 +132,7 @@ def generate_audios(
         mic.set_audio(audio)
 
     # Normalize audio signals to prevent very loud audio signals
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.5)
+    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
 
     return environment
 
@@ -165,3 +170,53 @@ def generate_maximally_different_sounds(N, sample_rate, duration):
         sounds.append(sound)
 
     return sounds
+
+
+# def create_seamless_background_noise(
+#     background_noise_signal, total_samples, fade_ratio=0.1
+# ):
+#     """
+#     Creates a seamless looped version of background noise using cross-fading.
+
+#     :param background_noise_signal: The original background noise signal (1D NumPy array).
+#     :param total_samples: Total number of samples required for the output.
+#     :param fade_ratio: Ratio of the cross-fade duration to the original noise length.
+#     :return: Seamlessly looped background noise signal of length `total_samples`.
+#     """
+#     print("create_seamless_background_noise")
+#     # Ensure fade ratio is within reasonable bounds
+#     fade_ratio = min(max(fade_ratio, 0.01), 0.5)
+
+#     # Calculate the fade length
+#     fade_length = int(len(background_noise_signal) * fade_ratio)
+
+#     # Create a fade window (Tukey window for smooth transitions)
+#     fade_window = tukey(len(background_noise_signal), alpha=fade_ratio)
+
+#     # Apply fade-in and fade-out to the noise signal
+#     faded_signal = background_noise_signal.copy()
+#     faded_signal[:fade_length] *= fade_window[:fade_length]  # Fade-in
+#     faded_signal[-fade_length:] *= fade_window[-fade_length:]  # Fade-out
+
+#     # Initialize the seamless loop
+#     seamless_signal = np.zeros(total_samples)
+#     current_index = 0
+
+#     # Repeat and cross-fade to fill the total samples
+#     while current_index < total_samples:
+#         end_index = current_index + len(faded_signal)
+#         overlap_length = max(0, end_index - total_samples)
+
+#         if overlap_length > 0:
+#             # Cross-fade the overlapping part
+#             seamless_signal[current_index:total_samples] += faded_signal[
+#                 : len(faded_signal) - overlap_length
+#             ]
+#         else:
+#             seamless_signal[current_index:end_index] += faded_signal
+
+#         current_index += (
+#             len(faded_signal) - fade_length
+#         )  # Step forward, overlapping by fade_length
+
+#     return seamless_signal

@@ -51,6 +51,13 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         ax.scatter(mic_x, mic_y, color="red", label="Microphones")
 
     sound_scatter_list = []
+    # for i, data in enumerate(dict_list):
+    #     for key in data.keys():
+    #         if data[key] is not None:
+    #             sound_scatter = ax.plot(
+    #                 data[key][0], data[key][1], "bo", label=f"Source {i + 1}"
+    #             )
+    #             sound_scatter_list.append(sound_scatter)
     (sound_scatter_1,) = ax.plot([], [], "bo", label="Source 1: Clap")
     (sound_scatter_2,) = ax.plot([], [], "go", label="Source 2: Sine Wave")
     (sound_scatter_3,) = ax.plot([], [], "yo", label="Source 3: third...")
