@@ -129,6 +129,15 @@ class Environment:
 
         return max_mic_distance / self.__sound_speed
 
+    def get_lowest_sample_rate(self) -> int:
+        """
+        Get the lowest sample rate of all microphones in the environment.
+
+        Returns:
+            int: The lowest sample rate of all microphones.
+        """
+        return min(mic.get_audio().get_sample_rate() for mic in self.__mics)
+
     def chunk_audio_signals_by_duration(
         self, chunk_duration: timedelta | None = timedelta(milliseconds=1000)
     ) -> None:
