@@ -9,17 +9,37 @@ from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+from visualization.spectrogram_plot import spectrogram_plot
+from visualization.wave_plot import wave_plot
 
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Illwerke - Rodundwerk II", [(0, 0), (10, 0), (10, 10), (0, 10)]
+    "Illwerke - Rodundwerk II",
+    [
+        (0, 2),
+        (0, 12),
+        (5, 12),
+        (5, 14),
+        (10, 14),
+        (10, 12),
+        (20, 12),
+        (20, 0),
+        (13, 0),
+        (13, 2),
+        (10, 2),
+        (10, 0),
+        (5, 0),
+        (5, 2),
+    ],
 )
+environment.visualize()
 
-mic1 = environment.add_microphone(7.61, 1)
-mic2 = environment.add_microphone(7.61, 4.89)
-mic3 = environment.add_microphone(1, 4.89)
-mic4 = environment.add_microphone(1, 1)
+
+mic1 = environment.add_microphone(10.61, 5)
+mic2 = environment.add_microphone(10.61, 8.89)
+mic3 = environment.add_microphone(4, 8.89)
+mic4 = environment.add_microphone(4, 5)
 
 mic1.set_audio(Audio(filepath="illwerke_MIC1_2024-11-07_10-30-45_977581.wav"))
 mic1.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 0))
