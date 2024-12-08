@@ -118,8 +118,11 @@ frequency_filter_chain.add_filter(NotchFilter(target_frequency=2760, quality_fac
 frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
 
 for mic in environment.get_mics():
-    frequency_filter_chain.apply(mic.get_audio())
-    AudioNormalizer.normalize_audio_to_max_amplitude(mic.get_audio(), 1.0)
+    audio = mic.get_audio()
+    frequency_filter_chain.apply(audio)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+    # NoiseReducer.reduce_noise(audio)
+    # AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
 
 # wave_plot_environment(environment=environment)
 # spectrogram_plot_environment(environment=environment)

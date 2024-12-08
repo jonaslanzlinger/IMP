@@ -98,14 +98,14 @@ class Audio:
         if self.__sample_rate == target_rate:
             return self.__audio_signal
 
+        print(f"Resampling audio from {self.__sample_rate} Hz to {target_rate} Hz...")
+
         self.__audio_signal = [
             librosa.resample(signal, orig_sr=self.__sample_rate, target_sr=target_rate)
             for signal in self.__audio_signal
         ]
 
-        self.__sample_rate = self.__convert_to_sample_rate
-
-        print(f"Audio resampled to {target_rate} Hz.")
+        self.__sample_rate = target_rate
 
         return self.__audio_signal
 
