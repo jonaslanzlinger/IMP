@@ -24,6 +24,7 @@ def wave_plot(
     )
 
     plt.plot(timeline, audio_signal)
+    plt.ylim(-1.2, 1.2)
     plt.title(title)
     plt.ylabel("Amplitude")
     plt.xlabel("Time (seconds)")
@@ -54,6 +55,7 @@ def wave_plot_environment(environment: Environment) -> None:
 
         plt.subplot(num_mics, 1, i + 1)
         plt.plot(timeline, audio_signal)
+        plt.ylim(-1.2, 1.2)
         plt.ylabel("Amplitude")
         plt.xlabel("Time (seconds)")
 
