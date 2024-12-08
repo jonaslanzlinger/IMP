@@ -31,6 +31,8 @@ def wave_plot(
 
     plt.show()
 
+    print(f"Waveplot of audio signal displayed.")
+
 
 def wave_plot_environment(environment: Environment) -> None:
     """
@@ -62,3 +64,5 @@ def wave_plot_environment(environment: Environment) -> None:
     plt.gcf().canvas.manager.set_window_title("Environment all Waveplots")
     plt.tight_layout()
     plt.show()
+
+    print(f"Waveplot of environment displayed.")

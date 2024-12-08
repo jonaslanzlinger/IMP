@@ -197,3 +197,5 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
     fig.canvas.mpl_connect("button_press_event", move_cursor)
 
     plt.show()
+
+    print(f"Multilateration plot for environment displayed.")

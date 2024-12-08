@@ -24,6 +24,8 @@ def spectrogram_plot(audio_signal: np.ndarray, sample_rate: int) -> None:
 
     plt.show()
 
+    print(f"Spectrogram of audio signal displayed.")
+
 
 def spectrogram_plot_environment(environment: Environment) -> None:
     """
@@ -56,3 +58,5 @@ def spectrogram_plot_environment(environment: Environment) -> None:
     plt.gcf().canvas.manager.set_window_title("Environment all Spectrograms")
     plt.tight_layout()
     plt.show()
+
+    print(f"Spectrogram of environment displayed.")
