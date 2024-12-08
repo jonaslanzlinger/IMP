@@ -23,21 +23,19 @@ import os
 import copy
 
 
-# #########################
-# Global Variables        #
-# #########################
+# ##################
+# Global Variables #
+# ##################
 current_file_name = os.path.splitext(__file__)[0]
 original_audios = [None, None, None, None]
 
-# #########################
-# #########################
-# # DEMO SCRIPT           #
-# #########################
-# #########################
+# #############
+# DEMO SCRIPT #
+# #############
 
-# #########################
-# # PHASE 1 - ENVIRONMENT #
-# #########################
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
 print("PHASE 1 - ENVIRONMENT")
 
 # Create a Simulation: The Simulation is the main object
@@ -77,9 +75,9 @@ mic_4 = environment.add_microphone(1, 118)
 # Visualize the Environment with the Microphones
 environment.visualize()
 
-# ################################
-# # PHASE 1.5 - Audio Generation #
-# ################################
+# ##############################
+# PHASE 1.5 - Audio Generation #
+# ##############################
 print("PHASE 1.5 - Audio Generation")
 
 # In this phase, the Audio objects are generated.
@@ -93,8 +91,8 @@ print("PHASE 1.5 - Audio Generation")
 # Optionally: Load custom .wav sound files
 # If no sound files are loaded, the sounds will be generated
 # in such a way that they are maximally distinguishable.
-sound_1 = Audio(filepath="../sound_bank/sounds/sneeze.wav")
-sound_2 = Audio(filepath="../sound_bank/sounds/dog.wav")
+sound_1 = Audio(filepath="../sound_bank/sounds/buzzer_sound.wav")
+sound_2 = Audio(filepath="../sound_bank/sounds/knock_sound.wav")
 
 # Normalize the audio signals to have a maximum amplitude of 1.0
 AudioNormalizer.normalize_audio_to_max_amplitude(sound_1, 1.0)
@@ -131,17 +129,17 @@ lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample
 # position at this sample index.
 source_positions = [
     {
-        "sound": None,  # None if no sound file is loaded
+        "sound": sound_1,  # None if no sound file is loaded
         int(lowest_sample_rate * 1): (50, 85),
         int(lowest_sample_rate * 3): (50, 85),
-        int(lowest_sample_rate * 5): (50, 85),
-        int(lowest_sample_rate * 7): (50, 85),
+        int(lowest_sample_rate * 5): (100, 85),
+        int(lowest_sample_rate * 7): (100, 85),
     },
     {
-        "sound": None,  # None if no sound file is loaded
+        "sound": sound_2,  # None if no sound file is loaded
         int(lowest_sample_rate * 2.0): (10, 50),
-        int(lowest_sample_rate * 4.0): (10, 50),
-        int(lowest_sample_rate * 6.0): (10, 50),
+        int(lowest_sample_rate * 4.0): (20, 50),
+        int(lowest_sample_rate * 6.0): (30, 50),
     },
 ]
 
@@ -150,7 +148,7 @@ source_positions = [
 # realistic environment. The background noise is added
 # to all Microphones in the Environment.
 noise = Audio(
-    filepath="../sound_bank/noise/crowd-2.wav",
+    filepath="../sound_bank/noise/factory_sound.wav",
 )
 noise.resample_audio(lowest_sample_rate)
 
@@ -187,7 +185,7 @@ environment = generate_audios(
     sample_rate=lowest_sample_rate,
     source_sources=source_positions,
     background_noise=noise,
-    loudness_mix=[0.6, 0.6, 0.6],
+    loudness_mix=[0.6, 0.6, 0.8],
     default_sound_duration=0.3,
 )
 
@@ -224,19 +222,13 @@ for i, mic in enumerate(environment.get_mics()):
 # Optionally: Save the generated Audio objects
 # to load them at a later point in time, instead of
 # generating them again. Also useful for debugging purposes.
-# original_audio1 = mic_1.get_audio()
-# original_audio1.export(f"{current_file_name}_audio_1.wav")
-# original_audio2 = mic_2.get_audio()
-# original_audio1.export(f"{current_file_name}_audio_2.wav")
-# original_audio3 = mic_3.get_audio()
-# original_audio1.export(f"{current_file_name}_audio_3.wav")
-# original_audio4 = mic_4.get_audio()
-# original_audio1.export(f"{current_file_name}_audio_4.wav")
+for i, audio in enumerate(original_audios):
+    audio.export(f"{current_file_name}_audio_{i + 1}.wav")
 
 
-# ############################
-# PHASE 2 - PRE-PROCESSING   #
-# ############################
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
 # All filters can be added to a FrequencyFilterChain object.
@@ -309,9 +301,9 @@ for i_sound_src in range(n_sound_sources):
     ### environment.get_mics()[0].get_audio().play()
 
 
-# ############################
-# PHASE 3 - Localize         #
-# ############################
+# ####################
+# PHASE 3 - Localize #
+# ####################
 print("PHASE 3 - LOCALIZE")
 
 # To localize the sound sources, the TDOA (Time Difference of Arrival)
@@ -369,9 +361,9 @@ for i_sound_src in range(n_sound_sources):
     sources_positions.append(source_pos)
 
 
-# #########################
-# FINAL RESULTS           #
-# #########################
+# ###############
+# FINAL RESULTS #
+# ###############
 print("FINAL RESULTS")
 
 # Because we want to visualize the results, with the original
