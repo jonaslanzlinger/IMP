@@ -18,7 +18,6 @@ from datetime import datetime
 from pysoundlocalization.visualization.spectrogram_plot import (
     spectrogram_plot_environment,
 )
-from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.visualization.wave_plot import wave_plot
 import os
 import copy
