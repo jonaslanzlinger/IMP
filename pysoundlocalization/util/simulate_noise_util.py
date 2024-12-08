@@ -131,6 +131,10 @@ def generate_audios(
         audio = Audio.create_from_signal(audio, sample_rate)
         mic.set_audio(audio)
 
+    print(
+        f"Generated audio signals for {num_mics} microphones; {n_default_sounds} sources; {n_default_sounds} default sounds; and background noise; with a total duration of {total_samples / sample_rate} seconds; with the following loudness mix: {loudness_mix}"
+    )
+
     # Normalize audio signals to prevent very loud audio signals
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
 
