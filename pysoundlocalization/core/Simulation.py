@@ -7,6 +7,7 @@ class Simulation:
         """
         Initialize the Simulation with an empty list of environments.
         """
+        print("Simulation created.")
         self.__environments: list[Environment] = []
 
     @classmethod

@@ -32,6 +32,8 @@ class Audio:
         if self.__audio_signal[0].ndim > 1:
             self.__audio_signal[0] = np.mean(self.__audio_signal[0], axis=1)
 
+        print(f"Audio object created from {filepath}")
+
     @classmethod
     def create_from_signal(cls, audio_signal: np.ndarray, sample_rate: int) -> "Audio":
         """
@@ -102,6 +104,8 @@ class Audio:
         ]
 
         self.__sample_rate = self.__convert_to_sample_rate
+
+        print(f"Audio resampled to {target_rate} Hz.")
 
         return self.__audio_signal
 
@@ -278,6 +282,8 @@ class Audio:
         """
         if self.__audio_signal is None:
             self.load_audio_file()
+
+        print("Playing audio...")
 
         for chunk in self.__audio_signal:
             sd.play(chunk, self.__sample_rate)

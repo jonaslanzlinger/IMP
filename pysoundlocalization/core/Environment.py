@@ -13,6 +13,7 @@ from pysoundlocalization.algorithms.multilateration import multilaterate_by_tdoa
 from pysoundlocalization.core.Microphone import Microphone
 from pysoundlocalization.core.TdoaPair import TdoaPair
 from pysoundlocalization.core.DoaPair import DoaPair
+from pysoundlocalization.visualization.environment_plot import environment_plot
 
 
 class Environment:
@@ -214,7 +215,7 @@ class Environment:
                 )
             elif algorithm == "threshold":
                 tdoa_pairs_of_chunk = self.compute_all_tdoa_of_chunk_index_by_threshold(
-                    chunk_index=i, threshold=threshold, debug=True
+                    chunk_index=i, threshold=threshold, debug=False
                 )
 
             if tdoa_pairs_of_chunk is None:
@@ -431,56 +432,12 @@ class Environment:
 
         return doa_results
 
-    # TODO: Needed?
     def visualize(self) -> None:
         """
-        Visualizes the environment layout, microphones, and sound source positions using Matplotlib.
+        Visualizes the environment layout, and microphones using Matplotlib.
         """
-        fig, ax = plt.subplots()
-
-        # Create a polygon representing the environment shape
-        polygon = patches.Polygon(
-            self.__vertices,
-            closed=True,
-            edgecolor="black",
-            facecolor="none",
-            linewidth=2,
-        )
-        ax.add_patch(polygon)
-
-        # Set limits based on the environment's shape
-        ax.set_xlim(
-            min(x for x, y in self.__vertices) - 1,
-            max(x for x, y in self.__vertices) + 1,
-        )
-        ax.set_ylim(
-            min(y for x, y in self.__vertices) - 1,
-            max(y for x, y in self.__vertices) + 1,
-        )
-
-        ax.set_aspect("equal")
-
-        # Plot microphones
-        if self.__mics:
-            mic_x, mic_y = zip(*[mic.get_position() for mic in self.__mics])
-            ax.scatter(mic_x, mic_y, color="red", label="Microphones")
-
-        if self.__sound_source_position and isinstance(
-            self.__sound_source_position, tuple
-        ):
-            ax.scatter(
-                self.__sound_source_position[0],
-                self.__sound_source_position[1],
-                color="blue",
-                label="Approximated Sound Source",
-            )
-
-        ax.set_xlabel("X coordinate")
-        ax.set_ylabel("Y coordinate")
-        ax.set_title(f"Environment: {self.__name} with Microphones")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        print("Visualizing environment...")
+        environment_plot(environment=self)
 
     def get_sound_speed(self) -> float:
         """
