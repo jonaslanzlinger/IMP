@@ -26,6 +26,9 @@ class NoiseReducer:
 
         audio_signal = nr.reduce_noise(y=audio_signal, sr=sr, y_noise=noise_sample)
         audio.set_audio_signal(audio_signal)
+
+        print(f"Noise reduced for audio signal.")
+
         return audio
 
     @staticmethod

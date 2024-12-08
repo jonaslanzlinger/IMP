@@ -97,4 +97,5 @@ class AudioNormalizer:
 
             audio.set_audio_signal(normalized_audio, i)
 
+        # print(f"Audio normalized to max amplitude {max_amplitude}")
         return audio

@@ -122,6 +122,9 @@ class NonNegativeMatrixFactorization:
         Returns:
            A dictionary mapping each microphone to a list of updated Audio objects.
         """
+
+        print("Running NMF for all audio signals in the environment...")
+
         mics = environment.get_mics()
         if not mics:
             raise ValueError("No microphones found in the environment.")
@@ -182,6 +185,8 @@ class NonNegativeMatrixFactorization:
                 )
                 results[mic].append(audio_with_new_signal)
                 start_idx = end_idx
+
+        print("NMF completed for all audio signals in the environment.")
 
         return results
 
