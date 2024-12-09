@@ -1,3 +1,12 @@
+![Static Badge](https://img.shields.io/badge/Python-green)
+![Static Badge](https://img.shields.io/badge/Audio_Processing-blue)
+![Static Badge](https://img.shields.io/badge/Sound_Source_Localization-orange)
+
+<video controls>
+  <source src="Haller_Länzlinger_IMP_Video.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 # pysoundlocalization Library
 
 Welcome to the `pysoundlocalization` library! This guide will help you set up a virtual environment and install the library in editable mode so you can start working with it seamlessly.
@@ -33,3 +42,7 @@ A virtual environment helps manage dependencies and ensures your project is isol
    ```bash
    pip install -e .
    ```
+
+# Demo
+
+For a quick overview, see [Demo](examples/DEMO_PRESENTATION.PY).
