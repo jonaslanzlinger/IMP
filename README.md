@@ -2,10 +2,7 @@
 ![Static Badge](https://img.shields.io/badge/Audio_Processing-blue)
 ![Static Badge](https://img.shields.io/badge/Sound_Source_Localization-orange)
 
-<video controls>
-  <source src="Haller_Länzlinger_IMP_Video.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/531798d4-7d4c-4516-b97e-0ec895d8471b
 
 # pysoundlocalization Library
 
