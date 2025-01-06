@@ -12,7 +12,6 @@ SampleTrimmer.slice_from_to(
     audio, timedelta(seconds=5, milliseconds=100), timedelta(seconds=10)
 )
 
-
 # Sync the audio based on known timestamps of when the respective recordings started
 # Very useful as it is necessary to have perfectly synced audio to effectively compute time delays
 audio1 = Audio(filepath="example_audio/pi1_audio.wav")

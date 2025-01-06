@@ -5,8 +5,10 @@ from pysoundlocalization.core.Audio import Audio
 import warnings
 import os
 
-warnings.filterwarnings("ignore")
-root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+"""
+In this example, we will demonstrate how to use FastICA to separate two sound sources from a mixed audio signal.
+We will mix a speech signal with a sinusoidal noise signal and then use FastICA to separate the two sources.
+"""
 
 speech_filepath = os.path.join(root, "examples", "example_audio", "speech_example.wav")
 speech_audio = Audio(filepath=speech_filepath)
