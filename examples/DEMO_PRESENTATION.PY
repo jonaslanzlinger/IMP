@@ -138,8 +138,8 @@ source_positions = [
     {
         "sound": sound_2,  # None if no sound file is loaded
         int(lowest_sample_rate * 2.0): (10, 50),
-        int(lowest_sample_rate * 4.0): (20, 50),
-        int(lowest_sample_rate * 6.0): (30, 50),
+        int(lowest_sample_rate * 4.0): (40, 50),
+        int(lowest_sample_rate * 6.0): (60, 50),
     },
 ]
 

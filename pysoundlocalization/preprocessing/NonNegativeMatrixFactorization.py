@@ -214,7 +214,8 @@ class NonNegativeMatrixFactorization:
             self.__S,
             beta=beta,
             threshold=0.05,
-            MAXITER=5000,
+            # MAXITER=5000,
+            MAXITER=500,
             display=visualize_results,
             displayEveryNiter=1000,
         )
