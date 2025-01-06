@@ -9,13 +9,13 @@ from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
-from visualization.spectrogram_plot import spectrogram_plot
-from visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.wave_plot import wave_plot
 
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Illwerke - Rodundwerk II",
+    "Pump Environment",
     [
         (0, 2),
         (0, 12),
@@ -35,29 +35,30 @@ environment = simulation.add_environment(
 )
 environment.visualize()
 
-
 mic1 = environment.add_microphone(10.61, 5)
 mic2 = environment.add_microphone(10.61, 8.89)
 mic3 = environment.add_microphone(4, 8.89)
 mic4 = environment.add_microphone(4, 5)
 
-mic1.set_audio(Audio(filepath="illwerke_MIC1_2024-11-07_10-30-45_977581.wav"))
-mic1.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 0))
-SampleTrimmer.trim_from_beginning(mic1.get_audio(), timedelta(microseconds=300499))
-SampleTrimmer.trim_from_beginning(mic1.get_audio(), timedelta(microseconds=16681))
+mic1.set_audio(
+    Audio(filepath="../data/10_pump/pi1_audio_2024-11-07_10-30-45_977581.wav")
+)
+mic1.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 977581))
 
-mic2.set_audio(Audio(filepath="illwerke_MIC2_2024-11-07_10-30-45_474498.wav"))
-mic2.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 0))
-SampleTrimmer.trim_from_beginning(mic2.get_audio(), timedelta(microseconds=16681))
+mic2.set_audio(
+    Audio(filepath="../data/10_pump/pi2_audio_2024-11-07_10-30-45_474498.wav")
+)
+mic2.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 474498))
 
-mic3.set_audio(Audio(filepath="illwerke_MIC3_2024-11-07_10-30-46_550904.wav"))
-mic3.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 0))
-SampleTrimmer.trim_from_beginning(mic3.get_audio(), timedelta(microseconds=20593))
-SampleTrimmer.trim_from_beginning(mic3.get_audio(), timedelta(microseconds=326916))
+mic3.set_audio(
+    Audio(filepath="../data/10_pump/pi3_audio_2024-11-07_10-30-46_550904.wav")
+)
+mic3.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 46, 550904))
 
-mic4.set_audio(Audio(filepath="illwerke_MIC4_2024-11-07_10-30-45_728052.wav"))
-mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 0))
-SampleTrimmer.trim_from_beginning(mic4.get_audio(), timedelta(microseconds=326916))
+mic4.set_audio(
+    Audio(filepath="../data/10_pump/pi4_audio_2024-11-07_10-30-45_728052.wav")
+)
+mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
 
 for mic in environment.get_mics():
     audio = mic.get_audio()

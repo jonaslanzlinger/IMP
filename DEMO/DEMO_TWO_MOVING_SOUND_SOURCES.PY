@@ -18,6 +18,9 @@ from datetime import datetime
 from pysoundlocalization.visualization.spectrogram_plot import (
     spectrogram_plot_environment,
 )
+import copy
+
+original_audios = [None, None, None, None]
 
 simulation = Simulation.create()
 
@@ -41,8 +44,8 @@ mic_2 = environment.add_microphone(95, 15)
 mic_3 = environment.add_microphone(95, 95)
 mic_4 = environment.add_microphone(5, 95)
 
-buzzer = Audio(filepath="buzzer_sound.wav")
-knock = Audio(filepath="knock_sound.wav")
+buzzer = Audio(filepath="../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
+knock = Audio(filepath="../data/00_SOUND_BANK/sounds/knock_sound.wav")
 # print(f"Sound 1 duration: {buzzer.get_sample_rate()}")
 # print(f"Sound 2 duration: {knock.get_sample_rate()}")
 lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
@@ -71,7 +74,8 @@ source_positions = [
 n_sound_sources = len(source_positions)
 
 factory_sound_audio = Audio(
-    filepath="factory_sound.wav", convert_to_sample_rate=lowest_sample_rate
+    filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
+    convert_to_sample_rate=lowest_sample_rate,
 )
 # factory_sound_audio.play()
 # print(f"Background noise duration: {factory_sound_audio.get_duration()}")
@@ -88,18 +92,12 @@ environment = generate_audios(
 
 AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
-# EXPORT THE AUDIOS TO WAV FILES
-# original_audio1 = mic_1.get_audio()
-# original_audio1.export("audio_1.wav")
-# original_audio2 = mic_2.get_audio()
-# original_audio2.export("audio_2.wav")
-# original_audio3 = mic_3.get_audio()
-# original_audio3.export("audio_3.wav")
-# original_audio4 = mic_4.get_audio()
-# original_audio4.export("audio_4.wav")
+original_audios = [None, None, None, None]
+
+for i, mic in enumerate(environment.get_mics()):
+    original_audios[i] = copy.deepcopy(mic.get_audio())
 
 # The following commented code is needed in case the audio files are loaded instead of generated
-
 # for i, mic in enumerate(environment.get_mics()):
 #     audio = Audio(filepath=f"audio_{i+1}.wav")
 #     mic.set_audio(audio)
@@ -176,8 +174,7 @@ for i_sound_src in range(n_sound_sources):
     sources_positions.append(source_pos)
 
 for i, mic in enumerate(environment.get_mics()):
-    audio = Audio(filepath=f"audio_{i+1}.wav")
-    mic.set_audio(audio)
+    mic.set_audio(original_audios[0])
     mic.set_recording_start_time(datetime.now())
 
 multilaterate_plot(environment, sources_positions)

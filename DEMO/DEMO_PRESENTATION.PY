@@ -91,8 +91,8 @@ print("PHASE 1.5 - Audio Generation")
 # Optionally: Load custom .wav sound files
 # If no sound files are loaded, the sounds will be generated
 # in such a way that they are maximally distinguishable.
-sound_1 = Audio(filepath="../sound_bank/sounds/buzzer_sound.wav")
-sound_2 = Audio(filepath="../sound_bank/sounds/knock_sound.wav")
+sound_1 = Audio(filepath="../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
+sound_2 = Audio(filepath="../data/00_SOUND_BANK/sounds/knock_sound.wav")
 
 # Normalize the audio signals to have a maximum amplitude of 1.0
 AudioNormalizer.normalize_audio_to_max_amplitude(sound_1, 1.0)
@@ -148,7 +148,7 @@ source_positions = [
 # realistic environment. The background noise is added
 # to all Microphones in the Environment.
 noise = Audio(
-    filepath="../sound_bank/noise/factory_sound.wav",
+    filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
 )
 noise.resample_audio(lowest_sample_rate)
 
@@ -222,8 +222,8 @@ for i, mic in enumerate(environment.get_mics()):
 # Optionally: Save the generated Audio objects
 # to load them at a later point in time, instead of
 # generating them again. Also useful for debugging purposes.
-for i, audio in enumerate(original_audios):
-    audio.export(f"{current_file_name}_audio_{i + 1}.wav")
+# for i, audio in enumerate(original_audios):
+#     audio.export(f"{current_file_name}_audio_{i + 1}.wav")
 
 
 # ##########################
