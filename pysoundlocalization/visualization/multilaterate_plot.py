@@ -20,6 +20,8 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
         dict_list (list[dict]): List of dictionaries containing the sound source positions approximated using the multilateration algorithm.
     """
 
+    print(f"Multilateration plot for environment displayed.")
+
     plt.rcParams["toolbar"] = "none"
 
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -197,5 +199,3 @@ def multilaterate_plot(environment: Environment, dict_list: dict) -> None:
     fig.canvas.mpl_connect("button_press_event", move_cursor)
 
     plt.show()
-
-    print(f"Multilateration plot for environment displayed.")

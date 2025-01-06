@@ -139,6 +139,15 @@ class Environment:
         """
         return min(mic.get_audio().get_sample_rate() for mic in self.__mics)
 
+    def get_min_num_samples(self) -> int:
+        """
+        Get the minimum number of samples of all audios in the environment.
+
+        Returns:
+            int: The minimum number of samples of all audios.
+        """
+        return min(mic.get_audio().get_num_samples() for mic in self.__mics)
+
     def get_sample_rate(self) -> int:
         """
         Get the sample rate of the environment. If there are different

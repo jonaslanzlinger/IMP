@@ -12,6 +12,8 @@ def spectrogram_plot(audio_signal: np.ndarray, sample_rate: int) -> None:
         sample_rate (int): The sample rate of the audio signal.
     """
 
+    print(f"Spectrogram of audio signal displayed.")
+
     plt.figure(figsize=(10, 6))
 
     plt.specgram(audio_signal, NFFT=1024, Fs=sample_rate, noverlap=512, cmap="inferno")
@@ -24,8 +26,6 @@ def spectrogram_plot(audio_signal: np.ndarray, sample_rate: int) -> None:
 
     plt.show()
 
-    print(f"Spectrogram of audio signal displayed.")
-
 
 def spectrogram_plot_environment(environment: Environment) -> None:
     """
@@ -34,6 +34,9 @@ def spectrogram_plot_environment(environment: Environment) -> None:
     Args:
         environment: The environment object containing microphones with audio signals.
     """
+
+    print(f"Spectrogram of environment displayed.")
+
     mics = environment.get_mics()
 
     num_mics = len(mics)
@@ -58,5 +61,3 @@ def spectrogram_plot_environment(environment: Environment) -> None:
     plt.gcf().canvas.manager.set_window_title("Environment all Spectrograms")
     plt.tight_layout()
     plt.show()
-
-    print(f"Spectrogram of environment displayed.")

@@ -17,6 +17,8 @@ def environment_plot(environment) -> None:
         environment (Environment): Environment object containing the environment layout and microphones.
     """
 
+    print(f"Environment Plot displayed.")
+
     plt.rcParams["toolbar"] = "none"
 
     fig, ax = plt.subplots(figsize=(10, 10))

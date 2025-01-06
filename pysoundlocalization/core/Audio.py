@@ -273,6 +273,17 @@ class Audio:
         """
         return np.max(np.abs(self.get_audio_signal_unchunked()))
 
+    def max_amplitude_timedelta(self) -> timedelta:
+        """
+        Return the time of the maximum amplitude of the audio signal.
+
+        Returns:
+            timedelta: The time of the maximum amplitude of the audio signal.
+        """
+        max_index = np.argmax(np.abs(self.get_audio_signal_unchunked()))
+        max_timedelta = max_index / self.__sample_rate
+        return max_timedelta
+
     def play(self) -> None:
         """
         Play the audio file using sounddevice.

@@ -15,6 +15,9 @@ def wave_plot(
         sample_rate (int): The sample rate of the audio signal
         title (str): The title of the plot.
     """
+
+    print(f"Waveplot of audio signal displayed.")
+
     plt.figure(figsize=(10, 6))
 
     timeline = np.linspace(
@@ -31,8 +34,6 @@ def wave_plot(
 
     plt.show()
 
-    print(f"Waveplot of audio signal displayed.")
-
 
 def wave_plot_environment(environment: Environment) -> None:
     """
@@ -41,6 +42,9 @@ def wave_plot_environment(environment: Environment) -> None:
     Args:
         environment: The environment object containing microphones with audio signals.
     """
+
+    print(f"Waveplot of environment displayed.")
+
     mics = environment.get_mics()
 
     num_mics = len(mics)
@@ -64,5 +68,3 @@ def wave_plot_environment(environment: Environment) -> None:
     plt.gcf().canvas.manager.set_window_title("Environment all Waveplots")
     plt.tight_layout()
     plt.show()
-
-    print(f"Waveplot of environment displayed.")
