@@ -6,10 +6,10 @@ from audio_utils import load_audio_data, play_audio
 import time
 
 audio_files = [
-    "audio_files/pi1_audio.wav",
-    "audio_files/pi2_audio.wav",
-    "audio_files/pi3_audio.wav",
-    "audio_files/pi4_audio.wav",
+    "data/08_door_bell/pi1_audio.wav",
+    "data/08_door_bell/pi2_audio.wav",
+    "data/08_door_bell/pi3_audio.wav",
+    "data/08_door_bell/pi4_audio.wav",
 ]
 
 num_audio_files = len(audio_files)

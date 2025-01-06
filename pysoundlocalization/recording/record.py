@@ -24,7 +24,7 @@ def record_audio(mic_id=None, device_id=None, duration=10):
     sd.wait()
     end_timestamp = datetime.now()
 
-    filename = f"output_{end_timestamp.strftime(f'{mic_id}_%Y-%m-%d_%H-%M-%S_%f')}.wav"
+    filename = f"pi{mic_id}_audio_{end_timestamp.strftime('%Y-%m-%d_%H-%M-%S_%f')}.wav"
     write(filename, SAMPLE_RATE, recording)
     print(f"File saved as {filename}")
 
