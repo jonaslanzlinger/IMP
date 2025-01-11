@@ -25,15 +25,25 @@ from pysoundlocalization.visualization.spectrogram_plot import (
 )
 from pysoundlocalization.visualization.wave_plot import wave_plot
 
-
+# TODO: add typing
 def run_experiment(algorithm_choice="gcc_phat"):
-    # 1. Create environment with microphones spaced 500x500m
-    # 2. create audio with background noise (sounds at 1s and 6s)
-    #       -> two stationary sounds (at 1s timestamp), one sound moves (at 6s timestamp)
-    # 3. preprocess and NMF
-    # 4.chunk a 10s audio into two 5s chunks (so that sounds are at 1s and 6s)
-    # 5. multilaterate
-    # 6. compute score
+    """
+    Runs the experiment setup as follows:
+    - Uses both algorithms (threshold and gcc-phat) to enable comparison
+    - Creates an environment with 4 microphones, placed on the corners of a 500x500 meter grid.
+    - Simulates two audio signals. Both are 10 seconds of length.
+        - First signal is stationary. First sound at 1s, second sound at 6s.
+        - Second signal moves. First sound at 1s, second sound at 6s.
+    - To localize the moving sound source, the audio signal is chunked into two 5s chunks.
+    - Constant background noise is added to make localization more complex.
+
+    Before localization occurs, preprocessing is performed on the audio signals; NMF splits the audio signal; and
+    chunking is used for localizing the moving sound source.
+
+    Returns:
+        The approximated sound source localization mapped to the actual sound source position,
+        including the localization error in meters. Format follows: [{'source_number': 2, 'mappings': [{'sample': '0', 'actual': (x, y), 'approximate': (x, y), 'error': m, ...]}, ...]}]
+    """
 
     # ##################
     # Global Variables #
