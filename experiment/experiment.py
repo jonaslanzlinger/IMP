@@ -21,6 +21,7 @@ from pysoundlocalization.visualization.spectrogram_plot import (
 from pysoundlocalization.visualization.wave_plot import wave_plot
 import copy
 import util_random_coordinates
+import util_mapping_actual_approx
 
 # 1. Create environment with microphones spaced 500x500m
 # 2. create audio with background noise (sounds at 1s and 6s)
@@ -259,7 +260,7 @@ print("PHASE 3 - LOCALIZE")
 algorithm_choice = "threshold"  # TODO: do for both algorithms
 # The sources_positions list will contain the estimated positions of the
 # sound sources after the multilateration step.
-sources_positions = []
+approx_source_positions = []
 # This is the index of the current audio source that is being multilaterated
 current_audio_index = 0
 
@@ -292,17 +293,31 @@ for i_sound_src in range(n_sound_sources):
     )
 
     # Append the estimated position to the sources_positions list
-    sources_positions.append(source_pos)
-
-# TODO: map sources_positions to RANDOM_SOURCE_A and B1/B2 such that total distance is minimized.
-# TODO: write result to txt (round, algorithm, 4 results?)
-# TODO: source1: actual (50,50), approximated (100,50), error: 50m
-# TODO: source2: ...
+    approx_source_positions.append(source_pos)
 
 # ###############
 # FINAL RESULTS #
 # ###############
 print("FINAL RESULTS")
+
+print(approx_source_positions)
+# [{'0': (np.float64(400.07566630995956), np.float64(399.5545727856106)), '55125': (np.float64(300.04389244615277), np.float64(399.4987019794673))}, {'0': (np.float64(100.00229926593859), np.float64(99.38170345012708)), '55125': (np.float64(100.04645607056848), np.float64(99.42614610171589))}]
+# TODO: map sources_positions to RANDOM_SOURCE_A and B1/B2 such that total distance is minimized.
+# TODO: write result to txt (round, algorithm, 4 results?)
+# TODO: source1: actual (50,50), approximated (100,50), error: 50m
+# TODO: source2: ...
+
+# TODO: is the total distance really correct? split into approx for each point and not per source once!!
+
+# Mapping approximated source_positions after NMF to the actual source_positions
+result = util_mapping_actual_approx.minimize_distance_mapping(
+    source_positions, approx_source_positions
+)
+for idx, res in enumerate(result):
+    print(f"Approx Source {idx+1}:")
+    print("Mapping:", res["approx_to_actual_mapping"])
+    print("Total Distance:", res["total_distance"])
+    print()
 
 # Because we want to visualize the results, with the original
 # Audio objects, we need to load the original Audio objects again
@@ -314,4 +329,4 @@ for i, mic in enumerate(environment.get_mics()):
     mic.set_recording_start_time(datetime.now())
 
 # Visualize the final result
-multilaterate_plot(environment, sources_positions)
+multilaterate_plot(environment, approx_source_positions)
