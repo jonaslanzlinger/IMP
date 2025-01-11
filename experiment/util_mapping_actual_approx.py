@@ -3,11 +3,34 @@ from itertools import permutations
 
 
 def calculate_distance(coord1, coord2):
-    """Calculate Euclidean distance between two coordinates"""
+    """
+    Calculate Euclidean distance between two coordinates.
+
+    Args:
+        coord1 (tuple): The first coordinate in format (x,y).
+        coord2 (tuple): The second coordinate in format (x,y).
+
+    Returns:
+        float: The Euclidean distance between coord1 and coord2.
+    """
     return np.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
 
 def get_mapped_results_accuracy(approx_source_positions, source_positions):
+    """
+    Map approximate positions to actual source positions based on the lowest total error.
+
+    Args:
+        approx_source_positions (list): A list of dictionaries containing the approximate positions
+                                         for each source. Keys represent sample times, values are
+                                         approximate coordinates.
+        source_positions (list): A list of dictionaries containing actual source positions for each
+                                  source. Keys represent sample times, values are actual coordinates.
+
+    Returns:
+        list: The best mapping configuration for approximate to actual positions, including
+              error metrics for each mapping.
+    """
     result = []
 
     # Try all possible mappings between approx_positions and source_positions
@@ -57,7 +80,10 @@ def get_mapped_results_accuracy(approx_source_positions, source_positions):
 
 
 def main():
-    # Example usage:
+    """
+    Main function to showcase the position mapping process between actual and approximated coordinates.
+    The format is specific to the output from experiment.py.
+    """
     approx_source_positions = [
         {
             "0": (np.float64(100), np.float64(99)),
@@ -69,7 +95,7 @@ def main():
         },
     ]
 
-    source_positions = [
+    actual_source_positions = [
         {
             "sound": None,
             0: (100, 100),
@@ -82,7 +108,9 @@ def main():
         },
     ]
 
-    result = get_mapped_results_accuracy(approx_source_positions, source_positions)
+    result = get_mapped_results_accuracy(
+        approx_source_positions, actual_source_positions
+    )
     print(result)
 
 

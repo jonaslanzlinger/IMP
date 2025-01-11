@@ -37,6 +37,21 @@ def calculate_statistics(errors):
 
 
 def analyze_experiment_file(filepath):
+    """
+    Reads and analyzes the experiment txt file specifically created as part of experiment.py.
+
+    A typical txt file follows the format:
+    Round 0: [{'source_number': 2, 'mappings': [{'sample': '0', 'actual': (400, 400), 'approximate': (np.float64(400.07566630995956), np.float64(399.5545727856106)), 'error': np.float64(0.45180835957470006)}, {'sample': '55125', 'actual': (300, 400), 'approximate': (np.float64(300.04389244615277), np.float64(399.4987019794673)), 'error': np.float64(0.5032159101412557)}]}, {'source_number': 1, 'mappings': [{'sample': '0', 'actual': (100, 100), 'approximate': (np.float64(100.00229926593859), np.float64(99.38170345012708)), 'error': np.float64(0.6183008250104608)}, {'sample': '55125', 'actual': (100, 100), 'approximate': (np.float64(100.04645607056848), np.float64(99.42614610171589)), 'error': np.float64(0.5757312420466145)}]}]
+    Round 1: [{'source_number': 2, 'mappings': [{'sample': '0', 'actual': (400, 400), 'approximate': (np.float64(400.07566630995956), np.float64(399.5545727856106)), 'error': np.float64(0.45180835957470006)}, {'sample': '55125', 'actual': (300, 400), 'approximate': (np.float64(300.04389244615277), np.float64(399.4987019794673)), 'error': np.float64(0.5032159101412557)}]}, {'source_number': 1, 'mappings': [{'sample': '0', 'actual': (100, 100), 'approximate': (np.float64(100.00229926593859), np.float64(99.38170345012708)), 'error': np.float64(0.6183008250104608)}, {'sample': '55125', 'actual': (100, 100), 'approximate': (np.float64(100.04645607056848), np.float64(99.42614610171589)), 'error': np.float64(0.5757312420466145)}]}]
+
+    The method extracts all values and computes key metrics, printed into the console.
+
+    Args:
+        filepath (string): Path to the experiment txt file to be loaded.
+
+    Returns:
+        dict[str, floating | complexfloating]: Statistics of the experiment file.
+    """
     # Read the file
     content = read_experiment_file(filepath)
     if content is None:
@@ -59,8 +74,13 @@ def analyze_experiment_file(filepath):
     return stats
 
 
-# Example usage:
-if __name__ == "__main__":
-    # Replace with your actual file path
-    filepath = "2025-01-11_18-14-09_experiment.txt"
+def main():
+    """
+    Analyzes the experiment file provided in the filepath.
+    """
+    filepath = "2025-01-11_18-21-02_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
     stats = analyze_experiment_file(filepath)
+
+
+if __name__ == "__main__":
+    main()

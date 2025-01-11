@@ -7,47 +7,46 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
     NonNegativeMatrixFactorization,
 )
 from pysoundlocalization.core.Simulation import Simulation
-from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.util.simulate_noise_util import generate_audios
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 from datetime import datetime
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
-)
-from pysoundlocalization.visualization.wave_plot import wave_plot
 import copy
 import util_random_coordinates
 import util_mapping_actual_approx
 
+# Relevant for some code snippets that may be uncommented to be used
+from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
+from pysoundlocalization.visualization.wave_plot import wave_plot_environment
+from pysoundlocalization.visualization.spectrogram_plot import (
+    spectrogram_plot_environment,
+)
+from pysoundlocalization.visualization.wave_plot import wave_plot
 
-def run_experiment():
+
+def run_experiment(algorithm_choice="gcc_phat"):
+    # 1. Create environment with microphones spaced 500x500m
+    # 2. create audio with background noise (sounds at 1s and 6s)
+    #       -> two stationary sounds (at 1s timestamp), one sound moves (at 6s timestamp)
+    # 3. preprocess and NMF
+    # 4.chunk a 10s audio into two 5s chunks (so that sounds are at 1s and 6s)
+    # 5. multilaterate
+    # 6. compute score
+
     # ##################
     # Global Variables #
     # ##################
     original_audios = [None, None, None, None]
-
-    # #############
-    # DEMO SCRIPT #
-    # #############
 
     # #######################
     # PHASE 1 - ENVIRONMENT #
     # #######################
     print("PHASE 1 - ENVIRONMENT")
 
-    # Create a Simulation: The Simulation is the main object
-    # that contains all the Environments and Microphones,
-    # along with the Audio objects that are used.
+    # Create a Simulation and add an Environment for the experiment
     simulation = Simulation.create()
-
-    # Add an Environment to the Simulation: The Environment
-    # is the object that contains the Microphones and the
-    # Audio objects. The Environment is defined by a list of
-    # points that represent the vertices of a polygon.
     environment = simulation.add_environment(
         "Simulation",
         [
@@ -57,15 +56,11 @@ def run_experiment():
             (0, 600),
         ],
     )
-
     # Add Microphones to the Environment as a 500x500m grid
     mic_1 = environment.add_microphone(50, 50)
     mic_2 = environment.add_microphone(550, 50)
     mic_3 = environment.add_microphone(550, 550)
     mic_4 = environment.add_microphone(50, 550)
-
-    # Visualize the Environment with the Microphones
-    # environment.visualize()
 
     # ##############################
     # PHASE 1.5 - Audio Generation #
@@ -105,18 +100,18 @@ def run_experiment():
         )
     )
 
-    RANDOM_SOURCE_A = (100, 100)  # This sound source does not move location
-    RANDOM_SOURCE_B1 = (400, 400)
-    RANDOM_SOURCE_B2 = (300, 400)  # This sound source moves location from B1 to B2
+    # ################################################################
+    # Add randomized sound sources to test the localization accuracy #
+    # ################################################################
 
-    # TODO: Activate randomization
-    # Generate coordinate for first sound source. Remains stationary as it does not move.
+    # Generate random coordinates for the first sound source. Sound source is stationary during the experiment.
     RANDOM_SOURCE_A = util_random_coordinates.get_random_coordinate(
         100, 500
     )  # This sound source does not move location
 
-    # Generate coordinates for second sound source. Second coordinate is required as the sound moves.
-    # Note that get_distant_coordinate() ensures that the coordinate is at least 150 units away.
+    # Generate random coordinates for the second sound source. Sound source moves during the experiment from
+    # RANDOM_SOURCE_B1 to RANDOM_SOURCE_B2.
+    # Note: get_distant_coordinate(...) ensures that the coordinates are at least 150 units away from each other.
     RANDOM_SOURCE_B1 = util_random_coordinates.get_distant_coordinate(
         RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
     )
@@ -143,7 +138,7 @@ def run_experiment():
         },
     ]
 
-    # Additionally, add a background noise
+    # Add a background noise to increase localization difficulty
     noise = Audio(
         filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
     )
@@ -255,12 +250,8 @@ def run_experiment():
     # ####################
     print("PHASE 3 - LOCALIZE")
 
-    algorithm_choice = "threshold"  # TODO: do for both algorithms
-    # The sources_positions list will contain the estimated positions of the
-    # sound sources after the multilateration step.
+    # Contains the approximated sound source positions after multilateration
     approx_source_positions = []
-    # This is the index of the current audio source that is being multilaterated
-    current_audio_index = 0
 
     # Loop over all isolated sound sources, and assign them to the Microphones
     # in the Environment. Then, normalize the Environment to have a maximum
@@ -301,14 +292,13 @@ def run_experiment():
     print("FINAL RESULTS")
 
     # Mapping approximated source_positions after NMF to the actual source_positions
+    # NMF splits the audio signal into its two most distinct parts (sounds) but returns the result unordered. To run
+    # automatic tests in large volumes, this must be handled.
     mapped_result_accuracy = util_mapping_actual_approx.get_mapped_results_accuracy(
         approx_source_positions, source_positions
     )
 
-    # Because we want to visualize the results, with the original
-    # Audio objects, we need to load the original Audio objects again
-    # and assign them to the Microphones in the Environment.
-    # print("Loading original Audio objects")
+    # Enable the interactive visualization of localization results. Good for debugging.
     # for i, mic in enumerate(environment.get_mics()):
     #     audio = original_audios[i]
     #     mic.set_audio(audio)
@@ -320,21 +310,20 @@ def run_experiment():
     return mapped_result_accuracy
 
 
-# 1. Create environment with microphones spaced 500x500m
-# 2. create audio with background noise (sounds at 1s and 6s)
-#       -> two stationary sounds (at 1s timestamp), one sound moves (at 6s timestamp)
-# 3. preprocess and NMF
-# 4.chunk a 10s audio into two 5s chunks (so that sounds are at 1s and 6s)
-# 5. multilaterate
-# 6. compute score
+def main():
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    for i in range(10):
+        result = run_experiment(
+            algorithm_choice="threshold"
+        )  # TODO: run algorithm over the same setups!! currently over different random setups
 
-ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-for i in range(10):
-    result = run_experiment()
+        # Open the file in append mode to ensure it is created if not existing
+        with open(f"{ts}_experiment.txt", "a") as file:
+            file.write(f"Round {i+1}: {result}\n")
+            file.flush()  # Flush the content to disk immediately
 
-    # Open the file in append mode to ensure it is created if not existing
-    with open(f"{ts}_experiment.txt", "a") as file:
-        file.write(f"Round {i+1}: {result}\n")
-        file.flush()  # Flush the content to disk immediately
+        print(f"Round {i+1}: Appended results to {ts}_experiment.txt.")
 
-    print(f"Round {i+1}: Appended results to {ts}_experiment.txt.")
+
+if __name__ == "__main__":
+    main()
