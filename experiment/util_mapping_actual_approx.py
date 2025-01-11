@@ -25,7 +25,7 @@ def minimize_distance_mapping(actual_source_positions, approx_source_positions):
         approx_source_positions (list): List of dictionaries containing approximation coordinates.
 
     Returns:
-        list: Mapped result with minimized total distances.
+        list: Mapped result in the desired structured format.
     """
     # Extract only RANDOM_SOURCE_XXX coordinates from actual_source_positions
     actual_coordinates = []
@@ -40,6 +40,7 @@ def minimize_distance_mapping(actual_source_positions, approx_source_positions):
     # Iterate over each approximation
     for i, approx in enumerate(approx_source_positions):
         approx_coords = list(approx.values())
+        approx_samples = list(approx.keys())  # Get corresponding sample keys
         actual_coords = actual_coordinates[i]
 
         # Generate all possible mappings and calculate total distance
@@ -53,12 +54,22 @@ def minimize_distance_mapping(actual_source_positions, approx_source_positions):
             )
             if total_distance < min_distance:
                 min_distance = total_distance
-                best_mapping = list(zip(approx_coords, perm))
+                best_mapping = list(zip(approx_samples, approx_coords, perm))
 
-        # Store the result
-        mapping_results.append(
-            {"approx_to_actual_mapping": best_mapping, "total_distance": min_distance}
-        )
+        # Store the structured result
+        result = {"source_number": i + 1, "mappings": []}
+        for sample, approx_coord, actual_coord in best_mapping:
+            error = calculate_distance(approx_coord, actual_coord)
+            result["mappings"].append(
+                {
+                    "sample": sample,
+                    "actual": actual_coord,
+                    "approximate": approx_coord,
+                    "error": error,
+                }
+            )
+
+        mapping_results.append(result)
 
     return mapping_results
 
@@ -79,8 +90,8 @@ actual_source_positions = [
 
 approx_source_positions = [
     {
-        "0": (400.07566630995956, 399.5545727856106),
-        "55125": (300.04389244615277, 399.4987019794673),
+        "0": (300.04389244615277, 399.4987019794673),
+        "55125": (400.07566630995956, 399.5545727856106),
     },
     {
         "0": (100.00229926593859, 99.38170345012708),
@@ -89,10 +100,14 @@ approx_source_positions = [
 ]
 
 result = minimize_distance_mapping(actual_source_positions, approx_source_positions)
+print(result)
 
 # Print the result
-for idx, res in enumerate(result):
-    print(f"Approx Source {idx+1}:")
-    print("Mapping:", res["approx_to_actual_mapping"])
-    print("Total Distance:", res["total_distance"])
+for res in result:
+    print(f"Source {res['source_number']}:")
+    for mapping in res["mappings"]:
+        print(f"  Sample: {mapping['sample']}")
+        print(f"    Actual -> {mapping['actual']}")
+        print(f"    Approximate -> {mapping['approximate']}")
+        print(f"    Error -> {mapping['error']:.4f}")
     print()
