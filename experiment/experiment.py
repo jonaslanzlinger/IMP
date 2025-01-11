@@ -110,19 +110,19 @@ def run_experiment():
     RANDOM_SOURCE_B2 = (300, 400)  # This sound source moves location from B1 to B2
 
     # TODO: Activate randomization
-    # # Generate coordinate for first sound source. Remains stationary as it does not move.
-    # RANDOM_SOURCE_A = util_random_coordinates.get_random_coordinate(
-    #     100, 500
-    # )  # This sound source does not move location
-    #
-    # # Generate coordinates for second sound source. Second coordinate is required as the sound moves.
-    # # Note that get_distant_coordinate() ensures that the coordinate is at least 150 units away.
-    # RANDOM_SOURCE_B1 = util_random_coordinates.get_distant_coordinate(
-    #     RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
-    # )
-    # RANDOM_SOURCE_B2 = util_random_coordinates.get_distant_coordinate(
-    #     RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
-    # )
+    # Generate coordinate for first sound source. Remains stationary as it does not move.
+    RANDOM_SOURCE_A = util_random_coordinates.get_random_coordinate(
+        100, 500
+    )  # This sound source does not move location
+
+    # Generate coordinates for second sound source. Second coordinate is required as the sound moves.
+    # Note that get_distant_coordinate() ensures that the coordinate is at least 150 units away.
+    RANDOM_SOURCE_B1 = util_random_coordinates.get_distant_coordinate(
+        RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
+    )
+    RANDOM_SOURCE_B2 = util_random_coordinates.get_distant_coordinate(
+        RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
+    )
 
     # Specify in this array of dictionaries the sound sources
     # and their positions in the environment. Each dictionary
@@ -329,12 +329,12 @@ def run_experiment():
 # 6. compute score
 
 ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-for i in range(2):
+for i in range(10):
     result = run_experiment()
 
     # Open the file in append mode to ensure it is created if not existing
     with open(f"{ts}_experiment.txt", "a") as file:
-        file.write(f"Round {i}: {result}\n")
+        file.write(f"Round {i+1}: {result}\n")
         file.flush()  # Flush the content to disk immediately
 
-    print(f"Round {i}: Appended results to {ts}_experiment.txt.")
+    print(f"Round {i+1}: Appended results to {ts}_experiment.txt.")
