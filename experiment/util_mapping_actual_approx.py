@@ -16,7 +16,7 @@ def calculate_distance(coord1, coord2):
     return math.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
 
-def minimize_distance_mapping(actual_source_positions, approx_source_positions):
+def get_mapped_results_accuracy(actual_source_positions, approx_source_positions):
     """
     Map approx_source_positions to actual_source_positions to minimize total distance.
 
@@ -99,7 +99,7 @@ approx_source_positions = [
     },
 ]
 
-result = minimize_distance_mapping(actual_source_positions, approx_source_positions)
+result = get_mapped_results_accuracy(actual_source_positions, approx_source_positions)
 print(result)
 
 # Print the result
