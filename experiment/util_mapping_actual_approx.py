@@ -1,113 +1,90 @@
-import math
+import numpy as np
 from itertools import permutations
 
 
 def calculate_distance(coord1, coord2):
-    """
-    Calculate the Euclidean distance between two coordinates.
-
-    Parameters:
-        coord1 (tuple): First coordinate (x1, y1).
-        coord2 (tuple): Second coordinate (x2, y2).
-
-    Returns:
-        float: The distance between coord1 and coord2.
-    """
-    return math.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
+    """Calculate Euclidean distance between two coordinates"""
+    return np.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
 
-def get_mapped_results_accuracy(actual_source_positions, approx_source_positions):
-    """
-    Map approx_source_positions to actual_source_positions to minimize total distance.
+def get_mapped_results_accuracy(approx_source_positions, source_positions):
+    result = []
 
-    Parameters:
-        actual_source_positions (list): List of dictionaries containing "RANDOM_SOURCE_XXX" coordinates.
-        approx_source_positions (list): List of dictionaries containing approximation coordinates.
+    # Try all possible mappings between approx_positions and source_positions
+    for mapping in permutations(range(len(approx_source_positions))):
+        total_error = 0
+        current_mapping = []
 
-    Returns:
-        list: Mapped result in the desired structured format.
-    """
-    # Extract only RANDOM_SOURCE_XXX coordinates from actual_source_positions
-    actual_coordinates = []
-    for source in actual_source_positions:
-        actual_coordinates.append(
-            [v for k, v in source.items() if isinstance(v, tuple)]
-        )
+        # For each position in the mapping
+        for result_idx, source_idx in enumerate(mapping):
+            approx_dict = approx_source_positions[result_idx]
+            source_dict = source_positions[source_idx]
 
-    # Result storage
-    mapping_results = []
+            # Get actual positions (excluding 'sound' key)
+            actual_positions = {k: v for k, v in source_dict.items() if k != "sound"}
 
-    # Iterate over each approximation
-    for i, approx in enumerate(approx_source_positions):
-        approx_coords = list(approx.values())
-        approx_samples = list(approx.keys())  # Get corresponding sample keys
-        actual_coords = actual_coordinates[i]
+            # Create mapping entry for this source
+            source_mapping = {"source_number": source_idx + 1, "mappings": []}
 
-        # Generate all possible mappings and calculate total distance
-        min_distance = float("inf")
-        best_mapping = None
+            # Map each sample's approximate position to actual position
+            for sample, approx_pos in approx_dict.items():
+                # Find closest actual position for this sample time
+                closest_time = min(
+                    actual_positions.keys(), key=lambda x: abs(int(x) - int(sample))
+                )
+                actual_pos = actual_positions[closest_time]
 
-        for perm in permutations(actual_coords):
-            total_distance = sum(
-                calculate_distance(approx_coords[j], perm[j])
-                for j in range(len(approx_coords))
-            )
-            if total_distance < min_distance:
-                min_distance = total_distance
-                best_mapping = list(zip(approx_samples, approx_coords, perm))
+                error = calculate_distance(approx_pos, actual_pos)
+                total_error += error
 
-        # Store the structured result
-        result = {"source_number": i + 1, "mappings": []}
-        for sample, approx_coord, actual_coord in best_mapping:
-            error = calculate_distance(approx_coord, actual_coord)
-            result["mappings"].append(
-                {
-                    "sample": sample,
-                    "actual": actual_coord,
-                    "approximate": approx_coord,
-                    "error": error,
-                }
-            )
+                source_mapping["mappings"].append(
+                    {
+                        "sample": sample,
+                        "actual": actual_pos,
+                        "approximate": approx_pos,
+                        "error": error,
+                    }
+                )
 
-        mapping_results.append(result)
+            current_mapping.append(source_mapping)
 
-    return mapping_results
+        # Keep this mapping if it has the lowest total error so far
+        if not result or total_error < min_total_error:
+            result = current_mapping
+            min_total_error = total_error
+
+    return result
 
 
-# Example usage
-actual_source_positions = [
-    {
-        "sound": None,
-        1: (400, 400),
-        6: (300, 400),
-    },
-    {
-        "sound": None,
-        1: (100, 100),
-        6: (100, 100),
-    },
-]
+def main():
+    # Example usage:
+    approx_source_positions = [
+        {
+            "0": (np.float64(100), np.float64(99)),
+            "55125": (np.float64(105), np.float64(100)),
+        },
+        {
+            "0": (np.float64(400), np.float64(400)),
+            "55125": (np.float64(301), np.float64(399)),
+        },
+    ]
 
-approx_source_positions = [
-    {
-        "0": (300.04389244615277, 399.4987019794673),
-        "55125": (400.07566630995956, 399.5545727856106),
-    },
-    {
-        "0": (100.00229926593859, 99.38170345012708),
-        "55125": (100.04645607056848, 99.42614610171589),
-    },
-]
+    source_positions = [
+        {
+            "sound": None,
+            0: (100, 100),
+            55125: (100, 100),
+        },
+        {
+            "sound": None,
+            0: (400, 400),
+            55125: (300, 400),
+        },
+    ]
 
-result = get_mapped_results_accuracy(actual_source_positions, approx_source_positions)
-print(result)
+    result = get_mapped_results_accuracy(approx_source_positions, source_positions)
+    print(result)
 
-# Print the result
-for res in result:
-    print(f"Source {res['source_number']}:")
-    for mapping in res["mappings"]:
-        print(f"  Sample: {mapping['sample']}")
-        print(f"    Actual -> {mapping['actual']}")
-        print(f"    Approximate -> {mapping['approximate']}")
-        print(f"    Error -> {mapping['error']:.4f}")
-    print()
+
+if __name__ == "__main__":
+    main()

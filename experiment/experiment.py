@@ -235,6 +235,7 @@ def run_experiment():
     # The NMF algorithm returns a dictionary with the Microphones as keys, and the
     # extracted sound sources as values.
     all_sound_sources_nmf = nmf.run_for_environment(environment=environment)
+    print(all_sound_sources_nmf)
 
     for i_sound_src in range(n_sound_sources):
         for mic in environment.get_mics():
@@ -301,7 +302,7 @@ def run_experiment():
 
     # Mapping approximated source_positions after NMF to the actual source_positions
     mapped_result_accuracy = util_mapping_actual_approx.get_mapped_results_accuracy(
-        source_positions, approx_source_positions
+        approx_source_positions, source_positions
     )
 
     # Because we want to visualize the results, with the original
