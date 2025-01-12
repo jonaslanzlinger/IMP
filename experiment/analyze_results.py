@@ -106,7 +106,7 @@ def main():
     """
     Analyzes the experiment file provided in the filepath.
     """
-    filepath = "2025-01-12_10-06-40_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
+    filepath = "2025-01-12_10-09-35_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
     stats = analyze_experiment_file(filepath)
 
 

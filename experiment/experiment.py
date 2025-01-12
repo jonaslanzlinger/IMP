@@ -340,7 +340,7 @@ def run_experiment(algorithm_choice="gcc_phat"):
 
 def main():
     ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    for i in range(1):
+    for i in range(100):
         result = run_experiment()
 
         print(result)
