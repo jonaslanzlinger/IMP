@@ -18,36 +18,42 @@ def read_experiment_file(filepath):
 
 def extract_errors_by_method(content):
     """Extract errors for each method from the experiment text"""
-    # Extract the dictionary part after 'Round X:'
-    round_match = re.search(r"Round \d+: (.+)$", content)
-    if not round_match:
-        print("Error: Could not find Round data in the content")
-        return None
+    # Initialize dictionary to store errors for each method
+    errors_by_method = {"threshold": [], "gcc_phat": []}
 
-    # Convert the string representation to a dictionary
-    # Replace numpy float representations with regular numbers
-    dict_str = round_match.group(1)
-    dict_str = re.sub(r"np\.float64\(([\d.]+)\)", r"\1", dict_str)
+    # Find all rounds
+    rounds = content.split("Round")[
+        1:
+    ]  # Split by "Round" and skip the first empty element
 
-    try:
-        round_data = ast.literal_eval(dict_str)
+    for round_data in rounds:
+        # Clean up the round data and convert to dictionary
+        round_str = round_data.split(":", 1)[
+            1
+        ].strip()  # Remove round number and get the dictionary part
+        round_str = re.sub(
+            r"np\.float64\(([\d.]+)\)", r"\1", round_str
+        )  # Clean numpy values
 
-        # Initialize dictionary to store errors for each method
-        errors_by_method = {}
+        try:
+            data = ast.literal_eval(round_str)
 
-        # Extract errors for each method
-        for method, data in round_data.items():
-            errors = []
-            for source in data:
-                for mapping in source["mappings"]:
-                    errors.append(float(mapping["error"]))
-            errors_by_method[method] = np.array(errors)
+            # Extract errors for each method in this round
+            for method in ["threshold", "gcc_phat"]:
+                if method in data:
+                    for source in data[method]:
+                        for mapping in source["mappings"]:
+                            errors_by_method[method].append(float(mapping["error"]))
 
-        return errors_by_method
+        except (ValueError, SyntaxError) as e:
+            print(f"Error parsing round data: {e}")
+            continue
 
-    except (ValueError, SyntaxError) as e:
-        print(f"Error parsing data: {e}")
-        return None
+    # Convert lists to numpy arrays
+    for method in errors_by_method:
+        errors_by_method[method] = np.array(errors_by_method[method])
+
+    return errors_by_method
 
 
 def calculate_statistics(errors):
@@ -58,6 +64,7 @@ def calculate_statistics(errors):
         "max_error": np.max(errors),
         "std_error": np.std(errors),
         "rmse": np.sqrt(np.mean(np.square(errors))),
+        "num_samples": len(errors),
     }
     return stats
 
@@ -93,6 +100,7 @@ def analyze_experiment_file(filepath):
         stats_by_method[method] = stats
 
         print(f"\n{method.upper()}:")
+        print(f"Number of samples: {stats['num_samples']}")
         print(f"Mean Error: {stats['mean_error']:.6f}")
         print(f"Min Error:  {stats['min_error']:.6f}")
         print(f"Max Error:  {stats['max_error']:.6f}")

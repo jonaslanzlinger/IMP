@@ -340,7 +340,7 @@ def main():
             file.write(f"Round {i+1}: {result}\n")
             file.flush()  # Flush the content to disk immediately
 
-        print(f"Round {i+1}: Appended results to {ts}_experiment.txt.")
+        print(f"Round {i+1}: Appended results to {ts}_experiment_one_sound_moving.txt.")
 
 
 if __name__ == "__main__":
