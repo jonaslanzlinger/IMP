@@ -346,7 +346,7 @@ def main():
         print(result)
 
         # Open the file in append mode to ensure it is created if not existing
-        with open(f"{ts}_experiment.txt", "a") as file:
+        with open(f"{ts}_experiment_two_sounds_moving.txt", "a") as file:
             file.write(f"Round {i+1}: {result}\n")
             file.flush()  # Flush the content to disk immediately
 
