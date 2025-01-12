@@ -25,6 +25,7 @@ from pysoundlocalization.visualization.spectrogram_plot import (
 )
 from pysoundlocalization.visualization.wave_plot import wave_plot
 
+
 # TODO: add typing
 def run_experiment(algorithm_choice="gcc_phat"):
     """
@@ -261,7 +262,8 @@ def run_experiment(algorithm_choice="gcc_phat"):
     print("PHASE 3 - LOCALIZE")
 
     # Contains the approximated sound source positions after multilateration
-    approx_source_positions = []
+    approx_source_positions_threshold = []
+    approx_source_positions_gcc_phat = []
 
     # Loop over all isolated sound sources, and assign them to the Microphones
     # in the Environment. Then, normalize the Environment to have a maximum
@@ -284,17 +286,21 @@ def run_experiment(algorithm_choice="gcc_phat"):
             chunk_duration=timedelta(milliseconds=5000)
         )
 
-        # Multilaterate the sound source
-        source_pos = environment.multilaterate(
-            algorithm=algorithm_choice,
+        # Multilaterate the sound source using threshold
+        source_pos_threshold = environment.multilaterate(
+            algorithm="threshold",
             number_of_sound_sources=1,
             threshold=0.5,
         )
+        approx_source_positions_threshold.append(source_pos_threshold)
 
-        # Append the estimated position to the sources_positions list
-        approx_source_positions.append(source_pos)
-
-    print(approx_source_positions)
+        # Multilaterate the sound source using gcc-phat
+        source_pos_gcc_phat = environment.multilaterate(
+            algorithm="gcc_phat",
+            number_of_sound_sources=1,
+            threshold=0.5,
+        )
+        approx_source_positions_gcc_phat.append(source_pos_gcc_phat)
 
     # ###############
     # FINAL RESULTS #
@@ -304,8 +310,16 @@ def run_experiment(algorithm_choice="gcc_phat"):
     # Mapping approximated source_positions after NMF to the actual source_positions
     # NMF splits the audio signal into its two most distinct parts (sounds) but returns the result unordered. To run
     # automatic tests in large volumes, this must be handled.
-    mapped_result_accuracy = util_mapping_actual_approx.get_mapped_results_accuracy(
-        approx_source_positions, source_positions
+    mapped_result_accuracy_threshold = (
+        util_mapping_actual_approx.get_mapped_results_accuracy(
+            approx_source_positions_threshold, source_positions
+        )
+    )
+
+    mapped_result_accuracy_gcc_phat = (
+        util_mapping_actual_approx.get_mapped_results_accuracy(
+            approx_source_positions_gcc_phat, source_positions
+        )
     )
 
     # Enable the interactive visualization of localization results. Good for debugging.
@@ -315,17 +329,21 @@ def run_experiment(algorithm_choice="gcc_phat"):
     #     mic.set_recording_start_time(datetime.now())
     #
     # # Visualize the final result
-    # multilaterate_plot(environment, approx_source_positions)
+    # multilaterate_plot(environment, approx_source_positions_threshold)
+    # multilaterate_plot(environment, approx_source_positions_gcc_phat)
 
-    return mapped_result_accuracy
+    return {
+        "threshold": mapped_result_accuracy_threshold,
+        "gcc_phat": mapped_result_accuracy_gcc_phat,
+    }
 
 
 def main():
     ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    for i in range(10):
-        result = run_experiment(
-            algorithm_choice="threshold"
-        )  # TODO: run algorithm over the same setups!! currently over different random setups
+    for i in range(1):
+        result = run_experiment()
+
+        print(result)
 
         # Open the file in append mode to ensure it is created if not existing
         with open(f"{ts}_experiment.txt", "a") as file:

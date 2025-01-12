@@ -1,5 +1,6 @@
 import numpy as np
 import re
+import ast
 
 
 def read_experiment_file(filepath):
@@ -15,13 +16,38 @@ def read_experiment_file(filepath):
         return None
 
 
-def extract_errors(text):
-    """Extract all error values from the experiment text"""
-    # Find all error values in the text
-    # Convert "np.float64(X)" strings to float values
-    error_pattern = r"'error': np\.float64\(([\d.]+)\)"
-    errors = [float(x) for x in re.findall(error_pattern, text)]
-    return np.array(errors)
+def extract_errors_by_method(content):
+    """Extract errors for each method from the experiment text"""
+    # Extract the dictionary part after 'Round X:'
+    round_match = re.search(r"Round \d+: (.+)$", content)
+    if not round_match:
+        print("Error: Could not find Round data in the content")
+        return None
+
+    # Convert the string representation to a dictionary
+    # Replace numpy float representations with regular numbers
+    dict_str = round_match.group(1)
+    dict_str = re.sub(r"np\.float64\(([\d.]+)\)", r"\1", dict_str)
+
+    try:
+        round_data = ast.literal_eval(dict_str)
+
+        # Initialize dictionary to store errors for each method
+        errors_by_method = {}
+
+        # Extract errors for each method
+        for method, data in round_data.items():
+            errors = []
+            for source in data:
+                for mapping in source["mappings"]:
+                    errors.append(float(mapping["error"]))
+            errors_by_method[method] = np.array(errors)
+
+        return errors_by_method
+
+    except (ValueError, SyntaxError) as e:
+        print(f"Error parsing data: {e}")
+        return None
 
 
 def calculate_statistics(errors):
@@ -38,47 +64,49 @@ def calculate_statistics(errors):
 
 def analyze_experiment_file(filepath):
     """
-    Reads and analyzes the experiment txt file specifically created as part of experiment.py.
-
-    A typical txt file follows the format:
-    Round 0: [{'source_number': 2, 'mappings': [{'sample': '0', 'actual': (400, 400), 'approximate': (np.float64(400.07566630995956), np.float64(399.5545727856106)), 'error': np.float64(0.45180835957470006)}, {'sample': '55125', 'actual': (300, 400), 'approximate': (np.float64(300.04389244615277), np.float64(399.4987019794673)), 'error': np.float64(0.5032159101412557)}]}, {'source_number': 1, 'mappings': [{'sample': '0', 'actual': (100, 100), 'approximate': (np.float64(100.00229926593859), np.float64(99.38170345012708)), 'error': np.float64(0.6183008250104608)}, {'sample': '55125', 'actual': (100, 100), 'approximate': (np.float64(100.04645607056848), np.float64(99.42614610171589)), 'error': np.float64(0.5757312420466145)}]}]
-    Round 1: [{'source_number': 2, 'mappings': [{'sample': '0', 'actual': (400, 400), 'approximate': (np.float64(400.07566630995956), np.float64(399.5545727856106)), 'error': np.float64(0.45180835957470006)}, {'sample': '55125', 'actual': (300, 400), 'approximate': (np.float64(300.04389244615277), np.float64(399.4987019794673)), 'error': np.float64(0.5032159101412557)}]}, {'source_number': 1, 'mappings': [{'sample': '0', 'actual': (100, 100), 'approximate': (np.float64(100.00229926593859), np.float64(99.38170345012708)), 'error': np.float64(0.6183008250104608)}, {'sample': '55125', 'actual': (100, 100), 'approximate': (np.float64(100.04645607056848), np.float64(99.42614610171589)), 'error': np.float64(0.5757312420466145)}]}]
-
-    The method extracts all values and computes key metrics, printed into the console.
+    Reads and analyzes the experiment txt file with multiple methods.
 
     Args:
         filepath (string): Path to the experiment txt file to be loaded.
 
     Returns:
-        dict[str, floating | complexfloating]: Statistics of the experiment file.
+        dict: Statistics for each method in the experiment file.
     """
     # Read the file
     content = read_experiment_file(filepath)
     if content is None:
         return None
 
-    # Extract errors
-    errors = extract_errors(content)
+    # Extract errors for each method
+    errors_by_method = extract_errors_by_method(content)
+    if errors_by_method is None:
+        return None
 
-    # Calculate statistics
-    stats = calculate_statistics(errors)
+    # Calculate statistics for each method
+    stats_by_method = {}
 
-    # Print results
-    print("\nError Statistics:")
-    print(f"Mean Error: {stats['mean_error']:.6f}")
-    print(f"Min Error:  {stats['min_error']:.6f}")
-    print(f"Max Error:  {stats['max_error']:.6f}")
-    print(f"Std Dev:    {stats['std_error']:.6f}")
-    print(f"RMSE:       {stats['rmse']:.6f}")
+    print("\nError Statistics by Method:")
+    print("-" * 50)
 
-    return stats
+    for method, errors in errors_by_method.items():
+        stats = calculate_statistics(errors)
+        stats_by_method[method] = stats
+
+        print(f"\n{method.upper()}:")
+        print(f"Mean Error: {stats['mean_error']:.6f}")
+        print(f"Min Error:  {stats['min_error']:.6f}")
+        print(f"Max Error:  {stats['max_error']:.6f}")
+        print(f"Std Dev:    {stats['std_error']:.6f}")
+        print(f"RMSE:       {stats['rmse']:.6f}")
+
+    return stats_by_method
 
 
 def main():
     """
     Analyzes the experiment file provided in the filepath.
     """
-    filepath = "2025-01-11_18-21-02_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
+    filepath = "2025-01-12_10-06-40_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
     stats = analyze_experiment_file(filepath)
 
 
