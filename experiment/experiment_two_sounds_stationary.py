@@ -27,7 +27,7 @@ from pysoundlocalization.visualization.wave_plot import wave_plot
 
 
 # TODO: add typing
-def run_experiment(algorithm_choice="gcc_phat"):
+def run_experiment():
     """
     Runs the experiment setup as follows:
     - Uses both algorithms (threshold and gcc-phat) to enable comparison
@@ -123,10 +123,7 @@ def run_experiment(algorithm_choice="gcc_phat"):
     # Generate random coordinates for the second sound source. Sound source moves during the experiment from
     # RANDOM_SOURCE_B1 to RANDOM_SOURCE_B2.
     # Note: get_distant_coordinate(...) ensures that the coordinates are at least 150 units away from each other.
-    RANDOM_SOURCE_B1 = util_random_coordinates.get_distant_coordinate(
-        RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
-    )
-    RANDOM_SOURCE_B2 = util_random_coordinates.get_distant_coordinate(
+    RANDOM_SOURCE_B = util_random_coordinates.get_distant_coordinate(
         RANDOM_SOURCE_A[0], RANDOM_SOURCE_A[1], 100, 500, 150
     )
 
@@ -144,8 +141,8 @@ def run_experiment(algorithm_choice="gcc_phat"):
         },
         {
             "sound": sound_2,  # None if no sound file is loaded
-            int(lowest_sample_rate * 1): RANDOM_SOURCE_B1,
-            int(lowest_sample_rate * 6): RANDOM_SOURCE_B2,
+            int(lowest_sample_rate * 1): RANDOM_SOURCE_B,
+            int(lowest_sample_rate * 6): RANDOM_SOURCE_B,
         },
     ]
 
@@ -346,7 +343,7 @@ def main():
         print(result)
 
         # Open the file in append mode to ensure it is created if not existing
-        with open(f"{ts}_experiment.txt", "a") as file:
+        with open(f"{ts}_experiment_two_sounds_stationary.txt", "a") as file:
             file.write(f"Round {i+1}: {result}\n")
             file.flush()  # Flush the content to disk immediately
 

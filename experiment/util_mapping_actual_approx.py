@@ -82,7 +82,7 @@ def get_mapped_results_accuracy(approx_source_positions, source_positions):
 def main():
     """
     Main function to showcase the position mapping process between actual and approximated coordinates.
-    The format is specific to the output from experiment.py.
+    The format is specific to the output from experiment_two_sounds_moving.py.
     """
     approx_source_positions = [
         {

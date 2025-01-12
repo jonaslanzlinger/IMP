@@ -106,8 +106,9 @@ def main():
     """
     Analyzes the experiment file provided in the filepath.
     """
-    filepath = "2025-01-12_10-09-35_experiment.txt"  # REPLACE FILEPATH WITH PATH TO EXPERIMENT FILE
-    stats = analyze_experiment_file(filepath)
+    # Prompt the user for the file path (eg. 2025-01-12_14-07-52_experiment_one_sound_moving.txt)
+    filepath = input("Please enter the path to the experiment file: ").strip()
+    analyze_experiment_file(filepath)
 
 
 if __name__ == "__main__":
