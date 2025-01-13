@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
 from pysoundlocalization.core.Audio import Audio
-import warnings
 import os
 
 """
@@ -10,8 +9,7 @@ In this example, we will demonstrate how to use FastICA to separate two sound so
 We will mix a speech signal with a sinusoidal noise signal and then use FastICA to separate the two sources.
 """
 
-speech_filepath = os.path.join(root, "examples", "example_audio", "speech_example.wav")
-speech_audio = Audio(filepath=speech_filepath)
+speech_audio = Audio(filepath="../data/00_SOUND_BANK/noise/meteo_speaker.wav")
 speech_audio.load_audio_file()
 speech_signal = speech_audio.get_audio_signal_unchunked()
 speech_sample_rate = speech_audio.get_sample_rate()
