@@ -11,9 +11,11 @@ from pysoundlocalization.core.Simulation import Simulation
 from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
+from pysoundlocalization.visualization.environment_wave_plot import (
+    environment_wave_plot,
+)
+from pysoundlocalization.visualization.environment_spectrogram_plot import (
+    environment_spectrogram_plot,
 )
 
 simulation = Simulation.create()
@@ -72,16 +74,16 @@ for mic in environment.get_mics():
     frequency_filter_chain.apply(mic.get_audio())
     AudioNormalizer.normalize_audio_to_max_amplitude(mic.get_audio(), 1.0)
 
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
     NoiseReducer.reduce_noise(audio)
     AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
 
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 n_sound_sources = 2
 
@@ -98,8 +100,8 @@ for i_sound_src in range(n_sound_sources):
         mic.set_audio(audio)
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
-    wave_plot_environment(environment=environment)
-    spectrogram_plot_environment(environment=environment)
+    environment_wave_plot(environment=environment)
+    environment_spectrogram_plot(environment=environment)
 
 algorithm_choice = "threshold"
 

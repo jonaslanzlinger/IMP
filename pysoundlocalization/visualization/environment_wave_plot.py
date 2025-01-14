@@ -1,35 +1,38 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from pysoundlocalization.core.Environment import Environment
 
 
 def environment_wave_plot(environment: Environment) -> None:
     """
-    Visualizes all waves of the audio signals in the environment.
+    Plot the waveforms of all audio signals in the given environment.
 
     Args:
-        environment (Environment): Environment object containing the audios.
+        environment: The environment object containing microphones with audio signals.
     """
 
-    print(f"Environment Wave Plot displayed.")
+    print(f"Waveplot of environment displayed.")
 
-    plt.rcParams["toolbar"] = "none"
+    mics = environment.get_mics()
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    fig.canvas.manager.set_window_title(
-        f"{environment.get_name()} - Environment Wave Plot"
-    )
+    num_mics = len(mics)
+    plt.figure(figsize=(10, 2 * num_mics))
 
-    # Plot audio waveforms for each microphone in the environment
-    for i, mic in enumerate(environment.get_mics()):
-        audio_data = mic.get_audio().get_audio_signal_unchunked()
-        sample_count = mic.get_audio().get_num_samples()
-        ax.plot(audio_data[:sample_count], label=f"Microphone {i + 1}")
+    for i, mic in enumerate(mics):
+        audio_signal = mic.get_audio().get_audio_signal_unchunked()
 
-    ax.set_title("Audio Waveforms in the Environment")
-    ax.set_xlabel("Sample Index")
-    ax.set_ylabel("Amplitude")
-    ax.legend(loc="upper right")
-    ax.grid(True)
+        timeline = np.linspace(
+            0,
+            len(audio_signal) / mic.get_audio().get_sample_rate(),
+            len(audio_signal),
+        )
 
+        plt.subplot(num_mics, 1, i + 1)
+        plt.plot(timeline, audio_signal)
+        plt.ylim(-1.2, 1.2)
+        plt.ylabel("Amplitude")
+        plt.xlabel("Time (seconds)")
+
+    plt.gcf().canvas.manager.set_window_title("Environment all Waveplots")
     plt.tight_layout()
     plt.show()

@@ -1,7 +1,5 @@
-import soundfile as sf
 import pyloudnorm as pyln
 from pysoundlocalization.core.Environment import Environment
-import numpy as np
 from pysoundlocalization.core.Audio import Audio
 
 

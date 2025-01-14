@@ -1,8 +1,7 @@
-import os
 from datetime import timedelta
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 
 """
 In this example we show how to chunk audio signals.
@@ -23,14 +22,14 @@ print("Unchunked audio:")
 print(
     f"Audio Chunks: {len(audio.get_audio_signal())}, Audio signal shape: {audio.get_audio_signal().shape}"
 )
-wave_plot(audio.get_audio_signal_unchunked(), audio.get_sample_rate())
+audio_wave_plot(audio.get_audio_signal_unchunked(), audio.get_sample_rate())
 
 audio.chunk_audio_signal_by_duration(chunk_duration=timedelta(milliseconds=5000))
 
 print("Chunked audio:")
 for i, chunk in enumerate(audio.get_audio_signal_chunked()):
     print(f"Chunk {i}: {len(chunk)} samples")
-    wave_plot(chunk, audio.get_sample_rate())
+    audio_wave_plot(chunk, audio.get_sample_rate())
 
 
 # #################################################

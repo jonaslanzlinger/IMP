@@ -1,6 +1,6 @@
 from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -165,7 +165,7 @@ class NonNegativeMatrixFactorization:
         concatenated_audio = np.concatenate(audios)
 
         if visualize_results:
-            wave_plot(
+            audio_wave_plot(
                 audio_signal=concatenated_audio, sample_rate=reference_sample_rate
             )
 
@@ -175,7 +175,9 @@ class NonNegativeMatrixFactorization:
 
         if visualize_results:
             for audio_signal in nmf_result:
-                wave_plot(audio_signal=audio_signal, sample_rate=reference_sample_rate)
+                audio_wave_plot(
+                    audio_signal=audio_signal, sample_rate=reference_sample_rate
+                )
 
         # Split the initially concatenated signals back and add the audio to the respective mics
         # Ensures that the order of NMF splitting is the same for all mic audio.

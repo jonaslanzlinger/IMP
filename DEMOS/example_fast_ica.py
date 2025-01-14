@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
 from pysoundlocalization.core.Audio import Audio
-import os
 
 """
 In this example, we will demonstrate how to use FastICA to separate two sound sources from a mixed audio signal.

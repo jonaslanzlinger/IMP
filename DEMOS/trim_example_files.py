@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 
 filepath1 = "../08_versuch_classroom_syncatmic3_3sources/pi1_audio.wav"
 filepath2 = "../08_versuch_classroom_syncatmic3_3sources/pi2_audio.wav"
@@ -10,7 +10,7 @@ filepath4 = "../08_versuch_classroom_syncatmic3_3sources/pi4_audio.wav"
 
 for filepath in [filepath1, filepath2, filepath3, filepath4]:
     audio = Audio(filepath=filepath)
-    wave_plot(
+    audio_wave_plot(
         audio.get_audio_signal_unchunked(),
         audio.get_sample_rate(),
     )
@@ -20,7 +20,7 @@ for filepath in [filepath1, filepath2, filepath3, filepath4]:
             SampleTrimmer.slice_from_to_samples(
                 audio, i - 20000, audio.get_num_samples() - 1
             )
-            wave_plot(
+            audio_wave_plot(
                 audio.get_audio_signal_unchunked(),
                 audio.get_sample_rate(),
             )
@@ -57,7 +57,7 @@ for filepath in [filepath1, filepath2, filepath3, filepath4]:
     #         elif audio.get_filepath() == "../08_versuch_classroom_syncatmic3_3sources/pi4_audio.wav":
     #             SampleTrimmer.slice_from_to_samples(audio, i - (20000 + 1001), )
 
-    #         wave_plot(
+    #         audio_wave_plot(
     #             audio.get_audio_signal_unchunked(),
     #             audio.get_sample_rate(),
     #         )

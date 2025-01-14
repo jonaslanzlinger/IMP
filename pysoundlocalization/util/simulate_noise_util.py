@@ -3,7 +3,6 @@ from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.config import DEFAULT_SOUND_SPEED
-from scipy.signal.windows import tukey
 
 
 def generate_audios(

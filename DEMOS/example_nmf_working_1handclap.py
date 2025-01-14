@@ -1,4 +1,4 @@
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from datetime import timedelta
@@ -66,13 +66,17 @@ nmf = NonNegativeMatrixFactorization(sample_rate=audio1.get_sample_rate())
 audio1_signal_nmf = nmf.run_for_single_audio_signal(
     audio1.get_audio_signal_unchunked(), sample_rate=audio1.get_sample_rate()
 )
-wave_plot(audio1_signal_nmf[0], audio1.get_sample_rate())
-wave_plot(audio1_signal_nmf[1], audio1.get_sample_rate())
+audio_wave_plot(audio1_signal_nmf[0], audio1.get_sample_rate())
+audio_wave_plot(audio1_signal_nmf[1], audio1.get_sample_rate())
 
 # apply NMF to audio1
 audio1_nmf_audios = nmf.run_for_single_audio(audio1)
-wave_plot(audio1_nmf_audios[0].get_audio_signal_unchunked(), audio1.get_sample_rate())
-wave_plot(audio1_nmf_audios[1].get_audio_signal_unchunked(), audio1.get_sample_rate())
+audio_wave_plot(
+    audio1_nmf_audios[0].get_audio_signal_unchunked(), audio1.get_sample_rate()
+)
+audio_wave_plot(
+    audio1_nmf_audios[1].get_audio_signal_unchunked(), audio1.get_sample_rate()
+)
 
 all_audio_nmf = nmf.experimental_run_for_all_audio_in_environment(environment1)
 
@@ -81,7 +85,7 @@ for mic, audio_list in all_audio_nmf.items():
     for idx, audio in enumerate(audio_list):
         print(f"  Audio {idx + 1}: {len(audio.get_audio_signal_unchunked())} samples")
         mic.set_audio(audio, reset_recording_start_time=False)
-        wave_plot(
+        audio_wave_plot(
             audio.get_audio_signal_unchunked(),
             audio.get_sample_rate(),
             "nmf_environment_" + str(mic.get_name()) + "_" + str(idx + 1),

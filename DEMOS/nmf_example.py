@@ -1,25 +1,17 @@
 from pysoundlocalization.core.Audio import Audio
-from datetime import timedelta
-from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
-from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
-from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
 from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
     NonNegativeMatrixFactorization,
 )
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
-from pysoundlocalization.util.simulate_noise_util import generate_audios
-from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
-from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
-from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 from datetime import datetime
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
+from pysoundlocalization.visualization.environment_spectrogram_plot import (
+    environment_spectrogram_plot,
 )
-from pysoundlocalization.visualization.wave_plot import wave_plot
-import os
+from pysoundlocalization.visualization.environment_wave_plot import (
+    environment_wave_plot,
+)
 import copy
 
 """
@@ -83,8 +75,8 @@ n_sound_sources = 2
 # ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 sample_rate = environment.get_sample_rate()
 nmf = NonNegativeMatrixFactorization(
@@ -108,8 +100,8 @@ for i_sound_src in range(n_sound_sources):
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
     # Visualize the individual sound source Audio objects
-    wave_plot_environment(environment=environment)
-    spectrogram_plot_environment(environment=environment)
+    environment_wave_plot(environment=environment)
+    environment_spectrogram_plot(environment=environment)
 
 
 # ####################

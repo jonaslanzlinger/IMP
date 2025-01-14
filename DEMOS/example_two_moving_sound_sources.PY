@@ -8,15 +8,17 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 )
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
+from pysoundlocalization.visualization.environment_wave_plot import (
+    environment_wave_plot,
+)
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.util.simulate_noise_util import generate_audios
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 from datetime import datetime
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
+from pysoundlocalization.visualization.environment_spectrogram_plot import (
+    environment_spectrogram_plot,
 )
 import copy
 
@@ -106,8 +108,8 @@ for i, mic in enumerate(environment.get_mics()):
 # SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
 # SampleTrimmer.sync_environment(environment)
 
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 frequency_filter_chain = FrequencyFilterChain()
 
@@ -122,15 +124,15 @@ for mic in environment.get_mics():
     # NoiseReducer.reduce_noise(audio)
     # AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
 
-# wave_plot_environment(environment=environment)
-# spectrogram_plot_environment(environment=environment)
+# environment_wave_plot(environment=environment)
+# environment_spectrogram_plot(environment=environment)
 
 for mic in environment.get_mics():
     NoiseReducer.reduce_noise(mic.get_audio())
     AudioNormalizer.normalize_audio_to_max_amplitude(mic.get_audio(), 1.0)
 
-# wave_plot_environment(environment=environment)
-# spectrogram_plot_environment(environment=environment)
+# environment_wave_plot(environment=environment)
+# environment_spectrogram_plot(environment=environment)
 
 n_sound_sources = 2
 sample_rate = environment.get_sample_rate()
@@ -148,8 +150,8 @@ for i_sound_src in range(n_sound_sources):
 
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
-    # wave_plot_environment(environment=environment)
-    # spectrogram_plot_environment(environment=environment)
+    # environment_wave_plot(environment=environment)
+    # environment_spectrogram_plot(environment=environment)
 
 algorithm_choice = "threshold"
 sources_positions = []

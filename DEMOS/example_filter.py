@@ -5,7 +5,9 @@ from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilt
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 from pysoundlocalization.preprocessing.LowCutFilter import LowCutFilter
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
-from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.audio_spectrogram_plot import (
+    audio_spectrogram_plot,
+)
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 
 """
@@ -24,7 +26,7 @@ SampleTrimmer.slice_from_to(
     audio, start_time=timedelta(seconds=8), end_time=timedelta(seconds=13)
 )
 
-spectrogram_plot(
+audio_spectrogram_plot(
     audio_signal=audio.get_audio_signal_unchunked(),
     sample_rate=audio.get_sample_rate(),
 )
@@ -42,7 +44,7 @@ NoiseReducer.reduce_noise(audio)
 
 AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1)
 
-spectrogram_plot(
+audio_spectrogram_plot(
     audio_signal=audio.get_audio_signal_unchunked(),
     sample_rate=audio.get_sample_rate(),
 )

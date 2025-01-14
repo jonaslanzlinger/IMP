@@ -9,6 +9,9 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 )
 from pysoundlocalization.core.Simulation import Simulation
 from datetime import datetime
+from pysoundlocalization.visualization.audio_spectrogram_plot import (
+    audio_spectrogram_plot,
+)
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 simulation = Simulation.create()
@@ -59,7 +62,7 @@ SampleTrimmer.slice_from_to(
 
 environment1 = SampleTrimmer.sync_environment(environment1)
 
-# spectrogram_plot(
+# audio_spectrogram_plot(
 #     audio_signal=audio.get_unchuncked_audio_signal(),
 #     sample_rate=audio.get_sample_rate(),
 # )
@@ -82,7 +85,7 @@ NoiseReducer.reduce_noise(audio=mic4.get_audio())
 
 # audio.play()
 
-# spectrogram_plot(audio.get_unchuncked_audio_signal(), audio.get_sample_rate())
+# audio_spectrogram_plot(audio.get_unchuncked_audio_signal(), audio.get_sample_rate())
 
 nmf = NonNegativeMatrixFactorization(sample_rate=mic1.get_audio().get_sample_rate())
 audio_signals_nmf = nmf.run_for_environment(environment=environment1)

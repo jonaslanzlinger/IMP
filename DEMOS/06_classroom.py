@@ -1,14 +1,15 @@
-import os
 from datetime import datetime, timedelta
-import numpy as np
 
 from pysoundlocalization.core.Audio import Audio
-from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
+from pysoundlocalization.visualization.environment_wave_plot import (
+    environment_wave_plot,
+)
+from pysoundlocalization.visualization.environment_spectrogram_plot import (
+    environment_spectrogram_plot,
+)
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
@@ -20,10 +21,6 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
-)
 
 simulation = Simulation.create()
 
@@ -93,8 +90,8 @@ for i_sound_src in range(n_sound_sources):
         audio = all_sound_sources_nmf[mic][i_sound_src]
         mic.set_audio(audio)
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
-    wave_plot_environment(environment=environment)
-    spectrogram_plot_environment(environment=environment)
+    environment_wave_plot(environment=environment)
+    environment_spectrogram_plot(environment=environment)
 
 algorithm_choice = "threshold"
 sources_positions = []

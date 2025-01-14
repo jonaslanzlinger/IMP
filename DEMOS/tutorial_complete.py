@@ -8,17 +8,19 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 )
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot_environment
+from pysoundlocalization.visualization.environment_wave_plot import (
+    environment_wave_plot,
+)
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.util.simulate_noise_util import generate_audios
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.NotchFilter import NotchFilter
 from pysoundlocalization.preprocessing.HighCutFilter import HighCutFilter
 from datetime import datetime
-from pysoundlocalization.visualization.spectrogram_plot import (
-    spectrogram_plot_environment,
+from pysoundlocalization.visualization.environment_spectrogram_plot import (
+    environment_spectrogram_plot,
 )
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 import os
 import copy
 
@@ -103,11 +105,11 @@ AudioNormalizer.normalize_audio_to_max_amplitude(sound_2, 1.0)
 # print(f"Sound 2 sample rate: {sound_2.get_sample_rate()}")
 
 # Visualize the Audio objects
-wave_plot(
+audio_wave_plot(
     audio_signal=sound_1.get_audio_signal_unchunked(),
     sample_rate=sound_1.get_sample_rate(),
 )
-wave_plot(
+audio_wave_plot(
     audio_signal=sound_2.get_audio_signal_unchunked(),
     sample_rate=sound_2.get_sample_rate(),
 )
@@ -156,7 +158,7 @@ noise.resample_audio(lowest_sample_rate)
 AudioNormalizer.normalize_audio_to_max_amplitude(noise, 1.0)
 
 # Visualize the noise Audio object
-wave_plot(
+audio_wave_plot(
     audio_signal=noise.get_audio_signal_unchunked(),
     sample_rate=noise.get_sample_rate(),
 )
@@ -209,8 +211,8 @@ environment = generate_audios(
 # n_sound_sources = 2
 
 # Visualize the Audio objects of the Environment
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 # Save a copy of the original Audio objects for later use
 for i, mic in enumerate(environment.get_mics()):
@@ -224,7 +226,6 @@ for i, mic in enumerate(environment.get_mics()):
 # generating them again. Also useful for debugging purposes.
 # for i, audio in enumerate(original_audios):
 #     audio.export(f"{current_file_name}_audio_{i + 1}.wav")
-
 
 # ##########################
 # PHASE 2 - PRE-PROCESSING #
@@ -253,8 +254,8 @@ for mic in environment.get_mics():
     AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
 
 # Visualize the Audio objects of the Environment after applying the filters
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 # Use the NoiseReducer to reduce the noise in the Audio objects.
 # The NoiseReducer might lower the loudness of the sound sources
@@ -266,8 +267,8 @@ for mic in environment.get_mics():
     AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
 
 # Visualize the Audio objects of the Environment after reducing the noise
-wave_plot_environment(environment=environment)
-spectrogram_plot_environment(environment=environment)
+environment_wave_plot(environment=environment)
+environment_spectrogram_plot(environment=environment)
 
 # The NMF algorithm is used to extract the sound sources from the
 # Audio objects of the Microphones. The number of sound sources
@@ -294,8 +295,8 @@ for i_sound_src in range(n_sound_sources):
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
     # Visualize the individual sound source Audio objects
-    wave_plot_environment(environment=environment)
-    spectrogram_plot_environment(environment=environment)
+    environment_wave_plot(environment=environment)
+    environment_spectrogram_plot(environment=environment)
 
     # Optionally play the Audio objects of the finished processed audio (POTENTIALLY LOUD!!!)
     ### environment.get_mics()[0].get_audio().play()

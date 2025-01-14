@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from pysoundlocalization.core.Environment import Environment
-from matplotlib.widgets import Slider, Button
+from matplotlib.widgets import Button
 from matplotlib.widgets import RadioButtons
 import pygame
 from scipy.io.wavfile import write

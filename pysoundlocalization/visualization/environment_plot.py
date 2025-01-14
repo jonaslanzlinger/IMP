@@ -1,12 +1,5 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.widgets import Slider, Button
-from matplotlib.widgets import RadioButtons
-import pygame
-from scipy.io.wavfile import write
-import numpy as np
-from matplotlib import animation
-import os
 
 
 def environment_plot(environment) -> None:

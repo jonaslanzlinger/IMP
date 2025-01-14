@@ -4,7 +4,9 @@ from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.FrequencyFilterChain import FrequencyFilterChain
 from pysoundlocalization.preprocessing.LowPassFilter import LowPassFilter
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
-from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
+from pysoundlocalization.visualization.audio_spectrogram_plot import (
+    audio_spectrogram_plot,
+)
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
 # Create simulation and add an environment with 4 microphones
@@ -23,12 +25,11 @@ audio_filepath = os.path.join(root, "examples", "example_audio", "pi1_audio.wav"
 audio = Audio(filepath=audio_filepath)
 
 # Add a filter
-# spectrogram_plot(audio1)
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowPassFilter(cutoff_frequency=300, order=5))
 frequency_filter_chain.apply(audio)
 
-spectrogram_plot(
+audio_spectrogram_plot(
     audio_signal=audio.get_audio_signal_unchunked(),
     sample_rate=audio.get_sample_rate(),
 )

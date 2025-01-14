@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-import numpy as np
-
+from datetime import datetime
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
@@ -8,8 +6,8 @@ from pysoundlocalization.visualization.environment_plot import environment_plot
 from pysoundlocalization.visualization.environment_play_audio_plot import (
     environment_play_audio_plot,
 )
-from pysoundlocalization.visualization.environment_wave_plot import (
-    environment_wave_plot,
+from pysoundlocalization.visualization.environment_overlap_wave_plot import (
+    environment_overlap_wave_plot,
 )
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
@@ -53,7 +51,7 @@ dict = environment.multilaterate(
 
 print(dict)
 
-environment_plot(environment)
-environment_play_audio_plot(environment)
-environment_wave_plot(environment)
-multilaterate_plot(environment, [dict])
+environment_plot(environment=environment)
+environment_play_audio_plot(environment=environment)
+environment_overlap_wave_plot(environment=environment)
+multilaterate_plot(environment=environment, dict_list=[dict])

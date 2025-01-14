@@ -1,11 +1,6 @@
 from datetime import timedelta
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from itertools import combinations
-
 import numpy as np
-
 import pysoundlocalization.config as config
 from pysoundlocalization.algorithms.gcc_phat import gcc_phat
 from pysoundlocalization.algorithms.doa import compute_doa

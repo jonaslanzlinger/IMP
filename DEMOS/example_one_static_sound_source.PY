@@ -9,8 +9,10 @@ from datetime import datetime
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
-from pysoundlocalization.visualization.spectrogram_plot import spectrogram_plot
-from pysoundlocalization.visualization.wave_plot import wave_plot
+from pysoundlocalization.visualization.audio_spectrogram_plot import (
+    audio_spectrogram_plot,
+)
+from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 
 simulation = Simulation.create()
 
@@ -62,16 +64,16 @@ mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    # wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
     # audio.play()
 
 AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    # wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
     # audio.play()
 
 
@@ -91,8 +93,8 @@ AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    # wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
     # audio.play()
 
 NoiseReducer.reduce_all_noise(environment)
@@ -101,8 +103,8 @@ AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    # wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
+    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
     # audio.play()
 
 algorithm_choice = "threshold"

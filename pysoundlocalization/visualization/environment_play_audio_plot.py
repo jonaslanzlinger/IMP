@@ -3,7 +3,6 @@ from pysoundlocalization.core.Environment import Environment
 import numpy as np
 from matplotlib.animation import FuncAnimation
 import time
-import threading
 import pygame
 import soundfile as sf
 import tempfile
