@@ -21,7 +21,9 @@ To show the effect, we plot the spectrogram of the audio signal before and after
 Optionally, we can play the audio signal before and after the processing (beware: LOUD).
 """
 
-audio = Audio(filepath="../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav")
+audio = Audio(
+    filepath="../../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav"
+)
 SampleTrimmer.slice_from_to(
     audio, start_time=timedelta(seconds=8), end_time=timedelta(seconds=13)
 )

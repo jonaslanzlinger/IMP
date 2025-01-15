@@ -53,10 +53,10 @@ mic_3 = environment.add_microphone(110, 110)
 mic_4 = environment.add_microphone(10, 110)
 
 # Load the audio files
-audio_1 = Audio(filepath="../data/17_nmf_example/nmf_example_audio_1.wav")
-audio_2 = Audio(filepath="../data/17_nmf_example/nmf_example_audio_2.wav")
-audio_3 = Audio(filepath="../data/17_nmf_example/nmf_example_audio_3.wav")
-audio_4 = Audio(filepath="../data/17_nmf_example/nmf_example_audio_4.wav")
+audio_1 = Audio(filepath="../../data/17_nmf_example/nmf_example_audio_1.wav")
+audio_2 = Audio(filepath="../../data/17_nmf_example/nmf_example_audio_2.wav")
+audio_3 = Audio(filepath="../../data/17_nmf_example/nmf_example_audio_3.wav")
+audio_4 = Audio(filepath="../../data/17_nmf_example/nmf_example_audio_4.wav")
 
 original_audios[0] = copy.deepcopy(audio_1)
 original_audios[1] = copy.deepcopy(audio_2)

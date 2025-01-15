@@ -32,21 +32,21 @@ mic3 = environment.add_microphone(1.9, 4.2)
 # Note: The audio files are already synced correctly.
 mic1.set_audio(
     Audio(
-        filepath="../data/09_three_microphones/pi1_audio_2024-11-09_18-24-32_104187.wav"
+        filepath="../../data/09_three_microphones/pi1_audio_2024-11-09_18-24-32_104187.wav"
     )
 )
 mic1.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 104187))
 
 mic2.set_audio(
     Audio(
-        filepath="../data/09_three_microphones/pi2_audio_2024-11-09_18-24-32_811701.wav"
+        filepath="../../data/09_three_microphones/pi2_audio_2024-11-09_18-24-32_811701.wav"
     )
 )
 mic2.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 811701))
 
 mic3.set_audio(
     Audio(
-        filepath="../data/09_three_microphones/pi3_audio_2024-11-09_18-24-31_911530.wav"
+        filepath="../../data/09_three_microphones/pi3_audio_2024-11-09_18-24-31_911530.wav"
     )
 )
 mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))

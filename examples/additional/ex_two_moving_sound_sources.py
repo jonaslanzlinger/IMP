@@ -52,8 +52,8 @@ mic_2 = environment.add_microphone(95, 15)
 mic_3 = environment.add_microphone(95, 95)
 mic_4 = environment.add_microphone(5, 95)
 
-buzzer = Audio(filepath="../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
-knock = Audio(filepath="../data/00_SOUND_BANK/sounds/knock_sound.wav")
+buzzer = Audio(filepath="../../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
+knock = Audio(filepath="../../data/00_SOUND_BANK/sounds/knock_sound.wav")
 # print(f"Sound 1 duration: {buzzer.get_sample_rate()}")
 # print(f"Sound 2 duration: {knock.get_sample_rate()}")
 lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
@@ -82,7 +82,7 @@ source_positions = [
 n_sound_sources = len(source_positions)
 
 factory_sound_audio = Audio(
-    filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
+    filepath="../../data/00_SOUND_BANK/noise/factory_sound.wav",
     convert_to_sample_rate=lowest_sample_rate,
 )
 # factory_sound_audio.play()

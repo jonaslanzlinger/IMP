@@ -7,7 +7,7 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 This script tests the loss percentage of the NMF algorithm.
 """
 
-audio = Audio("../data/07_mosquito/pi1_audio_2024-11-06_15-30-17_252158.wav")
+audio = Audio("../../data/07_mosquito/pi1_audio_2024-11-06_15-30-17_252158.wav")
 
 original_num_samples = audio.get_num_samples()
 

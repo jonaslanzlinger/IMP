@@ -289,17 +289,15 @@ def run_experiment():
         )
 
         # Multilaterate the sound source using threshold
-        source_pos_threshold = environment.multilaterate(
+        source_pos_threshold = environment.localize(
             algorithm="threshold",
-            number_of_sound_sources=1,
             threshold=0.5,
         )
         approx_source_positions_threshold.append(source_pos_threshold)
 
         # Multilaterate the sound source using gcc-phat
-        source_pos_gcc_phat = environment.multilaterate(
+        source_pos_gcc_phat = environment.localize(
             algorithm="gcc_phat",
-            number_of_sound_sources=1,
             threshold=0.5,
         )
         approx_source_positions_gcc_phat.append(source_pos_gcc_phat)

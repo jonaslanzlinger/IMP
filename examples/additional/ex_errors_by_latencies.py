@@ -43,25 +43,25 @@ mic3 = environment.add_microphone(9.1, 10.96, name="Microphone-3")
 mic4 = environment.add_microphone(1, 10.92, name="Microphone-4")
 
 audio1_original = Audio(
-    filepath="../data/06_classroom/pi1_audio_2024-11-28_15-00-00-037437.wav"
+    filepath="../../data/06_classroom/pi1_audio_2024-11-28_15-00-00-037437.wav"
 )
 mic1.set_audio(audio1_original)
 mic1.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 37437))
 
 audio2_original = Audio(
-    filepath="../data/06_classroom/pi2_audio_2024-11-28_15-00-00-029037.wav"
+    filepath="../../data/06_classroom/pi2_audio_2024-11-28_15-00-00-029037.wav"
 )
 mic2.set_audio(audio2_original)
 mic2.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 29037))
 
 audio3_original = Audio(
-    filepath="../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav"
+    filepath="../../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav"
 )
 mic3.set_audio(audio3_original)
 mic3.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 0))
 
 audio4_original = Audio(
-    filepath="../data/06_classroom/pi4_audio_2024-11-28_15-00-00-022696.wav"
+    filepath="../../data/06_classroom/pi4_audio_2024-11-28_15-00-00-022696.wav"
 )
 mic4.set_audio(audio4_original)
 mic4.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 22696))

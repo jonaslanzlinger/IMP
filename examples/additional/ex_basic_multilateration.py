@@ -37,16 +37,16 @@ mic4 = environment.add_microphone(x=10, y=-10)
 
 # Note that those audio files are already correctly synced
 mic1.set_audio(
-    Audio(filepath="../data/08_door_bell/pi1_audio_2024-10-24_15-21-23_000000.wav")
+    Audio(filepath="../../data/08_door_bell/pi1_audio_2024-10-24_15-21-23_000000.wav")
 )
 mic2.set_audio(
-    Audio(filepath="../data/08_door_bell/pi2_audio_2024-10-24_15-21-23_000000.wav")
+    Audio(filepath="../../data/08_door_bell/pi2_audio_2024-10-24_15-21-23_000000.wav")
 )
 mic3.set_audio(
-    Audio(filepath="../data/08_door_bell/pi3_audio_2024-10-24_15-21-23_000000.wav")
+    Audio(filepath="../../data/08_door_bell/pi3_audio_2024-10-24_15-21-23_000000.wav")
 )
 mic4.set_audio(
-    Audio(filepath="../data/08_door_bell/pi4_audio_2024-10-24_15-21-23_000000.wav")
+    Audio(filepath="../../data/08_door_bell/pi4_audio_2024-10-24_15-21-23_000000.wav")
 )
 
 AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)

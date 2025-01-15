@@ -16,7 +16,7 @@ Then we show how to chunk all audio signals of an environment at once.
 # Chunking of a single audio signal #
 #####################################
 
-audio = Audio(filepath="../data/03_classroom/pi1_audio.wav")
+audio = Audio(filepath="../../data/03_classroom/pi1_audio.wav")
 
 print("Unchunked audio:")
 print(
@@ -44,8 +44,8 @@ environment = simulation.add_environment(
 mic1 = environment.add_microphone(2, 4)
 mic2 = environment.add_microphone(8, 5)
 
-mic1.set_audio(Audio(filepath="../data/03_classroom/pi1_audio.wav"))
-mic2.set_audio(Audio(filepath="../data/03_classroom/pi2_audio.wav"))
+mic1.set_audio(Audio(filepath="../../data/03_classroom/pi1_audio.wav"))
+mic2.set_audio(Audio(filepath="../../data/03_classroom/pi2_audio.wav"))
 
 environment.chunk_audio_signals_by_duration(timedelta(milliseconds=5000))
 # ... or alternatively chunk by samples. This will create chunks of 1 second length:
