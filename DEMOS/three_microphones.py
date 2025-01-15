@@ -11,6 +11,14 @@ from pysoundlocalization.visualization.environment_overlap_wave_plot import (
 )
 from pysoundlocalization.visualization.multilaterate_plot import multilaterate_plot
 
+"""
+This script demonstrates the localization of a sound source within a school environment
+where 3 microphones are used to record the sound. The audio data contains one single 
+clapping sound.
+
+Note, the environment_play_audio_plot produces sound (potentially loud)!
+"""
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -45,9 +53,7 @@ mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
 
 environment = SampleTrimmer.sync_environment(environment)
 
-dict = environment.multilaterate(
-    algorithm="threshold", number_of_sound_sources=1, threshold=0.2
-)
+dict = environment.localize(algorithm="threshold", threshold=0.2)
 
 print(dict)
 

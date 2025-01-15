@@ -11,7 +11,6 @@ Adapted as part of a project for sound localization.
 import numpy as np
 
 
-# TODO: remove sample_rate as parameter from all methods where possible and automatically get from audio object?
 def gcc_phat(
     sig: np.ndarray,
     refsig: np.ndarray,

@@ -7,6 +7,16 @@ from pysoundlocalization.visualization.environment_overlap_wave_plot import (
     environment_overlap_wave_plot,
 )
 
+"""
+This example demonstrates the simplest multilateration possible, including
+the setup of the environment, the addition of microphones, loading of audio
+files and the localization of a sound source using a simple threshold
+algorithm.
+
+Note that the door bell sound is localized, while the rest of the audio
+signal is ignored.
+"""
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -43,9 +53,9 @@ AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
 
 environment_overlap_wave_plot(environment=environment)
 
-dict = environment.multilaterate(
-    algorithm="threshold",
-    number_of_sound_sources=1,
+# Hint: Try 'threshold' to compare with gcc_phat result.
+dict = environment.localize(
+    algorithm="gcc_phat",
     threshold=0.1,
 )
 

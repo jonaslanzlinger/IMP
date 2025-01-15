@@ -130,9 +130,8 @@ for i_sound_src in range(n_sound_sources):
     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
     # Multilaterate the sound source
-    source_pos = environment.multilaterate(
+    source_pos = environment.localize(
         algorithm=algorithm_choice,
-        number_of_sound_sources=2,
         threshold=0.35,
     )
 

@@ -22,6 +22,12 @@ from pysoundlocalization.visualization.environment_spectrogram_plot import (
 )
 import copy
 
+"""
+This script demonstrates the localization of two moving sound sources within a classroom environment.
+
+Note, uncomment the respective code parts to see the results of the individual steps.
+"""
+
 original_audios = [None, None, None, None]
 
 simulation = Simulation.create()
@@ -168,9 +174,8 @@ for i_sound_src in range(n_sound_sources):
         chunk_duration=timedelta(milliseconds=1000)
     )
 
-    source_pos = environment.multilaterate(
+    source_pos = environment.localize(
         algorithm=algorithm_choice,
-        number_of_sound_sources=1,
         threshold=0.5,
     )
     sources_positions.append(source_pos)

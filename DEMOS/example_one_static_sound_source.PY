@@ -14,6 +14,14 @@ from pysoundlocalization.visualization.audio_spectrogram_plot import (
 )
 from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 
+"""
+This script demonstrates the localization of a synthetic clap sound within
+a water pump environment. The background noise is reduced to isolate the clap noise.
+
+Note, uncomment respective parts to visualize the audio signals and spectrograms at
+different stages of the preprocessing part.
+"""
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -62,59 +70,64 @@ mic4.set_audio(
 )
 mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
 
-for mic in environment.get_mics():
-    audio = mic.get_audio()
-    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio.play()
+# Bring all audio files to the same sample rate
+SampleRateConverter.convert_all_to_lowest_sample_rate(environment=environment)
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
+# for mic in environment.get_mics():
+#     audio = mic.get_audio()
+#     audio_wave_plot(
+#         audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+#     )
+#     audio_spectrogram_plot(
+#         audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+#     )
+#     audio.play()
 
-for mic in environment.get_mics():
-    audio = mic.get_audio()
-    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio.play()
-
-
-SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
-
-SampleTrimmer.sync_environment(environment)
+SampleTrimmer.sync_environment(environment=environment)
+# Isolate the part of the audio signal where the clap sound is present
 SampleTrimmer.slice_all_from_to(
     environment, timedelta(seconds=15), timedelta(seconds=20)
 )
 
+# Apply a low cut filter to remove low frequency noise of the water pump
 frequency_filter_chain = FrequencyFilterChain()
 frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
 for mic in environment.get_mics():
     frequency_filter_chain.apply(mic.get_audio())
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
+# for mic in environment.get_mics():
+#     audio = mic.get_audio()
+#     audio_wave_plot(
+#         audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+#     )
+#     audio_spectrogram_plot(
+#         audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+#     )
+#     audio.play()
 
-for mic in environment.get_mics():
-    audio = mic.get_audio()
-    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio.play()
-
+# Reduce noise to further isolate the clap sound
 NoiseReducer.reduce_all_noise(environment)
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 0.8)
+# Normalize the audio signals to the maximum amplitude of 1.0 to ensure
+# peak amplitude consistency.
+AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
-for mic in environment.get_mics():
-    audio = mic.get_audio()
-    # audio_wave_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio_spectrogram_plot(audio.get_audio_signal(), audio.get_sample_rate())
-    # audio.play()
+# for mic in environment.get_mics():
+# audio = mic.get_audio()
+# audio_wave_plot(
+#     audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+# )
+# audio_spectrogram_plot(
+#     audio_signal=audio.get_audio_signal(), sample_rate=audio.get_sample_rate()
+# )
+# audio.play()
 
 algorithm_choice = "threshold"
 all_dicts = []
-result_dict = environment.multilaterate(
-    algorithm=algorithm_choice, number_of_sound_sources=1, threshold=0.75
-)
+result_dict = environment.localize(algorithm=algorithm_choice, threshold=0.75)
 all_dicts.append(result_dict)
 
-for i, object in enumerate(all_dicts):
-    print(dict[object])
+# for i, object in enumerate(all_dicts):
+#     print(dict[object])
 
-multilaterate_plot(environment, all_dicts)
+multilaterate_plot(environment=environment, dict_list=all_dicts)

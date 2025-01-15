@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.core.Simulation import Simulation
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
@@ -21,6 +20,16 @@ from pysoundlocalization.preprocessing.NonNegativeMatrixFactorization import (
 from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
 from pysoundlocalization.preprocessing.NoiseReducer import NoiseReducer
+
+"""
+This script demonstrates the localization of a moving clapping noise within a classroom environment.
+The background noise is reduced to isolate the clapping noise.
+
+The purpose of this demo is to show how latencies in audio signal recordings are influencing the
+multilateration result. The audio signals are recorded by four Raspberry Pi's, which are not
+synchronized. The audio signals are recorded with different latencies. See that the computed sound source
+positions are not correct due to these latencies.
+"""
 
 simulation = Simulation.create()
 
@@ -104,22 +113,22 @@ for i_sound_src in range(n_sound_sources):
         audio = all_sound_sources_nmf[mic][i_sound_src]
         mic.set_audio(audio)
 
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
-
     # Chunk the audio signals by the specified duration
     environment.chunk_audio_signals_by_duration(
         chunk_duration=timedelta(milliseconds=2000)
     )
 
     # Multilaterate the sound source
-    source_pos = environment.multilaterate(
+    source_pos = environment.localize(
         algorithm=algorithm_choice,
-        number_of_sound_sources=1,
         threshold=0.5,
     )
 
     # Append the estimated position to the sources_positions list
     sources_positions.append(source_pos)
+
+print("Computed sound source positions:")
+print(sources_positions)
 
 # Visualize the final result
 multilaterate_plot(environment, sources_positions)

@@ -7,9 +7,9 @@ from itertools import combinations
 import numpy as np
 
 import pysoundlocalization.config as config
-from pysoundlocalization.algorithms.gcc_phat import gcc_phat
+from pysoundlocalization.localization.gcc_phat import gcc_phat
 from pysoundlocalization.algorithms.doa import compute_doa
-from pysoundlocalization.algorithms.multilateration import multilaterate_by_tdoa_pairs
+from pysoundlocalization.localization.multilateration import multilaterate_by_tdoa_pairs
 from pysoundlocalization.core.Microphone import Microphone
 from pysoundlocalization.core.TdoaPair import TdoaPair
 from pysoundlocalization.core.DoaPair import DoaPair

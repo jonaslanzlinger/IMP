@@ -24,6 +24,10 @@ from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 import os
 import copy
 
+"""
+The following script is showcasing the complete workflow through the whole library,
+using generated audio signals.
+"""
 
 # ##################
 # Global Variables #
@@ -352,9 +356,8 @@ for i_sound_src in range(n_sound_sources):
     )
 
     # Multilaterate the sound source
-    source_pos = environment.multilaterate(
+    source_pos = environment.localize(
         algorithm=algorithm_choice,
-        number_of_sound_sources=1,
         threshold=0.5,
     )
 

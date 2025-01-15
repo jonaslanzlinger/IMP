@@ -1,10 +1,16 @@
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.preprocessing.SampleTrimmer import SampleTrimmer
-from datetime import timedelta
 from pysoundlocalization.core.Simulation import Simulation
 from datetime import datetime
-from pysoundlocalization.preprocessing.AudioNormalizer import AudioNormalizer
-from pysoundlocalization.preprocessing.SampleRateConverter import SampleRateConverter
+
+"""
+This script demonstrates the usage of the SampleTrimmer.sync_environment method.
+
+Synchronizing the environment will trim the audio files to the same length,
+while preserving the start time of the recordings, and the relative time between
+the recordings. This is necessary for the audio files to be used in the
+localization algorithm; otherwise, it will not work correctly.
+"""
 
 simulation = Simulation.create()
 
