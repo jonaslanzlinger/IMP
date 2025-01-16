@@ -28,15 +28,13 @@ class Environment:
             vertices (list[tuple[float, float]]): List of (x, y) coordinates defining the environment's shape.
             sound_speed (float): The speed of sound in m/s. Defaults to config.DEFAULT_SOUND_SPEED.
         """
-        self.__sound_speed = sound_speed  # Default speed of sound in m/s
+        self.__sound_speed = sound_speed
         self.__name = name
         self.__vertices = (
             vertices  # List of (x, y) coordinates for the environment's shape
         )
         self.__mics: list[Microphone] = []
-        self.__sound_source_position: tuple[float, float] | None = (
-            None  # TODO: create our own SoundSource class to handle multiple sound sources (assumed pos / computed pos / etc) and different colors for visualization?
-        )
+        self.__sound_source_position: tuple[float, float] | None = None
 
     def add_microphone(
         self, x: float, y: float, name: str | None = None
@@ -58,18 +56,17 @@ class Environment:
                 print(f"A microphone already exists at position ({x}, {y})")
                 return None
 
-        if self.is_within_environment(x, y):
-            mic = Microphone(x, y, name)
+        if self.is_within_environment(x=x, y=y):
+            mic = Microphone(x=x, y=y, name=name)
             self.__mics.append(mic)
             print(f"Microphone added at position ({x}, {y})")
             return mic
         else:
             print(f"Microphone at ({x}, {y}) is outside the environment bounds!")
 
-    # TODO: addAssumedSoundSource() -> add where we think the sound source is (nice for visualization)
     def add_sound_source_position(self, x: float, y: float) -> None:
         """
-        Add coordinates of sound source
+        Add coordinates of measured sound source. To goal is to estimate this position.
 
         Args:
             x (float): X-coordinate of the sound source.
@@ -132,7 +129,7 @@ class Environment:
         Get the lowest sample rate of all microphones in the environment.
 
         Returns:
-            int: The lowest sample rate of all microphones.
+            int: The lowest sample rate of all microphones in the environment.
         """
         return min(mic.get_audio().get_sample_rate() for mic in self.__mics)
 
@@ -141,7 +138,7 @@ class Environment:
         Get the minimum number of samples of all audios in the environment.
 
         Returns:
-            int: The minimum number of samples of all audios.
+            int: The minimum number of samples of all audios in the environment.
         """
         return min(mic.get_audio().get_num_samples() for mic in self.__mics)
 
@@ -245,7 +242,7 @@ class Environment:
         Get the speed of sound in the environment.
 
         Returns:
-            float: The speed of sound in m/s.
+            float: The speed of sound in m/s of the environment.
         """
         return self.__sound_speed
 
@@ -312,24 +309,22 @@ class Environment:
         """
         self.__mics = mics
 
-    # TODO: Needed?
     def get_sound_source_position(self) -> tuple[float, float] | None:
         """
-        Get the coordinates of the sound source.
+        Get the coordinates of the measured sound source.
 
         Returns:
-            tuple[float, float] | None: The (x, y) coordinates of the sound source if available, otherwise None.
+            tuple[float, float] | None: The (x, y) coordinates of the measured sound source if available, otherwise None.
         """
         return self.__sound_source_position
 
-    # TODO: Needed?
     def set_sound_source_position(
         self, sound_source_position: tuple[float, float]
     ) -> None:
         """
-        Set the coordinates of the sound source.
+        Set the coordinates of the measured sound source.
 
         Args:
-            sound_source_position (tuple[float, float]): The (x, y) coordinates of the sound source.
+            sound_source_position (tuple[float, float]): The (x, y) coordinates of the measured sound source.
         """
         self.__sound_source_position = sound_source_position
