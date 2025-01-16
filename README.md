@@ -34,10 +34,10 @@ A virtual environment helps manage dependencies and ensures your project is isol
    source venv/bin/activate
    ```
 
-4. **Install the library in editable mode**
+4. **Install the library requirements**
 
    ```bash
-   pip install -e .
+   pip install -r requirements.txt
    ```
 
 # Demo
