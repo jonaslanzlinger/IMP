@@ -37,7 +37,7 @@ class Simulation:
         Returns:
             Environment: The newly created Environment instance.
         """
-        environment = Environment(name, vertices, sound_speed)
+        environment = Environment(name=name, vertices=vertices, sound_speed=sound_speed)
         self.__environments.append(environment)
         print(f"Environment '{name}' added with vertices {vertices}")
         return environment
