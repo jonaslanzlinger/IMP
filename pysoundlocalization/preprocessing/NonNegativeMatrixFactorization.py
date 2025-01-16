@@ -1,3 +1,12 @@
+"""
+This script demonstrates the NMF algorithm for separating audio signals.
+
+Original code by Zahra Benslimane (2023).
+Source: https://github.com/ZahraBenslimane/SoundSourceSeparation_usingNMF
+
+Adapted as part of a project for sound localization.
+"""
+
 from pysoundlocalization.core.Environment import Environment
 from pysoundlocalization.core.Audio import Audio
 from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
