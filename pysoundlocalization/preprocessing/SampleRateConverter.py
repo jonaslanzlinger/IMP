@@ -32,9 +32,11 @@ class SampleRateConverter:
         Args:
             environment: An instance of the Environment class.
         """
-        lowest_rate = SampleRateConverter.get_lowest_sample_rate(environment)
+        lowest_rate = SampleRateConverter.get_lowest_sample_rate(
+            environment=environment
+        )
         for mic in environment.get_mics():
-            mic.get_audio().resample_audio(lowest_rate)
+            mic.get_audio().resample_audio(target_rate=lowest_rate)
 
     @staticmethod
     def convert_all_to_defined_sample_rate(
@@ -63,7 +65,7 @@ class SampleRateConverter:
         """
         target_sample_rate = audio_file.get_sample_rate()
         SampleRateConverter.convert_all_to_defined_sample_rate(
-            environment, target_sample_rate
+            environment=environment, target_sample_rate=target_sample_rate
         )
 
     @staticmethod
@@ -76,6 +78,6 @@ class SampleRateConverter:
         """
         lowest_sample_rate = min(audio.get_sample_rate() for audio in audio_list)
         for audio in audio_list:
-            audio.resample_audio(lowest_sample_rate)
+            audio.resample_audio(target_rate=lowest_sample_rate)
 
         return lowest_sample_rate

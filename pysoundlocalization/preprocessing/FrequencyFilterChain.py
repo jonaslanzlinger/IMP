@@ -20,7 +20,7 @@ class FrequencyFilterChain(IFrequencyFilter):
             raise ValueError("Audio signal can not be pre-processed when chunked.")
 
         for filter in self.__filters:
-            filter.apply(audio)
+            filter.apply(audio=audio)
 
     def add_filter(self, filter: IFrequencyFilter) -> None:
         """

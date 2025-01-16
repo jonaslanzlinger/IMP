@@ -8,7 +8,6 @@ import matplotlib
 import librosa
 
 
-# TODO: write credits to whoever wrote that
 class NonNegativeMatrixFactorization:
     def __init__(
         self,
@@ -21,7 +20,6 @@ class NonNegativeMatrixFactorization:
         """
         Initialize the Non-Negative Matrix Factorization (NMF) class with user-defined or default parameters.
 
-        # TODO: provide more parameters? Parameter and attributes description from ChatGPT, so needs to be verified.
         Parameters:
         - number_of_sources_to_extract (int): The number of audio sources to extract (default: 1).
         - sample_rate (int): Sampling rate of the audio data, in Hz (default: 44100 Hz).
@@ -44,7 +42,6 @@ class NonNegativeMatrixFactorization:
         - __reconstructed_sounds (list): List to store reconstructed audio data (initialized to None).
 
         This class provides flexibility for audio source separation or matrix decomposition tasks.
-        Further customization options (e.g., cost functions, regularization) could be added.
         """
         self.__FRAME = frame
         self.__HOP = hop
@@ -73,7 +70,7 @@ class NonNegativeMatrixFactorization:
             audio (Audio): The audio to run nfm for.
             visualize_results (bool): Whether to visualize intermediate results.
         """
-        audio_signals = self.__run(audio, visualize_results)
+        audio_signals = self.__run(audio=audio, visualize_results=visualize_results)
         nfm_audio = []
         for audio_signal in audio_signals:
             nfm_audio.append(
@@ -99,15 +96,14 @@ class NonNegativeMatrixFactorization:
             visualize_results (bool): Whether to visualize intermediate results.
         """
         return self.__run(
-            Audio(audio_signal=audio_signal, sample_rate=sample_rate), visualize_results
+            audio=Audio(audio_signal=audio_signal, sample_rate=sample_rate),
+            visualize_results=visualize_results,
         )
 
     def run_for_environment(
         self, environment: Environment, visualize_results: bool = False
     ):
         """
-        This method is experimental and may change in the future. Method requires advanced understanding and should not be used unless the behaviour is understood.
-
         Runs NFM on all audio files in an environment associated with a mic while preserving the splitting order.
 
         NFM does not guarantee the order of the split audio, which is problematic when multiple audio signals are split
@@ -194,7 +190,7 @@ class NonNegativeMatrixFactorization:
                 split_signal = nmf_signal[start_idx:end_idx]
                 audio_with_new_signal = Audio(
                     audio_signal=split_signal,
-                    sample_rate=self.__SR,  # TODO: use SR defined from object or from the actual audio, meaning reference_sample_rate?
+                    sample_rate=self.__SR,
                 )
                 results[mic].append(audio_with_new_signal)
                 start_idx = end_idx
@@ -223,8 +219,8 @@ class NonNegativeMatrixFactorization:
 
         beta = 2
         self.__W, self.__H, self.__cost_function = self.__NMF(
-            self.__V,
-            self.__S,
+            V=self.__V,
+            S=self.__S,
             beta=beta,
             threshold=0.05,
             MAXITER=5000,
@@ -234,12 +230,15 @@ class NonNegativeMatrixFactorization:
 
         filtered_spectrograms = self.__generate_filtered_spectrograms()
         reconstructed_sounds = self.__reconstruct_sounds(
-            filtered_spectrograms, sound_stft_angle
+            filtered_spectrograms=filtered_spectrograms,
+            sound_stft_angle=sound_stft_angle,
         )
 
         if visualize_results:
-            self.visualize_wave_form(reconstructed_sounds)
-            self.visualize_filtered_spectrograms(filtered_spectrograms)
+            self.visualize_wave_form(reconstructed_sounds=reconstructed_sounds)
+            self.visualize_filtered_spectrograms(
+                filtered_spectrograms=filtered_spectrograms
+            )
 
         return reconstructed_sounds
 
@@ -294,7 +293,7 @@ class NonNegativeMatrixFactorization:
 
         # Plotting the first initialization
         if display == True:
-            self._plot_NMF_iter(beta, counter)
+            self._plot_NMF_iter(beta=beta, iteration=counter)
 
         while beta_divergence >= threshold and counter <= MAXITER:
             # Update of W and H
@@ -306,11 +305,11 @@ class NonNegativeMatrixFactorization:
             )
 
             # Compute cost function
-            beta_divergence = self.__divergence(V, beta=2)
+            beta_divergence = self.__divergence(V=V, beta=2)
             self.__cost_function.append(beta_divergence)
 
             if display == True and counter % displayEveryNiter == 0:
-                self._plot_NMF_iter(beta, counter)
+                self._plot_NMF_iter(beta=beta, iteration=counter)
 
             counter += 1
 

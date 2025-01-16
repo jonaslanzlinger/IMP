@@ -25,7 +25,7 @@ class NoiseReducer:
             noise_sample = audio_signal[0 : int(sr * 1)]
 
         audio_signal = nr.reduce_noise(y=audio_signal, sr=sr, y_noise=noise_sample)
-        audio.set_audio_signal(audio_signal)
+        audio.set_audio_signal(audio_signal=audio_signal)
 
         print(f"Noise reduced for audio signal.")
 
@@ -46,5 +46,5 @@ class NoiseReducer:
             environment: The environment for which the noise was reduced for all mic audios.
         """
         for mic in environment.get_mics():
-            NoiseReducer.reduce_noise(mic.get_audio(), noise_sample)
+            NoiseReducer.reduce_noise(audio=mic.get_audio(), noise_sample=noise_sample)
         return environment

@@ -38,7 +38,9 @@ class LowPassFilter(IFrequencyFilter):
         b, a = butter(self.__order, normalized_cutoff, btype="low", analog=False)
 
         # Apply the filter to the audio signal
-        audio.set_audio_signal(lfilter(b, a, audio.get_audio_signal(index=0)))
+        audio.set_audio_signal(
+            audio_signal=lfilter(b, a, audio.get_audio_signal(index=0))
+        )
 
     def get_cutoff_frequency(self) -> float:
         """

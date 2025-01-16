@@ -35,7 +35,9 @@ class NotchFilter(IFrequencyFilter):
         b, a = iirnotch(normalized_frequency, self.__quality_factor)
 
         # Apply the filter to the audio signal
-        audio.set_audio_signal(lfilter(b, a, audio.get_audio_signal(index=0)))
+        audio.set_audio_signal(
+            audio_signal=lfilter(b, a, audio.get_audio_signal(index=0))
+        )
 
     def get_target_frequency(self) -> float:
         """
