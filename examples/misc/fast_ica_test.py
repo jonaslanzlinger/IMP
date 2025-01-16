@@ -76,7 +76,7 @@ noise_audio = Audio.create_from_signal(
 )
 
 #############################################
-# WARNING: VERY LOUD!!!!!!!!!!!!!!!!!!!!!!!!!
+# WARNING: LOUD!!!
 # ###########################################
 
 # speech_audio.play()

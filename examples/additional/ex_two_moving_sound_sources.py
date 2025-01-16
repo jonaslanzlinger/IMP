@@ -28,7 +28,20 @@ This script demonstrates the localization of two moving sound sources within a c
 Note, uncomment the respective code parts to see the results of the individual steps.
 """
 
+# ##################
+# Global Variables #
+# ##################
+
 original_audios = [None, None, None, None]
+
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
 
 simulation = Simulation.create()
 
@@ -51,6 +64,11 @@ mic_1 = environment.add_microphone(5, 15)
 mic_2 = environment.add_microphone(95, 15)
 mic_3 = environment.add_microphone(95, 95)
 mic_4 = environment.add_microphone(5, 95)
+
+# ##############################
+# PHASE 1.5 - Audio Generation #
+# ##############################
+print("PHASE 1.5 - Audio Generation")
 
 buzzer = Audio(filepath="../../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
 knock = Audio(filepath="../../data/00_SOUND_BANK/sounds/knock_sound.wav")
@@ -98,21 +116,25 @@ environment = generate_audios(
     default_sound_duration=0.3,
 )
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+# The following commented code is needed in case the audio files are loaded instead of generated
+# for i, mic in enumerate(environment.get_mics()):
+#     audio = Audio(filepath=f"audio_{i+1}.wav")
+#     mic.set_audio(audio)
+#     mic.set_recording_start_time(datetime.now())
+# SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
+# SampleTrimmer.sync_environment(environment)
 
 original_audios = [None, None, None, None]
 
 for i, mic in enumerate(environment.get_mics()):
     original_audios[i] = copy.deepcopy(mic.get_audio())
 
-# The following commented code is needed in case the audio files are loaded instead of generated
-# for i, mic in enumerate(environment.get_mics()):
-#     audio = Audio(filepath=f"audio_{i+1}.wav")
-#     mic.set_audio(audio)
-#     mic.set_recording_start_time(datetime.now())
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
 
-# SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
-# SampleTrimmer.sync_environment(environment)
+AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 
 environment_wave_plot(environment=environment)
 environment_spectrogram_plot(environment=environment)
@@ -159,6 +181,11 @@ for i_sound_src in range(n_sound_sources):
     # environment_wave_plot(environment=environment)
     # environment_spectrogram_plot(environment=environment)
 
+# ####################
+# PHASE 3 - Localize #
+# ####################
+print("PHASE 3 - LOCALIZE")
+
 algorithm_choice = "threshold"
 sources_positions = []
 current_audio_index = 0
@@ -183,5 +210,10 @@ for i_sound_src in range(n_sound_sources):
 for i, mic in enumerate(environment.get_mics()):
     mic.set_audio(original_audios[0])
     mic.set_recording_start_time(datetime.now())
+
+# ###############
+# FINAL RESULTS #
+# ###############
+print("FINAL RESULTS")
 
 multilaterate_plot(environment, sources_positions)

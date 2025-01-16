@@ -12,9 +12,13 @@ First we show how to chunk a single audio signal.
 Then we show how to chunk all audio signals of an environment at once.
 """
 
-#####################################
-# Chunking of a single audio signal #
-#####################################
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #################################
+# Chunking of single audio signal #
+# #################################
 
 audio = Audio(filepath="../../data/03_classroom/pi1_audio.wav")
 
@@ -30,7 +34,6 @@ print("Chunked audio:")
 for i, chunk in enumerate(audio.get_audio_signal_chunked()):
     print(f"Chunk {i}: {len(chunk)} samples")
     audio_wave_plot(chunk, audio.get_sample_rate())
-
 
 # #################################################
 # Chunking of all audio signals of an environment #

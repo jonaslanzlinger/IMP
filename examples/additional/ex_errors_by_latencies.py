@@ -31,6 +31,15 @@ synchronized. The audio signals are recorded with different latencies. See that 
 positions are not correct due to these latencies.
 """
 
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -65,6 +74,11 @@ audio4_original = Audio(
 )
 mic4.set_audio(audio4_original)
 mic4.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 22696))
+
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
 
 AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
 SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
@@ -102,6 +116,11 @@ for i_sound_src in range(n_sound_sources):
     environment_wave_plot(environment=environment)
     environment_spectrogram_plot(environment=environment)
 
+# ####################
+# PHASE 3 - Localize #
+# ####################
+print("PHASE 3 - LOCALIZE")
+
 algorithm_choice = "threshold"
 sources_positions = []
 current_audio_index = 0
@@ -126,6 +145,11 @@ for i_sound_src in range(n_sound_sources):
 
     # Append the estimated position to the sources_positions list
     sources_positions.append(source_pos)
+
+# ###############
+# FINAL RESULTS #
+# ###############
+print("FINAL RESULTS")
 
 print("Computed sound source positions:")
 print(sources_positions)

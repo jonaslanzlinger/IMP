@@ -19,6 +19,15 @@ clapping sound.
 Note, the environment_play_audio_plot produces sound (potentially loud)!
 """
 
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -51,13 +60,31 @@ mic3.set_audio(
 )
 mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
 
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
+
 environment = SampleTrimmer.sync_environment(environment)
 
+# ####################
+# PHASE 3 - Localize #
+# ####################
+print("PHASE 3 - LOCALIZE")
+
 dict = environment.localize(algorithm="threshold", threshold=0.2)
+
+# ###############
+# FINAL RESULTS #
+# ###############
+print("FINAL RESULTS")
 
 print(dict)
 
 environment_plot(environment=environment)
+
 environment_play_audio_plot(environment=environment)
+
 environment_overlap_wave_plot(environment=environment)
+
 multilaterate_plot(environment=environment, dict_list=[dict])

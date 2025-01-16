@@ -22,6 +22,15 @@ Note, uncomment respective parts to visualize the audio signals and spectrograms
 different stages of the preprocessing part.
 """
 
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -69,6 +78,11 @@ mic4.set_audio(
     Audio(filepath="../../data/10_pump/pi4_audio_2024-11-07_10-30-45_728052.wav")
 )
 mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
+
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
 
 # Bring all audio files to the same sample rate
 SampleRateConverter.convert_all_to_lowest_sample_rate(environment=environment)
@@ -122,10 +136,20 @@ AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
 # )
 # audio.play()
 
+# ####################
+# PHASE 3 - Localize #
+# ####################
+print("PHASE 3 - LOCALIZE")
+
 algorithm_choice = "threshold"
 all_dicts = []
 result_dict = environment.localize(algorithm=algorithm_choice, threshold=0.75)
 all_dicts.append(result_dict)
+
+# ###############
+# FINAL RESULTS #
+# ###############
+print("FINAL RESULTS")
 
 # for i, object in enumerate(all_dicts):
 #     print(dict[object])

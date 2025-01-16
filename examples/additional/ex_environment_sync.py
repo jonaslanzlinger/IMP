@@ -12,6 +12,15 @@ the recordings. This is necessary for the audio files to be used in the
 localization algorithm; otherwise, it will not work correctly.
 """
 
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -57,11 +66,16 @@ print("Mic2 duration:", mic2.get_audio().get_duration())
 print("Mic3 duration:", mic3.get_audio().get_duration())
 print("Mic4 duration:", mic4.get_audio().get_duration())
 
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
+
 # Synchronizing the environment will trim the audio files to the same length,
 # while preserving the start time of the recordings, and the relative time between
 # the recordings. This is necessary for the audio files to be used in the
 # localization algorithms, because the recordings start at different timestamps.
-SampleTrimmer.sync_environment(environment)
+SampleTrimmer.sync_environment(environment=environment)
 
 print("After syncing:")
 print("Mic1 duration:", mic1.get_audio().get_duration())

@@ -17,6 +17,15 @@ Note that the door bell sound is localized, while the rest of the audio
 signal is ignored.
 """
 
+# #############
+# DEMO SCRIPT #
+# #############
+
+# #######################
+# PHASE 1 - ENVIRONMENT #
+# #######################
+print("PHASE 1 - ENVIRONMENT")
+
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
@@ -49,14 +58,29 @@ mic4.set_audio(
     Audio(filepath="../../data/08_door_bell/pi4_audio_2024-10-24_15-21-23_000000.wav")
 )
 
+# ##########################
+# PHASE 2 - PRE-PROCESSING #
+# ##########################
+print("PHASE 2 - PRE-PROCESSING")
+
 AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
 
 environment_overlap_wave_plot(environment=environment)
+
+# ####################
+# PHASE 3 - Localize #
+# ####################
+print("PHASE 3 - LOCALIZE")
 
 # Hint: Try 'threshold' to compare with gcc_phat result.
 dict = environment.localize(
     algorithm="gcc_phat",
     threshold=0.1,
 )
+
+# ###############
+# FINAL RESULTS #
+# ###############
+print("FINAL RESULTS")
 
 multilaterate_plot(environment=environment, dict_list=[dict])
