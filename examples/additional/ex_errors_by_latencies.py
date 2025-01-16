@@ -43,61 +43,69 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Classroom Simulation", [(0, 0), (10.1, 0), (10.1, 11.96), (0, 11.96)]
+    name="Classroom Simulation", vertices=[(0, 0), (10.1, 0), (10.1, 11.96), (0, 11.96)]
 )
 
-mic1 = environment.add_microphone(1, 1, name="Microphone-1")
-mic2 = environment.add_microphone(9.1, 1, name="Microphone-2")
-mic3 = environment.add_microphone(9.1, 10.96, name="Microphone-3")
-mic4 = environment.add_microphone(1, 10.92, name="Microphone-4")
+mic1 = environment.add_microphone(x=1, y=1, name="Microphone-1")
+mic2 = environment.add_microphone(x=9.1, y=1, name="Microphone-2")
+mic3 = environment.add_microphone(x=9.1, y=10.96, name="Microphone-3")
+mic4 = environment.add_microphone(x=1, y=10.92, name="Microphone-4")
 
 audio1_original = Audio(
     filepath="../../data/06_classroom/pi1_audio_2024-11-28_15-00-00-037437.wav"
 )
-mic1.set_audio(audio1_original)
-mic1.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 37437))
+mic1.set_audio(audio=audio1_original)
+mic1.set_recording_start_time(start_time=datetime(2024, 11, 28, 15, 0, 0, 37437))
 
 audio2_original = Audio(
     filepath="../../data/06_classroom/pi2_audio_2024-11-28_15-00-00-029037.wav"
 )
-mic2.set_audio(audio2_original)
-mic2.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 29037))
+mic2.set_audio(audio=audio2_original)
+mic2.set_recording_start_time(start_time=datetime(2024, 11, 28, 15, 0, 0, 29037))
 
 audio3_original = Audio(
     filepath="../../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav"
 )
-mic3.set_audio(audio3_original)
-mic3.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 0))
+mic3.set_audio(audio=audio3_original)
+mic3.set_recording_start_time(start_time=datetime(2024, 11, 28, 15, 0, 0, 0))
 
 audio4_original = Audio(
     filepath="../../data/06_classroom/pi4_audio_2024-11-28_15-00-00-022696.wav"
 )
-mic4.set_audio(audio4_original)
-mic4.set_recording_start_time(datetime(2024, 11, 28, 15, 0, 0, 22696))
+mic4.set_audio(audio=audio4_original)
+mic4.set_recording_start_time(start_time=datetime(2024, 11, 28, 15, 0, 0, 22696))
 
 # ##########################
 # PHASE 2 - PRE-PROCESSING #
 # ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
-SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
+AudioNormalizer.normalize_environment_to_max_amplitude(
+    environment=environment, max_amplitude=1
+)
+SampleRateConverter.convert_all_to_lowest_sample_rate(environment=environment)
 
-SampleTrimmer.sync_environment(environment)
+SampleTrimmer.sync_environment(environment=environment)
 SampleTrimmer.slice_all_from_to(
-    environment, timedelta(seconds=5), timedelta(seconds=10)
+    environment=environment,
+    start_time=timedelta(seconds=5),
+    end_time=timedelta(seconds=10),
 )
 
 frequency_filter_chain = FrequencyFilterChain()
-frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=2000, order=5))
+frequency_filter_chain.add_filter(filter=LowCutFilter(cutoff_frequency=2000, order=5))
 for mic in environment.get_mics():
-    frequency_filter_chain.apply(mic.get_audio())
+    frequency_filter_chain.apply(audio=mic.get_audio())
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
+AudioNormalizer.normalize_environment_to_max_amplitude(
+    environment=environment, max_amplitude=1
+)
 
-NoiseReducer.reduce_all_noise(environment)
+NoiseReducer.reduce_all_noise(environment=environment)
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
+AudioNormalizer.normalize_environment_to_max_amplitude(
+    environment=environment, max_amplitude=1
+)
 
 n_sound_sources = 2
 
@@ -111,8 +119,10 @@ all_sound_sources_nmf = nmf.run_for_environment(environment=environment)
 for i_sound_src in range(n_sound_sources):
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+        mic.set_audio(audio=audio)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
     environment_wave_plot(environment=environment)
     environment_spectrogram_plot(environment=environment)
 
@@ -130,7 +140,7 @@ for i_sound_src in range(n_sound_sources):
 
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
+        mic.set_audio(audio=audio)
 
     # Chunk the audio signals by the specified duration
     environment.chunk_audio_signals_by_duration(
@@ -155,4 +165,4 @@ print("Computed sound source positions:")
 print(sources_positions)
 
 # Visualize the final result
-multilaterate_plot(environment, sources_positions)
+multilaterate_plot(environment=environment, dict_list=sources_positions)

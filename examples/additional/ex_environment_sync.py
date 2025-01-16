@@ -24,8 +24,8 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Test Environment",
-    [
+    name="Test Environment",
+    vertices=[
         (0, 0),
         (100, 0),
         (100, 100),
@@ -41,24 +41,24 @@ mic4 = environment.add_microphone(x=1, y=99)
 # environment.visualize()
 
 mic1.set_audio(
-    Audio(filepath="../../data/11_pump/pi1_audio_2024-11-07_10-30-45_977581.wav")
+    audio=Audio(filepath="../../data/11_pump/pi1_audio_2024-11-07_10-30-45_977581.wav")
 )
-mic1.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 977581))
+mic1.set_recording_start_time(start_time=datetime(2024, 11, 7, 10, 30, 45, 977581))
 
 mic2.set_audio(
-    Audio(filepath="../../data/11_pump/pi2_audio_2024-11-07_10-30-45_474498.wav")
+    audio=Audio(filepath="../../data/11_pump/pi2_audio_2024-11-07_10-30-45_474498.wav")
 )
 mic2.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 474498))
 
 mic3.set_audio(
-    Audio(filepath="../../data/11_pump/pi3_audio_2024-11-07_10-30-46_550904.wav")
+    audio=Audio(filepath="../../data/11_pump/pi3_audio_2024-11-07_10-30-46_550904.wav")
 )
 mic3.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 46, 550904))
 
 mic4.set_audio(
-    Audio(filepath="../../data/11_pump/pi4_audio_2024-11-07_10-30-45_728052.wav")
+    audio=Audio(filepath="../../data/11_pump/pi4_audio_2024-11-07_10-30-45_728052.wav")
 )
-mic4.set_recording_start_time(datetime(2024, 11, 7, 10, 30, 45, 728052))
+mic4.set_recording_start_time(start_time=datetime(2024, 11, 7, 10, 30, 45, 728052))
 
 print("Before syncing:")
 print("Mic1 duration:", mic1.get_audio().get_duration())

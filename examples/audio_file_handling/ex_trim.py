@@ -9,12 +9,18 @@ of the entire environment based on recording start timestamps.
 
 # Various slicing and trimming methods
 audio = Audio(filepath="../../data/01_lab_room/pi1_audio.wav")
-SampleTrimmer.slice_from_beginning(audio, timedelta(seconds=15, milliseconds=100))
-SampleTrimmer.slice_from_end(audio, timedelta(seconds=14, milliseconds=600))
-SampleTrimmer.trim_from_beginning(audio, timedelta(milliseconds=1500))
-SampleTrimmer.trim_from_end(audio, timedelta(seconds=2))
+SampleTrimmer.slice_from_beginning(
+    audio=audio, time_delta=timedelta(seconds=15, milliseconds=100)
+)
+SampleTrimmer.slice_from_end(
+    audio=audio, time_delta=timedelta(seconds=14, milliseconds=600)
+)
+SampleTrimmer.trim_from_beginning(audio=audio, time_delta=timedelta(milliseconds=1500))
+SampleTrimmer.trim_from_end(audio=audio, time_delta=timedelta(seconds=2))
 SampleTrimmer.slice_from_to(
-    audio, timedelta(seconds=5, milliseconds=100), timedelta(seconds=10)
+    audio=audio,
+    start_time=timedelta(seconds=5, milliseconds=100),
+    end_time=timedelta(seconds=10),
 )
 
 # Sync the audio based on known timestamps of when the respective recordings started
@@ -31,7 +37,7 @@ audio_files = [audio1, audio2]
 print(audio1.get_audio_signal_unchunked().shape)
 print(audio2.get_audio_signal_unchunked().shape)
 
-SampleTrimmer.sync_audio(audio_files, audio_timestamps)
+SampleTrimmer.sync_audio(list_audio=audio_files, start_times=audio_timestamps)
 
 print(audio1.get_audio_signal_unchunked().shape)
 print(audio2.get_audio_signal_unchunked().shape)

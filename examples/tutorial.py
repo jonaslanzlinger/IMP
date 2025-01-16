@@ -54,8 +54,8 @@ simulation = Simulation.create()
 # Audio objects. The Environment is defined by a list of
 # points that represent the vertices of a polygon.
 environment = simulation.add_environment(
-    "Simulation",
-    [
+    name="Simulation",
+    vertices=[
         (0, 10),
         (80, 0),
         (100, 50),
@@ -73,10 +73,10 @@ environment.visualize()
 # the objects that hold the Audio objects. The Microphones
 # are placed at specific positions in the Environment,
 # that are defined by the x and y coordinates.
-mic_1 = environment.add_microphone(-50, 25)
-mic_2 = environment.add_microphone(78, 4)
-mic_3 = environment.add_microphone(105, 126)
-mic_4 = environment.add_microphone(1, 118)
+mic_1 = environment.add_microphone(x=-50, y=25)
+mic_2 = environment.add_microphone(x=78, y=4)
+mic_3 = environment.add_microphone(x=105, y=126)
+mic_4 = environment.add_microphone(x=1, y=118)
 
 # Visualize the Environment with the Microphones
 environment.visualize()
@@ -101,8 +101,8 @@ sound_1 = Audio(filepath="../data/00_SOUND_BANK/sounds/buzzer_sound.wav")
 sound_2 = Audio(filepath="../data/00_SOUND_BANK/sounds/knock_sound.wav")
 
 # Normalize the audio signals to have a maximum amplitude of 1.0
-AudioNormalizer.normalize_audio_to_max_amplitude(sound_1, 1.0)
-AudioNormalizer.normalize_audio_to_max_amplitude(sound_2, 1.0)
+AudioNormalizer.normalize_audio_to_max_amplitude(audio=sound_1, max_amplitude=1.0)
+AudioNormalizer.normalize_audio_to_max_amplitude(audio=sound_2, max_amplitude=1.0)
 
 # Retrieve some information about the created Audio objects
 # print(f"Sound 1 duration: {sound_1.get_duration()}")
@@ -124,7 +124,7 @@ audio_wave_plot(
 
 # Ensure that all Audio objects have the same sample rate
 lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
-    [sound_1, sound_2]
+    audio_list=[sound_1, sound_2]
 )
 
 # Specify in this array of dictionaries the sound sources
@@ -156,10 +156,10 @@ source_positions = [
 noise = Audio(
     filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
 )
-noise.resample_audio(lowest_sample_rate)
+noise.resample_audio(target_rate=lowest_sample_rate)
 
 # Normalize the audio signal to have a maximum amplitude of 1.0
-AudioNormalizer.normalize_audio_to_max_amplitude(noise, 1.0)
+AudioNormalizer.normalize_audio_to_max_amplitude(audio=noise, max_amplitude=1.0)
 
 # Visualize the noise Audio object
 audio_wave_plot(
@@ -203,8 +203,8 @@ environment = generate_audios(
 # audio files correctly.
 # for i, mic in enumerate(environment.get_mics()):
 #     audio = Audio(filepath=f"{current_file_name}_audio_{i+1}.wav")
-#     mic.set_audio(audio)
-#     mic.set_recording_start_time(datetime.now())
+#     mic.set_audio(audio=audio)
+#     mic.set_recording_start_time(start_time=datetime.now())
 # SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
 # Sync the environment because the audio files might have different lengths,
 # recording times, or sample rates, which causes issues in the processing.
@@ -244,18 +244,20 @@ print("PHASE 2 - PRE-PROCESSING")
 # Audio objects => FIFO principle.
 frequency_filter_chain = FrequencyFilterChain()
 
-frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=500, order=5))
-frequency_filter_chain.add_filter(NotchFilter(target_frequency=2760, quality_factor=10))
-frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
+frequency_filter_chain.add_filter(filter=LowCutFilter(cutoff_frequency=500, order=5))
+frequency_filter_chain.add_filter(
+    filter=NotchFilter(target_frequency=2760, quality_factor=10)
+)
+frequency_filter_chain.add_filter(filter=HighCutFilter(cutoff_frequency=4000, order=5))
 
 # Loop over all Microphones in the Environment and apply the
 # FrequencyFilterChain to the Audio objects.
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    frequency_filter_chain.apply(audio)
+    frequency_filter_chain.apply(audio=audio)
     # It is important to normalize the audio signal after applying the filters
     # to ensure that the audio signal has a maximum amplitude of 1.0.
-    AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
 
 # Visualize the Audio objects of the Environment after applying the filters
 environment_wave_plot(environment=environment)
@@ -267,8 +269,8 @@ environment_spectrogram_plot(environment=environment)
 # after applying the NoiseReducer.
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    NoiseReducer.reduce_noise(audio)
-    AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+    NoiseReducer.reduce_noise(audio=audio)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
 
 # Visualize the Audio objects of the Environment after reducing the noise
 environment_wave_plot(environment=environment)
@@ -295,8 +297,10 @@ all_sound_sources_nmf = nmf.run_for_environment(environment=environment)
 for i_sound_src in range(n_sound_sources):
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+        mic.set_audio(audio=audio)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     # Visualize the individual sound source Audio objects
     environment_wave_plot(environment=environment)
@@ -345,10 +349,12 @@ for i_sound_src in range(n_sound_sources):
     # Load the audio signals of the sound sources into the Environment
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
+        mic.set_audio(audio=audio)
 
     # Normalize the Environment to have a maximum amplitude of 1.0
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     # Chunk the audio signals by the specified duration
     environment.chunk_audio_signals_by_duration(
@@ -376,8 +382,8 @@ print("FINAL RESULTS")
 print("Loading original Audio objects")
 for i, mic in enumerate(environment.get_mics()):
     audio = original_audios[i]
-    mic.set_audio(audio)
-    mic.set_recording_start_time(datetime.now())
+    mic.set_audio(audio=audio)
+    mic.set_recording_start_time(start_time=datetime.now())
 
 # Visualize the final result
-multilaterate_plot(environment, sources_positions)
+multilaterate_plot(environment=environment, dict_list=sources_positions)

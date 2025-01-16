@@ -31,41 +31,41 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "School Environment", [(0, 0), (0, 5), (5, 5), (5, 0)]
+    name="School Environment", vertices=[(0, 0), (0, 5), (5, 5), (5, 0)]
 )
 
-mic1 = environment.add_microphone(1, 1)
-mic2 = environment.add_microphone(2.8, 1)
-mic3 = environment.add_microphone(1.9, 4.2)
+mic1 = environment.add_microphone(x=1, y=1)
+mic2 = environment.add_microphone(x=2.8, y=1)
+mic3 = environment.add_microphone(x=1.9, y=4.2)
 
 # Note: The audio files are already synced correctly.
 mic1.set_audio(
-    Audio(
+    audio=Audio(
         filepath="../../data/09_three_microphones/pi1_audio_2024-11-09_18-24-32_104187.wav"
     )
 )
-mic1.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 104187))
+mic1.set_recording_start_time(start_time=datetime(2024, 11, 9, 18, 24, 32, 104187))
 
 mic2.set_audio(
-    Audio(
+    audio=Audio(
         filepath="../../data/09_three_microphones/pi2_audio_2024-11-09_18-24-32_811701.wav"
     )
 )
-mic2.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 32, 811701))
+mic2.set_recording_start_time(start_time=datetime(2024, 11, 9, 18, 24, 32, 811701))
 
 mic3.set_audio(
-    Audio(
+    audio=Audio(
         filepath="../../data/09_three_microphones/pi3_audio_2024-11-09_18-24-31_911530.wav"
     )
 )
-mic3.set_recording_start_time(datetime(2024, 11, 9, 18, 24, 31, 911530))
+mic3.set_recording_start_time(start_time=datetime(2024, 11, 9, 18, 24, 31, 911530))
 
 # ##########################
 # PHASE 2 - PRE-PROCESSING #
 # ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
-environment = SampleTrimmer.sync_environment(environment)
+environment = SampleTrimmer.sync_environment(environment=environment)
 
 # ####################
 # PHASE 3 - Localize #

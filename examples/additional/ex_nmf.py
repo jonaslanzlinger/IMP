@@ -38,8 +38,8 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Simulation",
-    [
+    name="Simulation",
+    vertices=[
         (0, 0),
         (120, 0),
         (120, 120),
@@ -47,10 +47,10 @@ environment = simulation.add_environment(
     ],
 )
 
-mic_1 = environment.add_microphone(10, 10)
-mic_2 = environment.add_microphone(110, 10)
-mic_3 = environment.add_microphone(110, 110)
-mic_4 = environment.add_microphone(10, 110)
+mic_1 = environment.add_microphone(x=10, y=10)
+mic_2 = environment.add_microphone(x=110, y=10)
+mic_3 = environment.add_microphone(x=110, y=110)
+mic_4 = environment.add_microphone(x=10, y=110)
 
 # Load the audio files
 audio_1 = Audio(filepath="../../data/17_nmf_example/nmf_example_audio_1.wav")
@@ -63,10 +63,10 @@ original_audios[1] = copy.deepcopy(audio_2)
 original_audios[2] = copy.deepcopy(audio_3)
 original_audios[3] = copy.deepcopy(audio_4)
 
-mic_1.set_audio(audio_1)
-mic_2.set_audio(audio_2)
-mic_3.set_audio(audio_3)
-mic_4.set_audio(audio_4)
+mic_1.set_audio(audio=audio_1)
+mic_2.set_audio(audio=audio_2)
+mic_3.set_audio(audio=audio_3)
+mic_4.set_audio(audio=audio_4)
 
 n_sound_sources = 2
 
@@ -96,8 +96,10 @@ all_sound_sources_nmf = nmf.run_for_environment(
 for i_sound_src in range(n_sound_sources):
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+        mic.set_audio(audio=audio)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     # Visualize the individual sound source Audio objects
     environment_wave_plot(environment=environment)
@@ -124,10 +126,12 @@ for i_sound_src in range(n_sound_sources):
     # Load the audio signals of the sound sources into the Environment
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
+        mic.set_audio(audio=audio)
 
     # Normalize the Environment to have a maximum amplitude of 1.0
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     # Multilaterate the sound source
     source_pos = environment.localize(
@@ -150,8 +154,8 @@ print("FINAL RESULTS")
 print("Loading original Audio objects")
 for i, mic in enumerate(environment.get_mics()):
     audio = original_audios[i]
-    mic.set_audio(audio)
-    mic.set_recording_start_time(datetime.now())
+    mic.set_audio(audio=audio)
+    mic.set_recording_start_time(start_time=datetime.now())
 
 # Visualize the final result
-multilaterate_plot(environment, sources_positions)
+multilaterate_plot(environment=environment, dict_list=sources_positions)

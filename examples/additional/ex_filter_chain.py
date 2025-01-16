@@ -25,7 +25,7 @@ audio = Audio(
     filepath="../../data/06_classroom/pi3_audio_2024-11-28_15-00-00-000000.wav"
 )
 SampleTrimmer.slice_from_to(
-    audio, start_time=timedelta(seconds=8), end_time=timedelta(seconds=13)
+    audio=audio, start_time=timedelta(seconds=8), end_time=timedelta(seconds=13)
 )
 
 audio_spectrogram_plot(
@@ -37,14 +37,14 @@ audio_spectrogram_plot(
 
 frequency_filter_chain = FrequencyFilterChain()
 
-frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=6800, order=10))
-frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=5800, order=10))
+frequency_filter_chain.add_filter(filter=HighCutFilter(cutoff_frequency=6800, order=10))
+frequency_filter_chain.add_filter(filter=LowCutFilter(cutoff_frequency=5800, order=10))
 
-frequency_filter_chain.apply(audio)
+frequency_filter_chain.apply(audio=audio)
 
-NoiseReducer.reduce_noise(audio)
+NoiseReducer.reduce_noise(audio=audio)
 
-AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1)
+AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1)
 
 audio_spectrogram_plot(
     audio_signal=audio.get_audio_signal_unchunked(),

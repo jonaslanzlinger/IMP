@@ -46,8 +46,8 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Simulation",
-    [
+    name="Simulation",
+    vertices=[
         (0, 10),
         (50, 0),
         (100, 10),
@@ -60,10 +60,10 @@ environment = simulation.add_environment(
     ],
 )
 
-mic_1 = environment.add_microphone(5, 15)
-mic_2 = environment.add_microphone(95, 15)
-mic_3 = environment.add_microphone(95, 95)
-mic_4 = environment.add_microphone(5, 95)
+mic_1 = environment.add_microphone(x=5, y=15)
+mic_2 = environment.add_microphone(x=95, y=15)
+mic_3 = environment.add_microphone(x=95, y=95)
+mic_4 = environment.add_microphone(x=5, y=95)
 
 # ##############################
 # PHASE 1.5 - Audio Generation #
@@ -75,7 +75,7 @@ knock = Audio(filepath="../../data/00_SOUND_BANK/sounds/knock_sound.wav")
 # print(f"Sound 1 duration: {buzzer.get_sample_rate()}")
 # print(f"Sound 2 duration: {knock.get_sample_rate()}")
 lowest_sample_rate = SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
-    [buzzer, knock]
+    audio_list=[buzzer, knock]
 )
 source_positions = [
     {
@@ -119,10 +119,10 @@ environment = generate_audios(
 # The following commented code is needed in case the audio files are loaded instead of generated
 # for i, mic in enumerate(environment.get_mics()):
 #     audio = Audio(filepath=f"audio_{i+1}.wav")
-#     mic.set_audio(audio)
-#     mic.set_recording_start_time(datetime.now())
-# SampleRateConverter.convert_all_to_lowest_sample_rate(environment)
-# SampleTrimmer.sync_environment(environment)
+#     mic.set_audio(audio=audio)
+#     mic.set_recording_start_time(start_time=datetime.now())
+# SampleRateConverter.convert_all_to_lowest_sample_rate(environment=environment)
+# SampleTrimmer.sync_environment(environment=environment)
 
 original_audios = [None, None, None, None]
 
@@ -134,30 +134,36 @@ for i, mic in enumerate(environment.get_mics()):
 # ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+AudioNormalizer.normalize_environment_to_max_amplitude(
+    environment=environment, max_amplitude=1.0
+)
 
 environment_wave_plot(environment=environment)
 environment_spectrogram_plot(environment=environment)
 
 frequency_filter_chain = FrequencyFilterChain()
 
-frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=500, order=5))
-frequency_filter_chain.add_filter(NotchFilter(target_frequency=2760, quality_factor=10))
-frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
+frequency_filter_chain.add_filter(filter=LowCutFilter(cutoff_frequency=500, order=5))
+frequency_filter_chain.add_filter(
+    filter=NotchFilter(target_frequency=2760, quality_factor=10)
+)
+frequency_filter_chain.add_filter(filter=HighCutFilter(cutoff_frequency=4000, order=5))
 
 for mic in environment.get_mics():
     audio = mic.get_audio()
-    frequency_filter_chain.apply(audio)
-    AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
-    # NoiseReducer.reduce_noise(audio)
-    # AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+    frequency_filter_chain.apply(audio=audio)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
+    # NoiseReducer.reduce_noise(audio=audio)
+    # AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
 
 # environment_wave_plot(environment=environment)
 # environment_spectrogram_plot(environment=environment)
 
 for mic in environment.get_mics():
-    NoiseReducer.reduce_noise(mic.get_audio())
-    AudioNormalizer.normalize_audio_to_max_amplitude(mic.get_audio(), 1.0)
+    NoiseReducer.reduce_noise(audio=mic.get_audio())
+    AudioNormalizer.normalize_audio_to_max_amplitude(
+        audio=mic.get_audio(), max_amplitude=1.0
+    )
 
 # environment_wave_plot(environment=environment)
 # environment_spectrogram_plot(environment=environment)
@@ -174,9 +180,11 @@ all_sound_sources_nmf = nmf.run_for_environment(environment=environment)
 for i_sound_src in range(n_sound_sources):
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
+        mic.set_audio(audio=audio)
 
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     # environment_wave_plot(environment=environment)
     # environment_spectrogram_plot(environment=environment)
@@ -193,9 +201,11 @@ current_audio_index = 0
 for i_sound_src in range(n_sound_sources):
     for mic in environment.get_mics():
         audio = all_sound_sources_nmf[mic][i_sound_src]
-        mic.set_audio(audio)
+        mic.set_audio(audio=audio)
 
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1.0
+    )
 
     environment.chunk_audio_signals_by_duration(
         chunk_duration=timedelta(milliseconds=1000)
@@ -208,12 +218,12 @@ for i_sound_src in range(n_sound_sources):
     sources_positions.append(source_pos)
 
 for i, mic in enumerate(environment.get_mics()):
-    mic.set_audio(original_audios[0])
-    mic.set_recording_start_time(datetime.now())
+    mic.set_audio(audio=original_audios[0])
+    mic.set_recording_start_time(start_time=datetime.now())
 
 # ###############
 # FINAL RESULTS #
 # ###############
 print("FINAL RESULTS")
 
-multilaterate_plot(environment, sources_positions)
+multilaterate_plot(environment=environment, dict_list=sources_positions)

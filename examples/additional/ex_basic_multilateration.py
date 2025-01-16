@@ -29,8 +29,8 @@ print("PHASE 1 - ENVIRONMENT")
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Door Bell Environment",
-    [
+    name="Door Bell Environment",
+    vertices=[
         (-15, -15),
         (-15, 15),
         (15, 15),
@@ -46,16 +46,24 @@ mic4 = environment.add_microphone(x=10, y=-10)
 
 # Note that those audio files are already correctly synced
 mic1.set_audio(
-    Audio(filepath="../../data/08_door_bell/pi1_audio_2024-10-24_15-21-23_000000.wav")
+    audio=Audio(
+        filepath="../../data/08_door_bell/pi1_audio_2024-10-24_15-21-23_000000.wav"
+    )
 )
 mic2.set_audio(
-    Audio(filepath="../../data/08_door_bell/pi2_audio_2024-10-24_15-21-23_000000.wav")
+    audio=Audio(
+        filepath="../../data/08_door_bell/pi2_audio_2024-10-24_15-21-23_000000.wav"
+    )
 )
 mic3.set_audio(
-    Audio(filepath="../../data/08_door_bell/pi3_audio_2024-10-24_15-21-23_000000.wav")
+    audio=Audio(
+        filepath="../../data/08_door_bell/pi3_audio_2024-10-24_15-21-23_000000.wav"
+    )
 )
 mic4.set_audio(
-    Audio(filepath="../../data/08_door_bell/pi4_audio_2024-10-24_15-21-23_000000.wav")
+    audio=Audio(
+        filepath="../../data/08_door_bell/pi4_audio_2024-10-24_15-21-23_000000.wav"
+    )
 )
 
 # ##########################
@@ -63,7 +71,9 @@ mic4.set_audio(
 # ##########################
 print("PHASE 2 - PRE-PROCESSING")
 
-AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
+AudioNormalizer.normalize_environment_to_max_amplitude(
+    environment=environment, max_amplitude=1
+)
 
 environment_overlap_wave_plot(environment=environment)
 

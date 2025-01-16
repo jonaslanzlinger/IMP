@@ -26,14 +26,16 @@ print("Unchunked audio:")
 print(
     f"Audio Chunks: {len(audio.get_audio_signal())}, Audio signal shape: {audio.get_audio_signal().shape}"
 )
-audio_wave_plot(audio.get_audio_signal_unchunked(), audio.get_sample_rate())
+audio_wave_plot(
+    audio_signal=audio.get_audio_signal_unchunked(), sample_rate=audio.get_sample_rate()
+)
 
 audio.chunk_audio_signal_by_duration(chunk_duration=timedelta(milliseconds=5000))
 
 print("Chunked audio:")
 for i, chunk in enumerate(audio.get_audio_signal_chunked()):
     print(f"Chunk {i}: {len(chunk)} samples")
-    audio_wave_plot(chunk, audio.get_sample_rate())
+    audio_wave_plot(audio_signal=chunk, sample_rate=audio.get_sample_rate())
 
 # #################################################
 # Chunking of all audio signals of an environment #
@@ -42,15 +44,15 @@ for i, chunk in enumerate(audio.get_audio_signal_chunked()):
 simulation = Simulation.create()
 
 environment = simulation.add_environment(
-    "Test Environment", [(0, 0), (0, 10), (10, 10), (10, 0)]
+    name="Test Environment", vertices=[(0, 0), (0, 10), (10, 10), (10, 0)]
 )
-mic1 = environment.add_microphone(2, 4)
-mic2 = environment.add_microphone(8, 5)
+mic1 = environment.add_microphone(x=2, y=4)
+mic2 = environment.add_microphone(x=8, y=5)
 
-mic1.set_audio(Audio(filepath="../../data/03_classroom/pi1_audio.wav"))
-mic2.set_audio(Audio(filepath="../../data/03_classroom/pi2_audio.wav"))
+mic1.set_audio(audio=Audio(filepath="../../data/03_classroom/pi1_audio.wav"))
+mic2.set_audio(audio=Audio(filepath="../../data/03_classroom/pi2_audio.wav"))
 
-environment.chunk_audio_signals_by_duration(timedelta(milliseconds=5000))
+environment.chunk_audio_signals_by_duration(chunk_duration=timedelta(milliseconds=5000))
 # ... or alternatively chunk by samples. This will create chunks of 1 second length:
 # environment.chunk_audio_signals_by_samples(chunk_samples=44100)
 
