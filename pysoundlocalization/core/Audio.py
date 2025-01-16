@@ -21,13 +21,15 @@ class Audio:
         Args:
             filepath (str | None): Path to the audio file.
             convert_to_sample_rate (int | None): Desired sampling rate of the audio signal in Hz to which the audio will be converted.
+            audio_signal (np.ndarray): The audio signal data as a numpy array.
+            sample_rate (int): The sample rate in Hz.
         """
         self.__filepath = filepath
         self.__convert_to_sample_rate = convert_to_sample_rate
         self.__audio_signal = [audio_signal]
         self.__sample_rate = sample_rate
         if audio_signal is None and sample_rate is None:
-            self.load_audio_file(filepath)
+            self.load_audio_file(filepath=filepath)
 
         if self.__audio_signal[0].ndim > 1:
             self.__audio_signal[0] = np.mean(self.__audio_signal[0], axis=1)
@@ -55,6 +57,9 @@ class Audio:
     def load_audio_file(self, filepath: str = None) -> tuple[int, list[np.ndarray]]:
         """
         Manually load the audio file from the filepath. May be used to re-load the file from the filepath.
+
+        Args:
+            filepath (str): The path to the audio file. If not provided, the filepath provided during initialization will be used.
 
         Returns:
             tuple[int, np.ndarray]: A tuple containing the sample rate (Hz) and audio signal (numpy array).
@@ -90,6 +95,9 @@ class Audio:
 
         Args:
             target_rate (int): The desired sampling rate of the resampled audio signal
+
+        Returns:
+            list[np.ndarray]: The resampled audio signal as a list of numpy arrays
         """
 
         if target_rate is None:
@@ -122,7 +130,7 @@ class Audio:
             tuple[int, np.ndarray]: The converted sample rate (Hz) and audio signal (numpy array).
         """
         if self.__sample_rate != target_sample_rate:
-            self.__audio_signal = self.resample_audio(target_sample_rate)
+            self.__audio_signal = self.resample_audio(target_rate=target_sample_rate)
             self.__sample_rate = target_sample_rate
         return self.__sample_rate, self.__audio_signal
 
@@ -136,7 +144,7 @@ class Audio:
             chunk_duration (timedelta): The duration of each audio chunk as a timedelta.
         """
         chunk_in_samples = int(self.__sample_rate * chunk_duration.total_seconds())
-        self.chunk_audio_signal_by_samples(chunk_in_samples)
+        self.chunk_audio_signal_by_samples(chunk_samples=chunk_in_samples)
 
     def chunk_audio_signal_by_samples(self, chunk_samples: int) -> None:
         """
@@ -153,7 +161,7 @@ class Audio:
             next_chunk = self.__audio_signal[0][i : i + chunk_samples]
             if len(next_chunk) == chunk_samples:
                 chunks.append(next_chunk)
-            else:  # TODO: do we want to enfore equal_chunk_size? currently, the last chunk is always padded to have same length as those before..
+            else:
                 chunks.append(np.pad(next_chunk, (0, chunk_samples - len(next_chunk))))
 
         self.__audio_signal = chunks
