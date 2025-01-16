@@ -126,4 +126,4 @@ class Microphone:
         """
         self.__audio = audio
         if reset_recording_start_time is True:
-            self.set_recording_start_time(None)
+            self.set_recording_start_time(start_time=None)
