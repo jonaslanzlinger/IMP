@@ -39,13 +39,13 @@ def generate_audios(
     default_sounds = []
     if n_default_sounds > 0:
         default_sounds = generate_maximally_different_sounds(
-            n_default_sounds, sample_rate, default_sound_duration
+            N=n_default_sounds, sample_rate=sample_rate, duration=default_sound_duration
         )
 
     for source in source_sources:
         if source["sound"] is None:
             source["sound"] = Audio.create_from_signal(
-                default_sounds.pop(0), sample_rate
+                audio_signal=default_sounds.pop(0), sample_rate=sample_rate
             )
 
     num_mics = len(environment.get_mics())
@@ -107,10 +107,6 @@ def generate_audios(
     # Add background noise
     if background_noise is not None:
         background_noise_signal = background_noise.get_audio_signal_unchunked()
-        # seamless_noise = create_seamless_background_noise(
-        #     background_noise_signal, total_samples
-        # )
-        # audio_seamless_noise = Audio.create_from_signal(seamless_noise, sample_rate)
         bg_noise_repeated = np.tile(
             background_noise_signal,
             int(np.ceil(total_samples / len(background_noise_signal))),
@@ -127,15 +123,17 @@ def generate_audios(
 
     # Set audio signals to microphones
     for mic, audio in zip(environment.get_mics(), mic_audio):
-        audio = Audio.create_from_signal(audio, sample_rate)
-        mic.set_audio(audio)
+        audio = Audio.create_from_signal(audio_signal=audio, sample_rate=sample_rate)
+        mic.set_audio(audio=audio)
 
     print(
         f"Generated audio signals for {num_mics} microphones; {n_default_sounds} sources; {n_default_sounds} default sounds; and background noise; with a total duration of {total_samples / sample_rate} seconds; with the following loudness mix: {loudness_mix}"
     )
 
     # Normalize audio signals to prevent very loud audio signals
-    AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1)
+    AudioNormalizer.normalize_environment_to_max_amplitude(
+        environment=environment, max_amplitude=1
+    )
 
     return environment
 

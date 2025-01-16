@@ -2,6 +2,11 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 from datetime import datetime
 
+"""
+This script records audio from a specified microphone for a specified duration.
+The audio is saved as a .wav file with a timestamp in the filename.
+"""
+
 SAMPLE_RATE = 44100
 
 

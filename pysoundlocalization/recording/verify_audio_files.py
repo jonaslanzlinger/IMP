@@ -2,6 +2,15 @@ import soundfile as sf
 import tkinter as tk
 from tkinter import filedialog
 
+"""
+Script to verify audio files. The script reads and analyzes .wav audio files.
+For each audio file, the following information will be displayed:
+- Sample rate (in Hz)
+- Shape (number of samples and channels)
+- Number of channels (1 for mono, 2 for stereo)
+- Duration of the file (in seconds)
+"""
+
 
 def display_intro():
     print("This script reads and analyzes .wav audio files.")
