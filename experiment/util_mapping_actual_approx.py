@@ -57,7 +57,7 @@ def get_mapped_results_accuracy(approx_source_positions, source_positions):
                 )
                 actual_pos = actual_positions[closest_time]
 
-                error = calculate_distance(approx_pos, actual_pos)
+                error = calculate_distance(coord1=approx_pos, coord2=actual_pos)
                 total_error += error
 
                 source_mapping["mappings"].append(
@@ -109,7 +109,8 @@ def main():
     ]
 
     result = get_mapped_results_accuracy(
-        approx_source_positions, actual_source_positions
+        approx_source_positions=approx_source_positions,
+        source_positions=actual_source_positions,
     )
     print(result)
 

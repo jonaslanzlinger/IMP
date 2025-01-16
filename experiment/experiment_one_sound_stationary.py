@@ -28,7 +28,6 @@ from pysoundlocalization.visualization.environment_spectrogram_plot import (
 from pysoundlocalization.visualization.audio_wave_plot import audio_wave_plot
 
 
-# TODO: add typing
 def run_experiment():
     """
     Runs the experiment setup as follows:
@@ -61,8 +60,8 @@ def run_experiment():
     # Create a Simulation and add an Environment for the experiment
     simulation = Simulation.create()
     environment = simulation.add_environment(
-        "Simulation",
-        [
+        name="Simulation",
+        vertices=[
             (0, 0),
             (600, 0),
             (600, 600),
@@ -70,10 +69,10 @@ def run_experiment():
         ],
     )
     # Add Microphones to the Environment as a 500x500m grid
-    mic_1 = environment.add_microphone(50, 50)
-    mic_2 = environment.add_microphone(550, 50)
-    mic_3 = environment.add_microphone(550, 550)
-    mic_4 = environment.add_microphone(50, 550)
+    mic_1 = environment.add_microphone(x=50, y=50)
+    mic_2 = environment.add_microphone(x=550, y=50)
+    mic_3 = environment.add_microphone(x=550, y=550)
+    mic_4 = environment.add_microphone(x=50, y=550)
 
     # ##############################
     # PHASE 1.5 - Audio Generation #
@@ -85,8 +84,8 @@ def run_experiment():
     sound_2 = Audio(filepath="../data/00_SOUND_BANK/sounds/knock_sound.wav")
 
     # Normalize the audio signals to have a maximum amplitude of 1.0
-    AudioNormalizer.normalize_audio_to_max_amplitude(sound_1, 1.0)
-    AudioNormalizer.normalize_audio_to_max_amplitude(sound_2, 1.0)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio=sound_1, max_amplitude=1.0)
+    AudioNormalizer.normalize_audio_to_max_amplitude(audio=sound_2, max_amplitude=1.0)
 
     # Retrieve some information about the created Audio objects
     # print(f"Sound 1 duration: {sound_1.get_duration()}")
@@ -109,7 +108,7 @@ def run_experiment():
     # Ensure that all Audio objects have the same sample rate
     lowest_sample_rate = (
         SampleRateConverter.convert_list_of_audios_to_lowest_sample_rate(
-            [sound_1, sound_2]
+            audio_list=[sound_1, sound_2]
         )
     )
 
@@ -121,10 +120,14 @@ def run_experiment():
     # RANDOM_SOURCE_B1 to RANDOM_SOURCE_B2.
     # Note: get_distant_coordinate(...) ensures that the coordinates are at least 150 units away from each other.
     RANDOM_SOURCE_B1 = util_random_coordinates.get_random_coordinate(
-        100, 500
+        lower_bound=100, upper_bound=500
     )  # This sound source does not move location
     RANDOM_SOURCE_B2 = util_random_coordinates.get_distant_coordinate(
-        RANDOM_SOURCE_B1[0], RANDOM_SOURCE_B1[1], 100, 500, 150
+        ref_x=RANDOM_SOURCE_B1[0],
+        ref_y=RANDOM_SOURCE_B1[1],
+        lower_bound=100,
+        upper_bound=500,
+        min_distance=150,
     )
 
     # Specify in this array of dictionaries the sound sources
@@ -145,7 +148,7 @@ def run_experiment():
     noise = Audio(
         filepath="../data/00_SOUND_BANK/noise/factory_sound.wav",
     )
-    noise.resample_audio(lowest_sample_rate)
+    noise.resample_audio(target_rate=lowest_sample_rate)
 
     # Normalize the audio signal to have a maximum amplitude of 1.0
     AudioNormalizer.normalize_audio_to_max_amplitude(noise, 1.0)
@@ -194,20 +197,24 @@ def run_experiment():
 
     # Filter out background noise
     frequency_filter_chain = FrequencyFilterChain()
-    frequency_filter_chain.add_filter(LowCutFilter(cutoff_frequency=500, order=5))
     frequency_filter_chain.add_filter(
-        NotchFilter(target_frequency=2760, quality_factor=10)
+        filter=LowCutFilter(cutoff_frequency=500, order=5)
     )
-    frequency_filter_chain.add_filter(HighCutFilter(cutoff_frequency=4000, order=5))
+    frequency_filter_chain.add_filter(
+        filter=NotchFilter(target_frequency=2760, quality_factor=10)
+    )
+    frequency_filter_chain.add_filter(
+        filter=HighCutFilter(cutoff_frequency=4000, order=5)
+    )
 
     # Loop over all Microphones in the Environment and apply the
     # FrequencyFilterChain to the Audio objects.
     for mic in environment.get_mics():
         audio = mic.get_audio()
-        frequency_filter_chain.apply(audio)
+        frequency_filter_chain.apply(audio=audio)
         # It is important to normalize the audio signal after applying the filters
         # to ensure that the audio signal has a maximum amplitude of 1.0.
-        AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+        AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
 
     # Visualize the Audio objects of the Environment after applying the filters
     # environment_wave_plot(environment=environment)
@@ -216,32 +223,10 @@ def run_experiment():
     # Use the NoiseReducer to reduce the noise in the Audio objects.
     for mic in environment.get_mics():
         audio = mic.get_audio()
-        NoiseReducer.reduce_noise(audio)
-        AudioNormalizer.normalize_audio_to_max_amplitude(audio, 1.0)
+        NoiseReducer.reduce_noise(audio=audio)
+        AudioNormalizer.normalize_audio_to_max_amplitude(audio=audio, max_amplitude=1.0)
 
     # Visualize the Audio objects of the Environment after reducing the noise
-    # environment_wave_plot(environment=environment)
-    # environment_spectrogram_plot(environment=environment)
-
-    # The NMF algorithm is used to extract the sound sources from the
-    # Audio objects of the Microphones.
-    # sample_rate = environment.get_sample_rate()
-    # nmf = NonNegativeMatrixFactorization(
-    #     number_of_sources_to_extract=n_sound_sources,
-    #     sample_rate=sample_rate,
-    # )
-    # The NMF algorithm returns a dictionary with the Microphones as keys, and the
-    # # extracted sound sources as values.
-    # all_sound_sources_nmf = nmf.run_for_environment(environment=environment)
-    # print(all_sound_sources_nmf)
-
-    # for i_sound_src in range(n_sound_sources):
-    #     for mic in environment.get_mics():
-    #         audio = all_sound_sources_nmf[mic][i_sound_src]
-    #         mic.set_audio(audio)
-    #     AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
-
-    # Visualize the individual sound source Audio objects
     # environment_wave_plot(environment=environment)
     # environment_spectrogram_plot(environment=environment)
 
@@ -264,19 +249,6 @@ def run_experiment():
     # to the sources_positions list.
     for i_sound_src in range(n_sound_sources):
         print(f"Multilaterating sound source {i_sound_src + 1} of {n_sound_sources}")
-
-        # Load the audio signals of the sound sources into the Environment
-        # for mic in environment.get_mics():
-        #     audio = all_sound_sources_nmf[mic][i_sound_src]
-        #     mic.set_audio(audio)
-
-        # Normalize the Environment to have a maximum amplitude of 1.0
-        # AudioNormalizer.normalize_environment_to_max_amplitude(environment, 1.0)
-
-        # Chunk the audio signals by the specified duration
-        # environment.chunk_audio_signals_by_duration(
-        #     chunk_duration=timedelta(milliseconds=5000)
-        # )
 
         # Multilaterate the sound source using threshold
         source_pos_threshold = environment.localize(
@@ -302,13 +274,15 @@ def run_experiment():
     # automatic tests in large volumes, this must be handled.
     mapped_result_accuracy_threshold = (
         util_mapping_actual_approx.get_mapped_results_accuracy(
-            approx_source_positions_threshold, source_positions
+            approx_source_positions=approx_source_positions_threshold,
+            source_positions=source_positions,
         )
     )
 
     mapped_result_accuracy_gcc_phat = (
         util_mapping_actual_approx.get_mapped_results_accuracy(
-            approx_source_positions_gcc_phat, source_positions
+            approx_source_positions=approx_source_positions_gcc_phat,
+            source_positions=source_positions,
         )
     )
 

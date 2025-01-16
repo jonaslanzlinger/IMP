@@ -3,8 +3,16 @@ import re
 import ast
 
 
-def read_experiment_file(filepath):
-    """Read the experiment file and return its content"""
+def read_experiment_file(filepath: str):
+    """
+    Read the experiment file and return its content.
+
+    Args:
+        filepath (string): Path to the experiment file to be loaded.
+
+    Returns:
+        string: Content of the experiment file.
+    """
     try:
         with open(filepath, "r") as file:
             return file.read()
@@ -16,8 +24,16 @@ def read_experiment_file(filepath):
         return None
 
 
-def extract_errors_by_method(content):
-    """Extract errors for each method from the experiment text"""
+def extract_errors_by_method(content: str):
+    """
+    Extract errors for each method from the experiment text.
+
+    Args:
+        content (string): Content of the experiment file.
+
+    Returns:
+        dict: Dictionary containing errors for each method.
+    """
     # Initialize dictionary to store errors for each method
     errors_by_method = {"threshold": [], "gcc_phat": []}
 
@@ -56,8 +72,16 @@ def extract_errors_by_method(content):
     return errors_by_method
 
 
-def calculate_statistics(errors):
-    """Calculate various error statistics"""
+def calculate_statistics(errors: np.ndarray):
+    """
+    Calculate various error statistics.
+
+    Args:
+        errors (np.ndarray): Array of errors.
+
+    Returns:
+        dict: Dictionary containing error statistics.
+    """
     stats = {
         "mean_error": np.mean(errors),
         "min_error": np.min(errors),
@@ -69,7 +93,7 @@ def calculate_statistics(errors):
     return stats
 
 
-def analyze_experiment_file(filepath):
+def analyze_experiment_file(filepath: str):
     """
     Reads and analyzes the experiment txt file with multiple methods.
 
@@ -80,12 +104,12 @@ def analyze_experiment_file(filepath):
         dict: Statistics for each method in the experiment file.
     """
     # Read the file
-    content = read_experiment_file(filepath)
+    content = read_experiment_file(filepath=filepath)
     if content is None:
         return None
 
     # Extract errors for each method
-    errors_by_method = extract_errors_by_method(content)
+    errors_by_method = extract_errors_by_method(content=content)
     if errors_by_method is None:
         return None
 
@@ -96,7 +120,7 @@ def analyze_experiment_file(filepath):
     print("-" * 50)
 
     for method, errors in errors_by_method.items():
-        stats = calculate_statistics(errors)
+        stats = calculate_statistics(errors=errors)
         stats_by_method[method] = stats
 
         print(f"\n{method.upper()}:")
@@ -116,7 +140,7 @@ def main():
     """
     # Prompt the user for the file path (eg. 2025-01-12_14-07-52_experiment_one_sound_moving.txt)
     filepath = input("Please enter the path to the experiment file: ").strip()
-    analyze_experiment_file(filepath)
+    analyze_experiment_file(filepath=filepath)
 
 
 if __name__ == "__main__":
