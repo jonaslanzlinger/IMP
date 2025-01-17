@@ -42,4 +42,4 @@ A virtual environment helps manage dependencies and ensures your project is isol
 
 # Demo
 
-For a quick overview, see [Demo](examples/tutorial_complete.py).
+For a quick overview, see [Demo](examples/tutorial.py).
